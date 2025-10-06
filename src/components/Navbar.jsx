@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
 import logo from "../assets/logos/scs-logo-cube.svg";
@@ -6,8 +6,11 @@ import logo from "../assets/logos/scs-logo-cube.svg";
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [isLogoHovered, setIsLogoHovered] = useState(false);
+  const location = useLocation();
 
   const toggleMenu = () => setIsOpen(!isOpen);
+
+  const isActive = (path) => location.pathname === path;
 
   return (
     <nav className="fixed top-0 left-0 w-full bg-gray-900/0 backdrop-blur-sm text-white p-4 shadow-md z-20">
@@ -42,19 +45,31 @@ export default function Navbar() {
         <div className="hidden font-display text-lg md:flex gap-15 mr-6">
           <Link
             to="/about"
-            className="hover:text-fuchsia-300 hover:scale-120 hover:drop-shadow-[0_0_15px_rgba(217,70,239,0.9)] transition"
+            className={`hover:scale-120 transition ${
+              isActive("/about")
+                ? "text-fuchsia-400 drop-shadow-[0_0_15px_rgba(217,70,239,0.9)]"
+                : "hover:text-fuchsia-300 hover:drop-shadow-[0_0_15px_rgba(217,70,239,0.9)]"
+            }`}
           >
             About
           </Link>
           <Link
             to="/projects"
-            className="hover:text-fuchsia-300 hover:scale-120 hover:drop-shadow-[0_0_15px_rgba(217,70,239,0.9)] transition"
+            className={`hover:scale-120 transition ${
+              isActive("/projects")
+                ? "text-fuchsia-400 drop-shadow-[0_0_15px_rgba(217,70,239,0.9)]"
+                : "hover:text-fuchsia-300 hover:drop-shadow-[0_0_15px_rgba(217,70,239,0.9)]"
+            }`}
           >
             Projects
           </Link>
           <Link
             to="/contact"
-            className="hover:text-fuchsia-300 hover:scale-120 hover:drop-shadow-[0_0_15px_rgba(217,70,239,0.9)] transition"
+            className={`hover:scale-120 transition ${
+              isActive("/contact")
+                ? "text-fuchsia-400 drop-shadow-[0_0_15px_rgba(217,70,239,0.9)]"
+                : "hover:text-fuchsia-300 hover:drop-shadow-[0_0_15px_rgba(217,70,239,0.9)]"
+            }`}
           >
             Contact
           </Link>
@@ -79,21 +94,33 @@ export default function Navbar() {
         <div className="flex flex-col gap-4 pb-4">
           <Link
             to="/about"
-            className="hover:text-fuchsia-300 transition px-4 py-2 hover:bg-gray-800/30 rounded"
+            className={`transition px-4 py-2 rounded active:bg-fuchsia-500/30 ${
+              isActive("/about")
+                ? "text-fuchsia-400 bg-fuchsia-500/20 border-l-4 border-fuchsia-400"
+                : "hover:text-fuchsia-300 hover:bg-gray-800/30"
+            }`}
             onClick={() => setIsOpen(false)}
           >
             About
           </Link>
           <Link
             to="/projects"
-            className="hover:text-fuchsia-300 transition px-4 py-2 hover:bg-gray-800/30 rounded"
+            className={`transition px-4 py-2 rounded active:bg-fuchsia-500/30 ${
+              isActive("/projects")
+                ? "text-fuchsia-400 bg-fuchsia-500/20 border-l-4 border-fuchsia-400"
+                : "hover:text-fuchsia-300 hover:bg-gray-800/30"
+            }`}
             onClick={() => setIsOpen(false)}
           >
             Projects
           </Link>
           <Link
             to="/contact"
-            className="hover:text-fuchsia-300 transition px-4 py-2 hover:bg-gray-800/30 rounded"
+            className={`transition px-4 py-2 rounded active:bg-fuchsia-500/30 ${
+              isActive("/contact")
+                ? "text-fuchsia-400 bg-fuchsia-500/20 border-l-4 border-fuchsia-400"
+                : "hover:text-fuchsia-300 hover:bg-gray-800/30"
+            }`}
             onClick={() => setIsOpen(false)}
           >
             Contact

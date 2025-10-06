@@ -87,7 +87,14 @@ export function useSplineHero() {
     appRef.current = app;
     setReady(true);
     startWatchingSolved();
-    if (!visible) app.stop();
+    const el = containerRef.current;
+    if (el) {
+      const r = el.getBoundingClientRect();
+      const onScreen = r.bottom > 0 && r.top < window.innerHeight;
+      onScreen ? app.play() : app.stop();
+    } else {
+      visible ? app.play() : app.stop();
+    }
   }
 
   function skipPuzzle() {

@@ -186,7 +186,9 @@ export default function Contact() {
                 </div>
                 <div>
                   <h3 className="font-semibold text-lg mb-1">Email</h3>
-                  <p className="text-gray-300">hello@solidcodesolutions.com</p>
+                  <p className="text-gray-300">
+                    christian@solidcodesolutionsllc.com
+                  </p>
                   <p className="text-gray-400 text-sm">
                     We'll respond within 24 hours
                   </p>
@@ -199,7 +201,7 @@ export default function Contact() {
                 </div>
                 <div>
                   <h3 className="font-semibold text-lg mb-1">Phone</h3>
-                  <p className="text-gray-300">+1 (555) 123-4567</p>
+                  <p className="text-gray-300">+1 (954) 559-2944</p>
                   <p className="text-gray-400 text-sm">Mon-Fri, 9am-6pm EST</p>
                 </div>
               </div>

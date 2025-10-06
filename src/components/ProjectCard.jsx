@@ -3,7 +3,16 @@ import { Link } from "react-router-dom";
 
 function ProjectCard({ title, blurb, image, alt, href, tags, index }) {
   const [isHovered, setIsHovered] = useState(false);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const isEven = index % 2 === 0;
+
+  const handleContentMouseMove = (e) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    setMousePosition({
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top,
+    });
+  };
 
   return (
     <article
@@ -18,27 +27,45 @@ function ProjectCard({ title, blurb, image, alt, href, tags, index }) {
       >
         {/* Image Section */}
         <div className="relative md:w-1/2 overflow-hidden">
-          <div className="relative h-64 md:h-full min-h-[400px]">
+          <div className="relative aspect-square md:aspect-auto md:h-full md:min-h-[400px]">
             <img
               src={image}
               alt={alt}
-              className={`w-full h-full object-cover object-center transition-transform duration-700 ${
+              className={`absolute inset-0 w-full h-full object-cover object-center transition-transform duration-700 ${
                 isHovered ? "scale-110" : "scale-100"
               }`}
               loading="lazy"
             />
-            {/* Animated gradient overlay */}
+
+            {/* Mobile: bottom gradient overlay */}
             <div
-              className={`absolute inset-0 ${
+              className={`absolute inset-x-0 bottom-0 h-1/3 md:hidden bg-gradient-to-t from-primary-dark-purple/80 to-transparent transition-opacity duration-500 ${
+                isHovered ? "opacity-70" : "opacity-90"
+              }`}
+              aria-hidden="true"
+            />
+
+            {/* Desktop/Tablet: side overlay (unchanged behavior) */}
+            <div
+              className={`absolute inset-0 hidden md:block ${
                 isEven ? "bg-gradient-to-r" : "bg-gradient-to-l"
               } from-transparent via-transparent to-primary-dark-purple/80 transition-opacity duration-500 ${
                 isHovered ? "opacity-70" : "opacity-90"
               }`}
               aria-hidden="true"
             />
-            {/* Animated accent line */}
+
+            {/* Mobile: bottom accent line */}
             <div
-              className={`absolute ${
+              className={`absolute inset-x-0 bottom-0 md:hidden h-1 bg-gradient-to-r from-accent-fuchsia via-accent-purple to-accent-fuchsia transition-all duration-500 ${
+                isHovered ? "opacity-100 h-1.5" : "opacity-60"
+              }`}
+              aria-hidden="true"
+            />
+
+            {/* Desktop/Tablet: side accent line (unchanged behavior) */}
+            <div
+              className={`absolute hidden md:block ${
                 isEven ? "right-0" : "left-0"
               } top-0 bottom-0 w-1 bg-gradient-to-b from-accent-fuchsia via-accent-purple to-accent-fuchsia transition-all duration-500 ${
                 isHovered ? "opacity-100 w-2" : "opacity-50"
@@ -49,15 +76,26 @@ function ProjectCard({ title, blurb, image, alt, href, tags, index }) {
         </div>
 
         {/* Content Section */}
-        <div className="md:w-1/2 p-8 md:p-12 flex flex-col justify-center">
-          <div className="space-y-6">
+        <div
+          className="md:w-1/2 p-8 md:p-12 flex flex-col justify-center relative bg-gradient-to-br from-accent-purple/0 to-accent-fuchsia/5 backdrop-blur-sm border border-accent-fuchsia-dark/30 md:border-accent-purple-dark/30 hover:border-accent-fuchsia-dark/50 transition-all duration-300 overflow-hidden shadow-lg shadow-fuchsia-500/10"
+          onMouseMove={handleContentMouseMove}
+        >
+          {/* Cursor glow effect */}
+          <div
+            className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+            style={{
+              background: `radial-gradient(600px circle at ${mousePosition.x}px ${mousePosition.y}px, rgba(217, 70, 239, 0.15), transparent 40%)`,
+            }}
+          />
+
+          <div className="relative z-10 space-y-6">
             {/* Project number badge */}
             <div className="inline-flex items-center gap-2 text-sm font-mono text-accent-fuchsia-light">
               <span className="w-8 h-px bg-accent-fuchsia"></span>
               <span>Project {String(index + 1).padStart(2, "0")}</span>
             </div>
 
-            <h3 className="text-3xl md:text-4xl font-bold text-transparent bg-gradient-to-r from-fuchsia-200 to-purple-200 bg-clip-text leading-tight">
+            <h3 className="text-3xl md:text-4xl font-display font-bold text-transparent bg-gradient-to-r from-fuchsia-200 to-purple-200 bg-clip-text leading-tight">
               {title}
             </h3>
 
@@ -86,7 +124,7 @@ function ProjectCard({ title, blurb, image, alt, href, tags, index }) {
             <div className="flex flex-col sm:flex-row gap-4 pt-4">
               <Link
                 to={href}
-                className="group/btn inline-flex items-center justify-center gap-3 px-6 py-3 bg-gradient-to-r from-accent-fuchsia-dark to-accent-purple-dark rounded-xl font-semibold hover:shadow-xl hover:shadow-fuchsia-500/30 transition-all duration-300 transform hover:scale-105"
+                className="btn-primary"
                 aria-label={`Open project: ${title}`}
               >
                 View Case Study
@@ -98,10 +136,7 @@ function ProjectCard({ title, blurb, image, alt, href, tags, index }) {
                 </span>
               </Link>
 
-              <Link
-                to="/contact"
-                className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl border border-accent-purple/50 hover:border-accent-purple hover:bg-accent-purple/10 transition-all duration-300 focus-visible:ring-2 focus-visible:ring-accent-fuchsia/60"
-              >
+              <Link to="/contact" className="btn-secondary">
                 Start Similar Project
               </Link>
             </div>

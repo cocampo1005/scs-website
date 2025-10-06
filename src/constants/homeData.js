@@ -76,7 +76,7 @@ export const PROJECTS = [
     image: mmFeatureImg,
     alt: "Scheduling grid showing available appointment slots",
     href: "/projects#meowmax",
-    tags: ["React", "Firebase", "Realtime", "Admin Tools"],
+    tags: ["React", "Firebase", "Realtime", "Admin Tools", "UX/UI"],
   },
   {
     slug: "bio-blast",
@@ -86,6 +86,6 @@ export const PROJECTS = [
     image: bbFeatureImg,
     alt: "Website mockups for industrial services",
     href: "/projects#bio-blast",
-    tags: ["WordPress", "SEO", "Performance", "UX"],
+    tags: ["WordPress", "SEO", "Performance", "Conversion"],
   },
 ];

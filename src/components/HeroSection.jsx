@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 const Spline = lazy(() => import("@splinetool/react-spline"));
 import HexagonLoader from "./HexagonLoader";
 import { useSplineHero } from "../hooks/useSplineHero";
+import Reveal, { Stagger } from "../components/Reveal";
 
 export default function HeroSection() {
   const { containerRef, ready, showUI, handleLoad, skipPuzzle } =
@@ -25,8 +26,6 @@ export default function HeroSection() {
               renderOnDemand
             />
           </Suspense>
-
-          {/* Loader overlay */}
           <HexagonLoader ready={ready} />
         </div>
       </div>
@@ -40,39 +39,71 @@ export default function HeroSection() {
         Skip to Main Content
       </button>
 
-      {/* Pre-solve headline - Problem Question */}
+      {/* Copy block */}
       <div className="relative text-center max-w-5xl p-4 z-10">
+        {/* Pre-solve headline */}
         <div className={showUI ? "hidden" : "block"}>
           <h2 className="font-logo text-2xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-violet-200 to-purple-300 bg-clip-text text-transparent">
             Can't Seem to Find a Digital Solution That Really Fits?
           </h2>
         </div>
 
-        {/* Post-solve content - main H1 for SEO */}
+        {/* Post-solve content (gated) */}
         <div
-          className={`transition-opacity duration-700 delay-100 ${
-            showUI ? "opacity-100" : "opacity-0 absolute inset-0"
-          }`}
+          aria-hidden={!showUI}
+          inert={!showUI}
+          className={`
+            transition-all duration-700 ease-out will-change-transform
+            ${
+              showUI
+                ? "opacity-100 translate-y-0"
+                : "opacity-0 translate-y-3 absolute inset-0 pointer-events-none"
+            }
+            motion-reduce:opacity-100 motion-reduce:translate-y-0
+          `}
         >
-          <h1 className="font-logo text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-accent-fuchsia to-accent-purple bg-clip-text text-transparent">
-            The Missing Piece to Your Digital Solution
-          </h1>
-          <p className="font-sans text-lg md:text-xl text-gray-light mb-8 max-w-3xl mx-auto">
-            Solid Code Solutions builds tailored websites and web applications
-            that click into place for your brand, your users, and your goals.
-          </p>
-          <nav
-            className="flex flex-nowrap text-sm md:text-lg gap-4 md:gap-10 justify-center"
-            aria-label="Primary navigation"
-          >
-            <Link to="/contact" className="btn-primary">
-              Start Your Project
-            </Link>
+          <Stagger gap={120}>
+            <Reveal
+              as="h1"
+              active={showUI}
+              className="font-logo text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-accent-fuchsia to-accent-purple bg-clip-text text-transparent"
+            >
+              The Missing Piece to Your Digital Solution
+            </Reveal>
 
-            <Link to="/projects" className="btn-secondary">
-              View Our Work
-            </Link>
-          </nav>
+            <Reveal
+              as="p"
+              active={showUI}
+              className="font-sans text-lg md:text-xl text-gray-light mb-8 max-w-3xl mx-auto"
+            >
+              Solid Code Solutions builds tailored websites and web applications
+              that click into place for your brand, your users, and your goals.
+            </Reveal>
+
+            <Reveal
+              as="nav"
+              active={showUI}
+              className="flex flex-nowrap text-sm md:text-lg gap-4 md:gap-10 justify-center"
+              aria-label="Primary navigation"
+            >
+              <Link
+                to="/contact"
+                className="btn-primary"
+                tabIndex={showUI ? 0 : -1}
+                aria-disabled={!showUI}
+              >
+                Start Your Project
+              </Link>
+              <Link
+                to="/projects"
+                className="btn-secondary"
+                tabIndex={showUI ? 0 : -1}
+                aria-disabled={!showUI}
+              >
+                View Our Work
+              </Link>
+            </Reveal>
+          </Stagger>
         </div>
       </div>
 
@@ -97,6 +128,7 @@ export default function HeroSection() {
         </button>
       )}
 
+      {/* Bottom gradient fade */}
       <div
         className="pointer-events-none absolute inset-x-0 bottom-0 h-[10vh] z-10
                   bg-gradient-to-t from-primary-dark-purple via-primary-dark-purple/50 to-transparent"
