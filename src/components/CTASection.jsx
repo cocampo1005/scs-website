@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef } from "react";
 import { Link } from "react-router-dom";
 import ctaBG from "../assets/images/cta-bg1.webp";
+import Reveal from "./Reveal";
 
 export default function CTASection() {
   const sectionRef = useRef(null);
@@ -141,18 +142,27 @@ export default function CTASection() {
         <div className="grid md:grid-cols-5 gap-6 items-stretch">
           {/* Left rail copy */}
           <div className="md:col-span-3">
-            <h2
+            <Reveal
+              as="h2"
+              y={6}
+              duration={450}
               id="cta-heading"
               className="text-4xl md:text-5xl font-bold font-logo bg-gradient-to-r from-accent-fuchsia to-accent-purple bg-clip-text text-transparent mb-6"
             >
               Custom Solutions. <br />
               Solid Results.
-            </h2>
-            <p className="text-lg md:text-xl text-white/80 max-w-prose mb-0">
+            </Reveal>
+            <Reveal
+              as="p"
+              delay={120}
+              y={4}
+              duration={450}
+              className="text-lg md:text-xl text-white/80 max-w-prose mb-0"
+            >
               Partner with Solid Code Solutions for tailor-made software and
               websites that streamline operations and strengthen your online
               presence.
-            </p>
+            </Reveal>
           </div>
 
           {/* Callout card */}

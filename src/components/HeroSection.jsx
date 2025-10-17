@@ -1,9 +1,9 @@
 import { lazy, Suspense } from "react";
 import { Link } from "react-router-dom";
 const Spline = lazy(() => import("@splinetool/react-spline"));
-import HexagonLoader from "./HexagonLoader";
 import { useSplineHero } from "../hooks/useSplineHero";
 import Reveal, { Stagger } from "../components/Reveal";
+import CubeLoader from "./CubeLoader";
 
 export default function HeroSection() {
   const { containerRef, ready, showUI, handleLoad, skipPuzzle } =
@@ -26,7 +26,7 @@ export default function HeroSection() {
               renderOnDemand
             />
           </Suspense>
-          <HexagonLoader ready={ready} />
+          <CubeLoader ready={ready} />
         </div>
       </div>
 
