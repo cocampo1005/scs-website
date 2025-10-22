@@ -66,7 +66,7 @@ export default function About() {
       {/* Mission Vision as tabs */}
       <section className="max-w-6xl mx-auto px-6 mt-14 grid md:grid-cols-2 gap-6">
         <MissionVisionTabs />
-        <GlowCard>
+        <GlowCard className="p-8">
           <Stagger>
             <Reveal
               as="h2"
@@ -125,7 +125,9 @@ export default function About() {
                   delay={200}
                   className="text-4xl font-bold text-fuchsia-200"
                 />
-                <div className="text-sm text-gray-300 mt-1">Week timeline</div>
+                <div className="text-sm text-gray-300 mt-1">
+                  Week Avg timeline
+                </div>
               </GlowCard>
             </Reveal>
 
@@ -169,7 +171,7 @@ export default function About() {
             <img
               src={fitImg}
               alt="Hexagonal tessellation that fits together"
-              className="w-full h-72 md:h-[500px] object-cover object-bottom"
+              className="w-full h-72 md:h-[400px] object-cover object-bottom"
             />
             <div
               aria-hidden
@@ -192,7 +194,7 @@ export default function About() {
           <div className="border-t border-purple-500/30" />
 
           {/* Bottom: Our Story (still inside the same container/border) */}
-          <GlowCard className="p-0 rounded-t-none rounded-b-3xl bg-transparent ring-0 shadow-none">
+          <GlowCard className="p-8 rounded-t-none rounded-b-3xl bg-transparent ring-0 shadow-none">
             <Stagger>
               <Reveal
                 as="h2"
@@ -243,9 +245,10 @@ export default function About() {
           id="solid-intro"
           className="text-center text-gray-300 max-w-3xl mx-auto mb-10"
         >
-          Our name comes from the S O L I D principles. Stacked like blocks that
-          form a stable structure, they keep products flexible and dependable as
-          you grow.
+          Our name comes from the{" "}
+          <span className="font-bold font-display">S O L I D</span> principles
+          in programming. Stacked like blocks that form a stable structure, they
+          keep products flexible and dependable as you grow.
         </Reveal>
 
         {/* Instruction text */}

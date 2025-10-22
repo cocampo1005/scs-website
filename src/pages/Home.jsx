@@ -44,7 +44,7 @@ export default function Home() {
             <Stagger gap={120} startAt={80}>
               {SERVICES.map((service, index) => (
                 <Reveal key={service.title} y={8}>
-                  <GlowCard>
+                  <GlowCard className="p-8">
                     <img
                       src={service.image}
                       alt={service.alt}
@@ -110,7 +110,7 @@ export default function Home() {
                 const Icon = item.icon;
                 return (
                   <Reveal key={item.title} y={8}>
-                    <GlowCard>
+                    <GlowCard className="p-8">
                       <Icon
                         className="w-12 h-12 text-accent-fuchsia mb-4"
                         aria-hidden="true"

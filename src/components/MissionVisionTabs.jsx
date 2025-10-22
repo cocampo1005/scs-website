@@ -50,7 +50,7 @@ export default function MissionVisionTabs() {
 
   return (
     <Reveal as="div" delay={100} className="max-w-3xl mx-auto">
-      <GlowCard className="p-0 overflow-hidden">
+      <GlowCard className="p-8 overflow-hidden">
         <div className="relative">
           {/* Tablist */}
           <div

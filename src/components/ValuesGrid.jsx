@@ -1,9 +1,9 @@
 import {
   Cpu,
+  Crosshair,
   Gem,
   HeartHandshake,
   LineChart,
-  Ruler,
   Sparkles,
 } from "lucide-react";
 import GlowCard from "./GlowCard";
@@ -12,7 +12,7 @@ import Reveal from "./Reveal";
 export default function ValuesGrid() {
   const values = [
     {
-      icon: <Ruler className="size-6" />,
+      icon: <Crosshair className="size-6" />,
       title: "Precision",
       desc: "Every detail adds up and supports the whole.",
     },
@@ -54,7 +54,7 @@ export default function ValuesGrid() {
       <div className="relative grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {values.map((v, i) => (
           <Reveal key={v.title} delay={i * 60}>
-            <GlowCard className="group">
+            <GlowCard className="group p-8">
               <div className="flex items-start gap-4">
                 {/* uniform icon container */}
                 <div
