@@ -44,12 +44,16 @@ export default function ValuesGrid() {
   ];
 
   return (
-    <div className="relative">
+    <div className="relative pb-24">
       {/* subtle background grid glow */}
       <div aria-hidden className="absolute inset-0">
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-purple-900/10 to-transparent" />
         <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 size-[70vmin] rounded-full blur-3xl bg-fuchsia-600/10" />
       </div>
+      <div
+        aria-hidden
+        className="absolute bottom-0 inset-x-0 h-20 bg-gradient-to-t from-primary-dark-purple to-transparent"
+      />
 
       <div className="relative grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {values.map((v, i) => (

@@ -1,4 +1,4 @@
-export default function GlowCard({ children, className = "" }) {
+export default function GlowCard({ children, className = "", ...props }) {
   return (
     <div
       className={`group relative bg-white/5 md:bg-white/5 bg-gradient-to-br from-accent-purple/10 to-accent-fuchsia/10 backdrop-blur-sm rounded-2xl border border-accent-fuchsia-dark/30 md:border-accent-purple-dark/30 hover:border-accent-fuchsia-dark/50 transition-all duration-300 overflow-hidden shadow-lg shadow-fuchsia-500/10 md:shadow-none ${className}`}
@@ -13,6 +13,7 @@ export default function GlowCard({ children, className = "" }) {
         "--mouse-x": "0px",
         "--mouse-y": "0px",
       }}
+      {...props}
     >
       {/* Cursor shine effect */}
       <div

@@ -8,9 +8,11 @@ import {
   Github,
   Linkedin,
   Instagram,
+  Box,
 } from "lucide-react";
 import { WhatsappLogo } from "@phosphor-icons/react";
 import logo from "../assets/logos/scs-logo-cube.svg";
+import GlowCard from "./GlowCard";
 
 export default function Footer() {
   const year = new Date().getFullYear();
@@ -28,7 +30,7 @@ export default function Footer() {
       />
 
       {/* Body */}
-      <div className="bg-gradient-to-br from-slate-950 via-purple-950 to-slate-950">
+      <GlowCard className="bg-gradient-to-br from-slate-950 via-accent-purple-dark/15 to-slate-950 rounded-none">
         <div className="max-w-6xl mx-auto px-6 pt-16 pb-10">
           <div className="grid gap-10 md:gap-14 md:grid-cols-12">
             {/* Brand */}
@@ -59,7 +61,7 @@ export default function Footer() {
                   rel="noreferrer noopener"
                   className="inline-flex items-center gap-2 rounded-lg border border-purple-500/20 bg-white/5 px-3 py-2 hover:border-fuchsia-500/50 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-fuchsia-500/60"
                 >
-                  <Github className="h-8 w-8 md:h-4 md:w-4" aria-hidden />
+                  <Github className="h-4 md:w-4" aria-hidden />
                   <span className="sr-only">GitHub</span>
                 </a>
                 <a
@@ -68,7 +70,7 @@ export default function Footer() {
                   rel="noreferrer noopener"
                   className="inline-flex items-center gap-2 rounded-lg border border-purple-500/20 bg-white/5 px-3 py-2 hover:border-fuchsia-500/50 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-fuchsia-500/60"
                 >
-                  <Linkedin className="h-8 w-8 md:h-4 md:w-4" aria-hidden />
+                  <Linkedin className="h-4 md:w-4" aria-hidden />
                   <span className="sr-only">LinkedIn</span>
                 </a>
                 <a
@@ -77,7 +79,7 @@ export default function Footer() {
                   rel="noreferrer noopener"
                   className="inline-flex items-center gap-2 rounded-lg border border-purple-500/20 bg-white/5 px-3 py-2 hover:border-fuchsia-500/50 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-fuchsia-500/60"
                 >
-                  <Instagram className="h-8 w-8 md:h-4 md:w-4" aria-hidden />
+                  <Instagram className="h-4 md:w-4" aria-hidden />
                   <span className="sr-only">Instagram</span>
                 </a>
               </div>
@@ -89,7 +91,7 @@ export default function Footer() {
               className="md:col-span-7 grid grid-cols-2 md:grid-cols-2 gap-8"
             >
               <div>
-                <h3 className="text-sm uppercase tracking-wider text-fuchsia-300 mb-3">
+                <h3 className="text-sm uppercase tracking-wider text-accent-fuchsia-light mb-3">
                   Quick Links
                 </h3>
                 <ul className="space-y-2 text-gray-300">
@@ -130,37 +132,62 @@ export default function Footer() {
               </div>
 
               <div className="col-span-2 md:col-span-1">
-                <h3 className="text-sm uppercase tracking-wider text-fuchsia-300 mb-3">
+                <h3 className="text-sm uppercase tracking-wider text-accent-fuchsia-light mb-3">
                   Get in touch
                 </h3>
-                <ul className="space-y-3 text-gray-300">
-                  <li className="flex flex-wrap items-start gap-3">
-                    <Mail
-                      className="h-5 w-5 text-fuchsia-300 mt-0.5"
-                      aria-hidden
-                    />
+
+                <ul className="space-y-4 text-gray-300">
+                  {/* Email */}
+                  <li>
+                    <div className="flex items-center gap-3 mb-1">
+                      <Mail
+                        className="h-5 w-5 text-accent-fuchsia-light"
+                        aria-hidden
+                      />
+                      <span className="font-semibold text-accent-fuchsia-light">
+                        Email
+                      </span>
+                    </div>
                     <a
                       href="mailto:christian@solidcodesolutionsllc.com"
-                      className="md:text-sm hover:text-fuchsia-200 break-all"
+                      className="block ml-8 md:text-sm hover:text-fuchsia-200 break-all"
                     >
                       christian@solidcodesolutionsllc.com
                     </a>
                   </li>
-                  <li className="flex items-start gap-3">
-                    <WhatsappLogo
-                      className="h-5 w-5 text-fuchsia-300 mt-0.5"
-                      aria-hidden
-                    />
-                    <span>+1 (954) 559-2944</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <MapPin
-                      className="h-5 w-5 text-fuchsia-300 mt-0.5"
-                      aria-hidden
-                    />
-                    <span>Miami, Florida · Remote-first</span>
+
+                  {/* WhatsApp */}
+                  <li>
+                    <div className="flex items-center gap-3 mb-1">
+                      <WhatsappLogo
+                        className="h-5 w-5 text-accent-fuchsia-light"
+                        aria-hidden
+                      />
+                      <span className="font-semibold text-accent-fuchsia-light">
+                        WhatsApp
+                      </span>
+                    </div>
+                    <a
+                      href="https://wa.me/19545592944"
+                      target="_blank"
+                      rel="noreferrer"
+                      className="block ml-8 md:text-sm hover:text-fuchsia-200"
+                    >
+                      +1 (954) 559-2944
+                    </a>
                   </li>
                 </ul>
+
+                {/* Tagline */}
+                <div className="mt-5 flex items-start gap-3">
+                  <Box
+                    className="h-5 w-5 text-accent-fuchsia-light mt-0.5"
+                    aria-hidden
+                  />
+                  <span className="text-gray-400 italic">
+                    Building Solid Solutions That Fit
+                  </span>
+                </div>
               </div>
             </nav>
           </div>
@@ -200,7 +227,7 @@ export default function Footer() {
             </div>
           </div>
         </div>
-      </div>
+      </GlowCard>
     </footer>
   );
 }

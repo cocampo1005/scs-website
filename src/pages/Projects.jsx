@@ -49,7 +49,7 @@ export default function Projects() {
   );
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white">
+    <>
       {/* Hero — matches About’s hero style */}
       <section
         className="relative overflow-hidden py-40 md:py-50 px-6 bg-primary-dark-purple bg-center bg-cover"
@@ -441,6 +441,6 @@ export default function Projects() {
           />
         )}
       </AnimatePresence>
-    </div>
+    </>
   );
 }

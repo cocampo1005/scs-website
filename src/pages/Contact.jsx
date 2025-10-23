@@ -1,294 +1,535 @@
-import { useState } from "react";
+// src/pages/Contact.jsx
+import { useRef, useState } from "react";
+import { Mail, Send } from "lucide-react";
+import { motion } from "framer-motion";
+
+import Reveal, { Stagger } from "../components/Reveal";
+import GlowCard from "../components/GlowCard";
+import heroImg from "../assets/images/contact-beam.webp";
+import { WhatsappLogoIcon } from "@phosphor-icons/react";
+import emailjs from "@emailjs/browser";
 
 export default function Contact() {
+  const [status, setStatus] = useState({ sending: false, ok: false, err: "" });
+  const [errors, setErrors] = useState({});
+  const [lastSentAt, setLastSentAt] = useState(0);
+  const [openIdx, setOpenIdx] = useState(0);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
-    company: "",
-    projectType: "",
-    budget: "",
+    phone: "",
     message: "",
+    website: "", // honeypot
   });
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Handle form submission here
-    console.log("Form submitted:", formData);
-    alert("Thank you for your message! We'll get back to you soon.");
-  };
+  const formRef = useRef(null);
 
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
+  function isEmail(v = "") {
+    // simple, robust email check for UI (server still enforces)
+    return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim());
+  }
+
+  function normalizePhone(v = "") {
+    // keep digits and +; return E.164-ish if possible, else original
+    const digits = v.replace(/[^\d+]/g, "");
+    return digits || v;
+  }
+
+  function validate(form) {
+    const errs = {};
+    if (!form.name || form.name.trim().length < 2)
+      errs.name = "Please enter your name.";
+    if (!form.email || !isEmail(form.email))
+      errs.email = "Enter a valid email address.";
+    if (!form.message || form.message.trim().length < 10)
+      errs.message = "Tell us a bit more — at least 10 characters.";
+
+    // phone is optional; if present, light validation
+    if (form.phone && form.phone.replace(/\D/g, "").length < 7)
+      errs.phone = "If you include a phone, add at least 7 digits.";
+
+    return errs;
+  }
+
+  function handleChange(e) {
+    const { name, value } = e.target;
+    setFormData((s) => ({ ...s, [name]: value }));
+  }
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    setStatus((s) => ({ ...s, err: "", ok: false }));
+    setErrors({});
+
+    // Honeypot
+    if (formData.website) return;
+
+    // Rate limit after a success (12s)
+    const now = Date.now();
+    if (now - lastSentAt < 12000) {
+      setStatus({
+        sending: false,
+        ok: false,
+        err: "Please wait a moment before sending another message.",
+      });
+      return;
+    }
+
+    // Validate
+    const v = { ...formData, phone: normalizePhone(formData.phone) };
+    const errs = validate(v);
+    if (Object.keys(errs).length) {
+      setErrors(errs);
+      setStatus({
+        sending: false,
+        ok: false,
+        err: "Please fix the highlighted fields.",
+      });
+      return;
+    }
+
+    try {
+      setStatus({ sending: true, ok: false, err: "" });
+
+      const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID;
+      const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
+      const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
+
+      const templateParams = {
+        name: v.name.trim(),
+        email: v.email.trim(),
+        phone: v.phone || "—",
+        message: v.message.trim(),
+        submitted_at: new Date().toLocaleString(),
+      };
+
+      // 12s safety timeout so the button can't get stuck
+      const sendPromise = emailjs.send(serviceId, templateId, templateParams, {
+        publicKey,
+      });
+      const timeout = new Promise((_, rej) =>
+        setTimeout(() => rej(new Error("timeout")), 12000)
+      );
+
+      await Promise.race([sendPromise, timeout]);
+
+      setStatus({ sending: false, ok: true, err: "" });
+      setLastSentAt(Date.now());
+      formRef.current?.reset();
+      setFormData({ name: "", email: "", phone: "", message: "", website: "" });
+    } catch (err) {
+      let msg =
+        "Couldn’t send the message right now. Please try again or email us directly.";
+      // EmailJS sometimes exposes { status, text }
+      const code = err?.status || err?.code || err?.message;
+
+      if (code === 412)
+        msg =
+          "Email service isn’t fully authorized. Try the email button while we fix it.";
+      if (code === 429)
+        msg = "Too many attempts. Please wait a moment and try again.";
+      if (code === "timeout")
+        msg = "Network seems slow. Please try again in a moment.";
+      if (
+        String(err?.text || "")
+          .toLowerCase()
+          .includes("invalid")
+      ) {
+        msg =
+          "The email service configuration looks invalid. Use the email button for now.";
+      }
+
+      setStatus({ sending: false, ok: false, err: msg });
+    }
+  }
+
+  const faq = [
+    {
+      q: "How long does a typical project take?",
+      a: "Timelines vary depending on scope — small websites can launch within a few weeks, while full web applications may span several months. Once we understand your goals, we'll outline a clear timeline with milestones and deliverables.",
+    },
+    {
+      q: "What kind of budget should I plan for?",
+      a: "Every project is different, but we tailor each solution to fit your scale and goals. After an initial consultation, we'll provide transparent pricing and a detailed scope — ensuring you know exactly what you're getting.",
+    },
+    {
+      q: "Do you work with existing websites or codebases?",
+      a: "Yes. Many of our projects involve enhancing or rebuilding existing React, Firebase, or WordPress sites. We focus on improving performance, design consistency, and long-term maintainability without disrupting your current system.",
+    },
+    {
+      q: "What happens after the launch?",
+      a: "We provide flexible post-launch support — from ongoing maintenance and performance optimization to hosting and feature expansion. You can choose a maintenance retainer or reach out as needed for updates and improvements.",
+    },
+    {
+      q: "How do we collaborate during the project?",
+      a: "Communication is at the core of every successful build. We keep you in the loop through structured updates, shared milestones, and transparent feedback channels — ensuring your vision stays aligned every step of the way.",
+    },
+  ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-purple-950 to-slate-950 text-white pt-24 px-6 pb-20">
-      {/* Header */}
-      <section className="max-w-6xl mx-auto py-12 text-center">
-        <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-fuchsia-400 to-purple-400 bg-clip-text text-transparent">
-          Let's Build Together
-        </h1>
-        <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-          Ready to transform your ideas into reality? Get in touch and let's
-          start the conversation.
-        </p>
+    <>
+      {/* Hero with CTA style background */}
+      <section
+        className="relative overflow-hidden py-40 md:py-50 px-6 bg-primary-dark-purple bg-center bg-cover"
+        aria-labelledby="about-hero"
+        style={{ backgroundImage: `url(${heroImg})` }}
+      >
+        <div
+          aria-hidden
+          className="absolute inset-0 bg-primary-dark-purple/80 md:bg-primary-dark-purple/60"
+        />
+        <div
+          aria-hidden
+          className="absolute top-0 inset-x-0 h-20 bg-gradient-to-b from-primary-dark-purple to-transparent"
+        />
+        <div
+          aria-hidden
+          className="absolute bottom-0 inset-x-0 h-20 bg-gradient-to-t from-primary-dark-purple to-transparent"
+        />
+
+        <div className="relative z-[1] max-w-6xl mx-auto text-center">
+          <Stagger>
+            <Reveal
+              as="h1"
+              id="about-hero"
+              className="font-logo text-5xl md:text-6xl font-bold mb-4 bg-gradient-to-r from-accent-fuchsia to-accent-purple bg-clip-text text-transparent"
+            >
+              Let's Build Something Solid
+            </Reveal>
+            <Reveal
+              as="p"
+              className="md:text-xl text-gray-200 max-w-3xl mx-auto"
+            >
+              Whether you're refining an idea or scaling a product, reach out
+              and let's shape it into something dependable, beautiful, and built
+              to last.
+            </Reveal>
+          </Stagger>
+        </div>
       </section>
 
-      <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-12">
-        {/* Contact Form */}
-        <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-8 border border-purple-500/20">
-          <h2 className="text-3xl font-bold mb-6 text-fuchsia-300">
-            Send Us a Message
-          </h2>
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-              <label className="block text-sm font-semibold mb-2 text-gray-300">
-                Your Name *
-              </label>
-              <input
-                type="text"
-                name="name"
-                required
-                value={formData.name}
-                onChange={handleChange}
-                className="w-full px-4 py-3 bg-white/10 border border-purple-500/30 rounded-lg focus:outline-none focus:border-fuchsia-500 transition-colors text-white placeholder-gray-500"
-                placeholder="John Doe"
-              />
+      {/* Main: Bento grid */}
+      <section className="max-w-6xl mx-auto px-6 py-14">
+        <div className="grid md:grid-cols-5 gap-8 items-start">
+          {/* LEFT (md: 3 cols): Contact tiles + form */}
+          <div className="md:col-span-3 space-y-6">
+            <Reveal>
+              <h2 className="text-2xl font-display font-bold text-fuchsia-200">
+                Contacts
+              </h2>
+            </Reveal>
+            <div className="grid sm:grid-cols-2 gap-6">
+              {/* Email */}
+              <Reveal>
+                <GlowCard className="p-5 md:p-6 h-full">
+                  <div className="flex items-start gap-4">
+                    <div className="grid place-items-center w-12 h-12 rounded-xl bg-gradient-to-br from-fuchsia-600 to-purple-700 ring-1 ring-purple-400/40 flex-shrink-0">
+                      <Mail className="size-5" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <h3 className="text-lg font-bold text-fuchsia-100 mb-1">
+                        Email
+                      </h3>
+                      <a
+                        href="mailto:christian@solidcodesolutionsllc.com"
+                        className="text-sm text-gray-200 hover:text-white underline underline-offset-4 break-words block"
+                      >
+                        christian@solidcodesolutionsllc.com
+                      </a>
+                      <p className="text-xs text-white/60 mt-2">
+                        Avg response ~24 hrs
+                      </p>
+                    </div>
+                  </div>
+                </GlowCard>
+              </Reveal>
+
+              {/* WhatsApp */}
+              <Reveal delay={80}>
+                <GlowCard className="p-5 md:p-6 h-full">
+                  <div className="flex items-start gap-4">
+                    <div className="grid place-items-center w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-600 to-emerald-700 ring-1 ring-emerald-400/40 flex-shrink-0">
+                      <WhatsappLogoIcon size={20} weight="fill" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <h3 className="text-lg font-bold text-fuchsia-100 mb-1">
+                        WhatsApp
+                      </h3>
+                      <a
+                        href="https://wa.me/19545592944"
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-sm text-gray-200 hover:text-white underline underline-offset-4 block"
+                      >
+                        +1 (954) 559-2944
+                      </a>
+                      <p className="text-xs text-white/60 mt-2">
+                        Mon–Fri, 9–6 ET
+                      </p>
+                    </div>
+                  </div>
+                </GlowCard>
+              </Reveal>
             </div>
 
-            <div>
-              <label className="block text-sm font-semibold mb-2 text-gray-300">
-                Email Address *
-              </label>
-              <input
-                type="email"
-                name="email"
-                required
-                value={formData.email}
-                onChange={handleChange}
-                className="w-full px-4 py-3 bg-white/10 border border-purple-500/30 rounded-lg focus:outline-none focus:border-fuchsia-500 transition-colors text-white placeholder-gray-500"
-                placeholder="john@company.com"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-semibold mb-2 text-gray-300">
-                Company Name
-              </label>
-              <input
-                type="text"
-                name="company"
-                value={formData.company}
-                onChange={handleChange}
-                className="w-full px-4 py-3 bg-white/10 border border-purple-500/30 rounded-lg focus:outline-none focus:border-fuchsia-500 transition-colors text-white placeholder-gray-500"
-                placeholder="Your Company"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-semibold mb-2 text-gray-300">
-                Project Type
-              </label>
-              <select
-                name="projectType"
-                value={formData.projectType}
-                onChange={handleChange}
-                className="w-full px-4 py-3 bg-white/10 border border-purple-500/30 rounded-lg focus:outline-none focus:border-fuchsia-500 transition-colors text-white"
-              >
-                <option value="" className="bg-slate-900">
-                  Select a type
-                </option>
-                <option value="web" className="bg-slate-900">
-                  Web Development
-                </option>
-                <option value="software" className="bg-slate-900">
-                  Custom Software
-                </option>
-                <option value="mobile" className="bg-slate-900">
-                  Mobile App
-                </option>
-                <option value="design" className="bg-slate-900">
-                  UI/UX Design
-                </option>
-                <option value="other" className="bg-slate-900">
-                  Other
-                </option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-semibold mb-2 text-gray-300">
-                Budget Range
-              </label>
-              <select
-                name="budget"
-                value={formData.budget}
-                onChange={handleChange}
-                className="w-full px-4 py-3 bg-white/10 border border-purple-500/30 rounded-lg focus:outline-none focus:border-fuchsia-500 transition-colors text-white"
-              >
-                <option value="" className="bg-slate-900">
-                  Select a range
-                </option>
-                <option value="5k-10k" className="bg-slate-900">
-                  $5,000 - $10,000
-                </option>
-                <option value="10k-25k" className="bg-slate-900">
-                  $10,000 - $25,000
-                </option>
-                <option value="25k-50k" className="bg-slate-900">
-                  $25,000 - $50,000
-                </option>
-                <option value="50k+" className="bg-slate-900">
-                  $50,000+
-                </option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-semibold mb-2 text-gray-300">
-                Tell Us About Your Project *
-              </label>
-              <textarea
-                name="message"
-                required
-                value={formData.message}
-                onChange={handleChange}
-                rows="5"
-                className="w-full px-4 py-3 bg-white/10 border border-purple-500/30 rounded-lg focus:outline-none focus:border-fuchsia-500 transition-colors text-white placeholder-gray-500 resize-none"
-                placeholder="Describe your project, goals, and timeline..."
-              ></textarea>
-            </div>
-
-            <button
-              type="submit"
-              className="w-full py-4 bg-gradient-to-r from-fuchsia-600 to-purple-600 rounded-lg font-semibold hover:shadow-lg hover:shadow-fuchsia-500/50 transition-all duration-300 transform hover:scale-105"
-            >
-              Send Message
-            </button>
-          </form>
-        </div>
-
-        {/* Contact Information */}
-        <div className="space-y-8">
-          {/* Contact Cards */}
-          <div className="bg-gradient-to-br from-fuchsia-600/20 to-purple-600/20 rounded-2xl p-8 border border-purple-500/30">
-            <h2 className="text-3xl font-bold mb-6 text-fuchsia-300">
-              Get In Touch
-            </h2>
-
-            <div className="space-y-6">
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 bg-gradient-to-r from-fuchsia-600 to-purple-600 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <span className="text-2xl">📧</span>
-                </div>
-                <div>
-                  <h3 className="font-semibold text-lg mb-1">Email</h3>
-                  <p className="text-gray-300">
-                    christian@solidcodesolutionsllc.com
-                  </p>
-                  <p className="text-gray-400 text-sm">
-                    We'll respond within 24 hours
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 bg-gradient-to-r from-fuchsia-600 to-purple-600 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <span className="text-2xl">📞</span>
-                </div>
-                <div>
-                  <h3 className="font-semibold text-lg mb-1">Phone</h3>
-                  <p className="text-gray-300">+1 (954) 559-2944</p>
-                  <p className="text-gray-400 text-sm">Mon-Fri, 9am-6pm EST</p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 bg-gradient-to-r from-fuchsia-600 to-purple-600 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <span className="text-2xl">📍</span>
-                </div>
-                <div>
-                  <h3 className="font-semibold text-lg mb-1">Location</h3>
-                  <p className="text-gray-300">Remote-First Company</p>
-                  <p className="text-gray-400 text-sm">
-                    Serving clients worldwide
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Social Links */}
-          <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-8 border border-purple-500/20">
-            <h3 className="text-2xl font-bold mb-6">Connect With Us</h3>
-            <div className="grid grid-cols-2 gap-4">
-              {[
-                { name: "LinkedIn", icon: "💼" },
-                { name: "GitHub", icon: "💻" },
-                { name: "Twitter", icon: "🐦" },
-                { name: "Instagram", icon: "📸" },
-              ].map((social, index) => (
-                <button
-                  key={index}
-                  className="flex items-center gap-3 px-4 py-3 bg-white/5 rounded-lg border border-purple-500/20 hover:border-fuchsia-500/50 hover:bg-white/10 transition-all duration-300"
+            {/* Form */}
+            <Reveal delay={120}>
+              <GlowCard className="p-5 md:p-6">
+                <form
+                  ref={formRef}
+                  onSubmit={handleSubmit}
+                  className="grid grid-cols-1 sm:grid-cols-2 gap-4"
+                  noValidate
                 >
-                  <span className="text-2xl">{social.icon}</span>
-                  <span className="font-semibold">{social.name}</span>
-                </button>
-              ))}
-            </div>
+                  {/* Honeypot */}
+                  <input
+                    type="text"
+                    name="website"
+                    value={formData.website}
+                    onChange={handleChange}
+                    className="hidden"
+                    tabIndex={-1}
+                    autoComplete="off"
+                  />
+
+                  <Field label="Your Name *">
+                    <input
+                      type="text"
+                      name="name"
+                      required
+                      value={formData.name}
+                      onChange={handleChange}
+                      autoComplete="name"
+                      className={`w-full px-4 py-3 bg-white/5 border-1 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-fuchsia-500 focus:ring-2 focus:ring-fuchsia-500/20 transition-all
+                ${
+                  errors.name
+                    ? "border-rose-400 focus:border-rose-400 focus:ring-rose-400/30"
+                    : "border-purple-500/30"
+                }`}
+                      aria-invalid={!!errors.name}
+                      aria-describedby={errors.name ? "err-name" : undefined}
+                      placeholder="Jane Doe"
+                    />
+                    {errors.name && (
+                      <p id="err-name" className="mt-1 text-sm text-rose-300">
+                        {errors.name}
+                      </p>
+                    )}
+                  </Field>
+
+                  <Field label="Email *">
+                    <input
+                      type="email"
+                      name="email"
+                      required
+                      value={formData.email}
+                      onChange={handleChange}
+                      autoComplete="email"
+                      className={`w-full px-4 py-3 bg-white/5 border-1 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-fuchsia-500 focus:ring-2 focus:ring-fuchsia-500/20 transition-all
+                ${
+                  errors.email
+                    ? "border-rose-400 focus:border-rose-400 focus:ring-rose-400/30"
+                    : "border-purple-500/30"
+                }`}
+                      aria-invalid={!!errors.email}
+                      aria-describedby={errors.email ? "err-email" : undefined}
+                      placeholder="jane@company.com"
+                    />
+                    {errors.email && (
+                      <p id="err-email" className="mt-1 text-sm text-rose-300">
+                        {errors.email}
+                      </p>
+                    )}
+                  </Field>
+
+                  <Field label="Phone">
+                    <input
+                      type="tel"
+                      name="phone"
+                      value={formData.phone}
+                      onChange={handleChange}
+                      autoComplete="tel"
+                      className={`w-full px-4 py-3 bg-white/5 border-1 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-fuchsia-500 focus:ring-2 focus:ring-fuchsia-500/20 transition-all
+                ${
+                  errors.phone
+                    ? "border-rose-400 focus:border-rose-400 focus:ring-rose-400/30"
+                    : "border-purple-500/30"
+                }`}
+                      aria-invalid={!!errors.phone}
+                      aria-describedby={errors.phone ? "err-phone" : undefined}
+                      placeholder="+1 555 555 5555"
+                    />
+                    {errors.phone && (
+                      <p id="err-phone" className="mt-1 text-sm text-rose-300">
+                        {errors.phone}
+                      </p>
+                    )}
+                  </Field>
+
+                  <Field label="Tell us about your project *" full>
+                    <textarea
+                      name="message"
+                      required
+                      value={formData.message}
+                      onChange={handleChange}
+                      rows={7}
+                      className={`w-full px-4 py-3 bg-white/5 border-1 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-fuchsia-500 focus:ring-2 focus:ring-fuchsia-500/20 transition-all resize-none
+                ${
+                  errors.message
+                    ? "border-rose-400 focus:border-rose-400 focus:ring-rose-400/30"
+                    : "border-purple-500/30"
+                }`}
+                      aria-invalid={!!errors.message}
+                      aria-describedby={
+                        errors.message ? "err-message" : undefined
+                      }
+                      placeholder="Goals, users, key features, and any links we should see…"
+                    />
+                    {errors.message && (
+                      <p
+                        id="err-message"
+                        className="mt-1 text-sm text-rose-300"
+                      >
+                        {errors.message}
+                      </p>
+                    )}
+                  </Field>
+
+                  {/* Status */}
+                  <div
+                    className="sm:col-span-2 space-y-1"
+                    role="status"
+                    aria-live="polite"
+                  >
+                    {status.ok && (
+                      <p className="text-emerald-300">
+                        Thanks — we'll be in touch shortly.
+                      </p>
+                    )}
+                    {status.err && (
+                      <p className="text-rose-300">{status.err}</p>
+                    )}
+                  </div>
+
+                  {/* Actions */}
+                  <div className="sm:col-span-2 flex flex-col sm:flex-row gap-3 sm:justify-end">
+                    <a
+                      href="mailto:christian@solidcodesolutionsllc.com"
+                      className="btn-secondary inline-flex items-center justify-center gap-2"
+                    >
+                      <Mail className="size-4" />
+                      Email Us Instead
+                    </a>
+                    <button
+                      type="submit"
+                      disabled={status.sending}
+                      className="btn-primary inline-flex items-center justify-center gap-2 cursor-pointer disabled:cursor-not-allowed disabled:opacity-60 transition-all"
+                      aria-busy={status.sending}
+                    >
+                      {status.sending ? (
+                        <motion.span
+                          aria-hidden
+                          animate={{ x: [0, 6, 0] }}
+                          transition={{
+                            duration: 0.6,
+                            repeat: Infinity,
+                            ease: "easeInOut",
+                          }}
+                          className="inline-flex"
+                        >
+                          <Send className="size-4" />
+                        </motion.span>
+                      ) : (
+                        <Send className="size-4" aria-hidden />
+                      )}
+                      {status.sending ? "Sending…" : "Send Message"}
+                    </button>
+                  </div>
+                </form>
+              </GlowCard>
+            </Reveal>
           </div>
 
-          {/* Quick Response Time */}
-          <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-8 border border-purple-500/20 text-center">
-            <div className="text-5xl mb-4">⚡</div>
-            <h3 className="text-2xl font-bold mb-2">Fast Response Time</h3>
-            <p className="text-gray-300">
-              We typically respond to all inquiries within 24 hours
-            </p>
-          </div>
-        </div>
-      </div>
+          {/* RIGHT (md: 2 cols): FAQ Accordion */}
+          <div className="md:col-span-2 space-y-6">
+            <Reveal>
+              <h2 className="text-2xl font-display font-bold text-fuchsia-200 mb-2">
+                FAQ
+              </h2>
+            </Reveal>
 
-      {/* FAQ Section */}
-      <section className="max-w-6xl mx-auto mt-20">
-        <h2 className="text-4xl font-bold text-center mb-12 bg-gradient-to-r from-fuchsia-400 to-purple-400 bg-clip-text text-transparent">
-          Frequently Asked Questions
-        </h2>
-        <div className="grid md:grid-cols-2 gap-6">
-          {[
-            {
-              q: "What's your typical project timeline?",
-              a: "Project timelines vary based on scope, but most projects range from 4-12 weeks from kickoff to launch.",
-            },
-            {
-              q: "Do you offer ongoing support?",
-              a: "Yes! We provide maintenance packages and ongoing support to ensure your solution continues to perform optimally.",
-            },
-            {
-              q: "What industries do you work with?",
-              a: "We've worked across 15+ industries including healthcare, finance, e-commerce, education, and more.",
-            },
-            {
-              q: "Can you work with our existing team?",
-              a: "Absolutely! We seamlessly integrate with your in-house team and existing development workflows.",
-            },
-          ].map((faq, index) => (
-            <div
-              key={index}
-              className="bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-purple-500/20"
-            >
-              <h3 className="font-bold text-lg mb-3 text-fuchsia-300">
-                {faq.q}
-              </h3>
-              <p className="text-gray-300 text-sm">{faq.a}</p>
-            </div>
-          ))}
+            {faq.map((item, idx) => {
+              const open = openIdx === idx;
+              return (
+                <div key={idx} className="relative">
+                  <Reveal y={8}>
+                    <GlowCard
+                      className="p-5 md:p-6 cursor-pointer select-none transition-colors hover:bg-white/5"
+                      onClick={() => setOpenIdx(open ? null : idx)}
+                      role="button"
+                      aria-expanded={open}
+                      tabIndex={0}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          setOpenIdx(open ? null : idx);
+                        }
+                      }}
+                    >
+                      <div className="flex items-center justify-between gap-4">
+                        <p className="font-semibold text-white">{item.q}</p>
+                        <span
+                          className={`text-2xl transition-transform duration-300 ${
+                            open ? "rotate-45" : ""
+                          }`}
+                          aria-hidden
+                        >
+                          +
+                        </span>
+                      </div>
+                      <div
+                        className={`grid transition-[grid-template-rows] duration-300 ease-out ${
+                          open ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
+                        }`}
+                      >
+                        <div className="overflow-hidden">
+                          <p className="text-sm text-gray-300 mt-3">{item.a}</p>
+                        </div>
+                      </div>
+                    </GlowCard>
+                  </Reveal>
+
+                  {/* Synapse connector (shows only when open) */}
+                  {open && (
+                    <div
+                      aria-hidden
+                      className="mx-auto h-6 w-px my-2 bg-gradient-to-b from-fuchsia-500/70 via-purple-400/60 to-transparent blur-[0.5px]"
+                    />
+                  )}
+                </div>
+              );
+            })}
+          </div>
         </div>
       </section>
-    </div>
+    </>
+  );
+}
+
+/* ---------- Small helper for consistent inputs ---------- */
+function Field({ label, children, full }) {
+  // Split label at '*' to color the asterisk separately
+  const [mainLabel, isRequired] = label.split("*");
+
+  return (
+    <label className={`${full ? "sm:col-span-2" : ""} block`}>
+      <span className="block text-sm font-semibold mb-2 text-gray-300">
+        {mainLabel.trim()}
+        {isRequired !== undefined && (
+          <span className="text-accent-fuchsia"> *</span>
+        )}
+      </span>
+      {children}
+    </label>
   );
 }

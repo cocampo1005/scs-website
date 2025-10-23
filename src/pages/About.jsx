@@ -23,7 +23,7 @@ export default function About() {
   const { ready, handleLoad, handleWheelCapture } = useSplineSimple();
 
   return (
-    <div className="min-h-screen text-white">
+    <>
       {/* Hero with CTA style background */}
       <section
         className="relative overflow-hidden py-40 md:py-50 px-6 bg-primary-dark-purple bg-center bg-cover"
@@ -380,7 +380,7 @@ export default function About() {
       </section>
 
       {/* Core Values with Lucide and layered effects */}
-      <section className="max-w-6xl mx-auto px-6 mb-24">
+      <section className="max-w-6xl mx-auto px-6">
         <Reveal
           as="h2"
           className="text-4xl md:text-5xl font-bold font-logo text-center mb-12 bg-gradient-to-r from-accent-fuchsia to-accent-purple bg-clip-text text-transparent"
@@ -394,6 +394,6 @@ export default function About() {
       <Reveal as="div" y={8}>
         <CTASection />
       </Reveal>
-    </div>
+    </>
   );
 }
