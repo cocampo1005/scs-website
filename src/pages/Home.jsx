@@ -1,10 +1,10 @@
 import { Link } from "react-router-dom";
-import HeroSection from "../components/HeroSection";
-import GlowCard from "../components/GlowCard";
-import ProjectCard from "../components/ProjectCard";
-import { SERVICES, ADVANTAGES, PROJECTS } from "../constants/homeData";
 import CTASection from "../components/CTASection";
+import GlowCard from "../components/GlowCard";
+import HeroSection from "../components/HeroSection";
+import ProjectCard from "../components/ProjectCard";
 import Reveal, { Stagger } from "../components/Reveal";
+import { ADVANTAGES, PROJECTS, SERVICES } from "../constants/homeData";
 
 export default function Home() {
   return (
@@ -159,7 +159,7 @@ export default function Home() {
           <div className="flex flex-col gap-8">
             <Stagger gap={160} startAt={80}>
               {PROJECTS.map((p, index) => (
-                <Reveal key={p.slug} y={10}>
+                <Reveal key={p.slug ?? p.key ?? index} y={10}>
                   <ProjectCard {...p} index={index} />
                 </Reveal>
               ))}

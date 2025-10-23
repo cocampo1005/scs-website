@@ -1,7 +1,18 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { buildStartSimilarLink } from "../utils/similarProjectLinks";
 
-function ProjectCard({ title, blurb, image, alt, href, tags, index }) {
+function ProjectCard({
+  title,
+  blurb,
+  image,
+  alt,
+  href,
+  slug,
+  key,
+  tags,
+  index,
+}) {
   const [isHovered, setIsHovered] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const isEven = index % 2 === 0;
@@ -136,7 +147,10 @@ function ProjectCard({ title, blurb, image, alt, href, tags, index }) {
                 </span>
               </Link>
 
-              <Link to="/contact" className="btn-secondary">
+              <Link
+                to={buildStartSimilarLink(key ?? slug, title)}
+                className="btn-secondary"
+              >
                 Start Similar Project
               </Link>
             </div>

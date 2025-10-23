@@ -281,6 +281,14 @@ export const LogoLoop = memo(
           ? item.ariaLabel ?? item.title
           : item.alt ?? item.title;
 
+        const isInternalCase =
+          typeof item.href === "string" &&
+          (item.href.startsWith("/projects?case=street-cat-clinic") ||
+            item.href.startsWith("/projects?case=cat-solutions-305"));
+
+        const target = isInternalCase ? "_self" : "_blank";
+        const rel = target === "_blank" ? "noopener noreferrer" : undefined;
+
         const inner = item.href ? (
           <a
             className={cx(
@@ -291,8 +299,8 @@ export const LogoLoop = memo(
             )}
             href={item.href}
             aria-label={itemAriaLabel || "logo link"}
-            target="_blank"
-            rel="noreferrer noopener"
+            target={target}
+            rel={rel}
           >
             {content}
           </a>

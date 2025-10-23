@@ -1,22 +1,23 @@
-// src/pages/Contact.jsx
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { Mail, Send } from "lucide-react";
+import { WhatsappLogoIcon } from "@phosphor-icons/react";
 import { motion } from "framer-motion";
 import PhoneInput from "react-phone-input-2";
+import emailjs from "@emailjs/browser";
 import "react-phone-input-2/lib/style.css";
 import "../styles/phone-input.css";
-
-import Reveal, { Stagger } from "../components/Reveal";
 import GlowCard from "../components/GlowCard";
+import Reveal, { Stagger } from "../components/Reveal";
 import heroImg from "../assets/images/contact-beam.webp";
-import { WhatsappLogoIcon } from "@phosphor-icons/react";
-import emailjs from "@emailjs/browser";
 
 export default function Contact() {
+  const [searchParams] = useSearchParams();
   const [status, setStatus] = useState({ sending: false, ok: false, err: "" });
   const [errors, setErrors] = useState({});
   const [lastSentAt, setLastSentAt] = useState(0);
   const [openIdx, setOpenIdx] = useState(0);
+  const [message, setMessage] = useState("");
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -27,6 +28,38 @@ export default function Contact() {
     message: "",
     website: "",
   });
+
+  const TITLE_BY_KEY = {
+    "cat-solutions-305": "MeowMax — Appointment Scheduler",
+    "street-cat-clinic": "Street Cat Clinic — Records Platform",
+    "bio-coatings-blast-it-off": "Bio-Coatings & Blast-It-Off — Dual Website",
+    // add others as needed
+  };
+
+  useEffect(() => {
+    const intent = searchParams.get("intent");
+    if (intent !== "start-similar") return;
+
+    const rawTitle =
+      searchParams.get("title") ||
+      TITLE_BY_KEY[searchParams.get("project") || ""] ||
+      "your featured project";
+
+    const seed = `Hello, I’d like to discuss starting a project similar to ${rawTitle}. Please see my details below and let me know next steps.`;
+
+    setMessage((prev) => (prev?.trim() ? prev : seed));
+
+    // Scroll smoothly to the form after render
+    const el = document.getElementById("form");
+    if (el) {
+      const headerOffset = 150; // adjust this to your navbar height in px
+      const y = el.getBoundingClientRect().top + window.scrollY - headerOffset;
+
+      setTimeout(() => {
+        window.scrollTo({ top: y, behavior: "smooth" });
+      }, 100);
+    }
+  }, [searchParams]);
 
   const formRef = useRef(null);
 
@@ -321,6 +354,7 @@ export default function Contact() {
             <Reveal delay={120}>
               <GlowCard className="p-5 md:p-6">
                 <form
+                  id="form"
                   ref={formRef}
                   onSubmit={handleSubmit}
                   className="grid grid-cols-1 sm:grid-cols-2 gap-4"
@@ -388,7 +422,7 @@ export default function Contact() {
                   </Field>
 
                   {/* PHONE (uses Field for consistent label + spacing) */}
-                  <Field label="Phone *" full>
+                  <Field label="Phone" full>
                     <PhoneInput
                       country="us"
                       value={formData.phoneRaw}
@@ -428,10 +462,11 @@ export default function Contact() {
 
                   <Field label="Tell us about your project *" full>
                     <textarea
+                      id="message"
                       name="message"
                       required
-                      value={formData.message}
-                      onChange={handleChange}
+                      value={message}
+                      onChange={(e) => setMessage(e.target.value)}
                       rows={7}
                       className={`w-full px-4 py-3 bg-white/5 border-1 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-fuchsia-500 focus:ring-2 focus:ring-fuchsia-500/20 transition-all resize-none
                 ${

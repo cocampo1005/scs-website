@@ -1,25 +1,24 @@
-// src/pages/Projects.jsx
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { Link, useSearchParams } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowRight, ExternalLink, ChevronDown } from "lucide-react";
-import { href, Link } from "react-router-dom";
-
-import heroImg from "../assets/images/hex-bg.webp";
-import Reveal, { Stagger } from "../components/Reveal";
-import GlowCard from "../components/GlowCard";
-
-import CTASection from "../components/CTASection";
-import Gallery from "../components/Gallery";
+import { ArrowRight, ChevronDown, ExternalLink } from "lucide-react";
+import { buildStartSimilarLink } from "../utils/similarProjectLinks";
+import { CountOnReveal } from "../utils/Counter";
 import {
   CASE_STUDIES,
   OTHER_PROJECTS,
   clientLogos,
 } from "../constants/projectsData";
+import CTASection from "../components/CTASection";
+import Gallery from "../components/Gallery";
+import GlowCard from "../components/GlowCard";
 import Lightbox from "../components/Lightbox";
-import { CountOnReveal } from "../utils/Counter";
 import LogoLoop from "../components/LogoLoop";
+import Reveal, { Stagger } from "../components/Reveal";
+import heroImg from "../assets/images/hex-bg.webp";
 
 export default function Projects() {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [active, setActive] = useState(CASE_STUDIES[0].key);
   const [mobileDropdownOpen, setMobileDropdownOpen] = useState(false);
   const [lightboxState, setLightboxState] = useState(null);
@@ -46,6 +45,29 @@ export default function Projects() {
   const activeProject = useMemo(
     () => CASE_STUDIES.find((t) => t.key === active),
     [active]
+  );
+
+  // --- initialize from URL on first render ---
+  useEffect(() => {
+    const caseParam = searchParams.get("case");
+    if (caseParam) {
+      const match = CASE_STUDIES.find((c) => c.key === caseParam);
+      if (match) {
+        setActive(match.key);
+        // optional: scroll into view if needed
+        const el = document.getElementById("featured");
+        if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }
+  }, []);
+
+  // Helper to set both state and URL param
+  const setActiveAndUrl = useCallback(
+    (key) => {
+      setActive(key);
+      setSearchParams({ case: key }); // updates ?case=<key>
+    },
+    [setSearchParams]
   );
 
   return (
@@ -90,7 +112,7 @@ export default function Projects() {
       </section>
 
       {/* Featured Case Studies */}
-      <section className="max-w-6xl mx-auto px-6 py-14">
+      <section id="featured" className="max-w-6xl mx-auto px-6 py-14">
         <h2 className="text-4xl md:text-5xl font-bold font-logo text-center mb-10 bg-gradient-to-r from-fuchsia-400 to-purple-400 bg-clip-text text-transparent">
           Featured Case Studies
         </h2>
@@ -104,7 +126,7 @@ export default function Projects() {
                 return (
                   <button
                     key={t.key}
-                    onClick={() => setActive(t.key)}
+                    onClick={() => setActiveAndUrl(t.key)}
                     className={[
                       "relative cursor-pointer overflow-hidden rounded-xl px-4 py-3 text-left transition-all",
                       isActive
@@ -158,7 +180,7 @@ export default function Projects() {
                       <button
                         key={t.key}
                         onClick={() => {
-                          setActive(t.key);
+                          setActiveAndUrl(t.key);
                           setMobileDropdownOpen(false);
                         }}
                         className={`w-full p-3 text-left rounded-lg transition-colors ${
@@ -342,7 +364,10 @@ export default function Projects() {
                   </div>
                   <div className="pt-4 flex justify-end w-full">
                     <Link
-                      to="/contact"
+                      to={buildStartSimilarLink(
+                        activeProject.key ?? activeProject.slug,
+                        activeProject.title
+                      )}
                       className="btn-primary w-full md:w-auto"
                     >
                       Start a similar project
@@ -416,7 +441,7 @@ export default function Projects() {
                 <p className="mt-2 text-sm text-gray-300">{p.summary}</p>
                 <div className="pt-3 flex justify-end">
                   <Link
-                    to="/contact"
+                    to={buildStartSimilarLink(p.key ?? p.slug, p.title)}
                     className="inline-flex items-center gap-2 text-accent-fuchsia-light hover:text-white transition-colors text-sm"
                   >
                     Start something similar <ArrowRight className="w-4 h-4" />

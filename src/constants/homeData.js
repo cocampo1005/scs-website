@@ -65,7 +65,8 @@ export const PROJECTS = [
       "End-to-end records system for staff and coordinators – database setup, record entry and keeping, staff management, and automated PDF Form generation in one place.",
     image: sccFeatureImg,
     alt: "Screenshot concept of a data management interface",
-    href: "/projects#street-cat-clinic",
+    slug: "street-cat-clinic",
+    href: "/projects?case=street-cat-clinic#featured",
     tags: ["React", "Firebase", "PDF Gen", "Role-based UI"],
   },
   {
@@ -75,7 +76,8 @@ export const PROJECTS = [
       "Mobile-first scheduling web app, admin oversight, and real-time updates for TNR and foster workflows.",
     image: mmFeatureImg,
     alt: "Scheduling grid showing available appointment slots",
-    href: "/projects#meowmax",
+    slug: "cat-solutions-305",
+    href: "/projects?case=cat-solutions-305#featured",
     tags: ["React", "Firebase", "Realtime", "Admin Tools", "UX/UI"],
   },
   {
@@ -85,7 +87,8 @@ export const PROJECTS = [
       "Two sister sites working in tandem – sandblasting and powder-coating service funnels with fast, SEO-ready pages.",
     image: bbFeatureImg,
     alt: "Website mockups for industrial services",
-    href: "/projects#bio-blast",
+    slug: "bio-coatings-blast-it-off",
+    href: "/projects?case=bio-coatings-blast-it-off#featured",
     tags: ["WordPress", "SEO", "Performance", "Conversion"],
   },
 ];

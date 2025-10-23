@@ -1,4 +1,3 @@
-// Lightbox.jsx
 import { useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
@@ -113,7 +112,7 @@ export default function Lightbox({
 
             {/* Image with swipe handlers */}
             <motion.img
-              key={item.src} // triggers re-animation on change
+              key={item.src}
               src={item.src}
               alt={item.alt || item.title || "Expanded image"}
               initial={{ opacity: 0, scale: 0.98 }}

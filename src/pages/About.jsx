@@ -1,23 +1,18 @@
+import { lazy, Suspense } from "react";
+import { ArrowBigDown } from "lucide-react";
 import Reveal, { Stagger } from "../components/Reveal";
 import GlowCard from "../components/GlowCard";
 import CTASection from "../components/CTASection";
-
-// Assets
-import heroImg from "../assets/images/stacked-blocks.webp";
-import fitImg from "../assets/images/hex-tesselation-fit.webp";
-
-// Icons
-import { ArrowBigDown } from "lucide-react";
-
-// Spline
-import { lazy, Suspense } from "react";
-const Spline = lazy(() => import("@splinetool/react-spline"));
 import CubeLoader from "../components/CubeLoader";
-import { useSplineSimple } from "../hooks/useSplineSimple";
-import { CountOnReveal } from "../utils/Counter";
 import MissionVisionTabs from "../components/MissionVisionTabs";
 import ApproachScroller from "../components/ApproachScroller";
 import ValuesGrid from "../components/ValuesGrid";
+import { useSplineSimple } from "../hooks/useSplineSimple";
+import { CountOnReveal } from "../utils/Counter";
+import heroImg from "../assets/images/stacked-blocks.webp";
+import fitImg from "../assets/images/hex-tesselation-fit.webp";
+
+const Spline = lazy(() => import("@splinetool/react-spline"));
 
 export default function About() {
   const { ready, handleLoad, handleWheelCapture } = useSplineSimple();

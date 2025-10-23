@@ -71,6 +71,7 @@ import lwp from "../assets/logos/client-logos/lwp-logo.svg";
 import iconGroupCover from "../assets/images/icon-group-website-cover.webp";
 import aaPlaygroundsCover from "../assets/images/aaplaygrounds-website-cover.webp";
 import elcRealEstateCover from "../assets/images/elc-real-estate-website-cover.webp";
+import { href } from "react-router-dom";
 
 const sccScreenshots = [
   {
@@ -390,6 +391,8 @@ export const CASE_STUDIES = [
       "Custom PDF engine",
     ],
     cta: { label: "View full case study", to: "/projects/street-cat-clinic" },
+    slug: "street-cat-clinic",
+    href: "/projects?case=street-cat-clinic#featured",
   },
   {
     key: "cat-solutions-305",
@@ -437,6 +440,8 @@ export const CASE_STUDIES = [
       "i18n (English/Spanish)",
     ],
     cta: { label: "View full case study", to: "/projects/cat-solutions-305" },
+    slug: "cat-solutions-305",
+    href: "/projects?case=cat-solutions-305#featured",
   },
   {
     key: "bio-coatings-blast-it-off",
@@ -493,6 +498,8 @@ export const CASE_STUDIES = [
       label: "View full case study",
       to: "/projects/bio-coatings-blast-it-off",
     },
+    slug: "bio-coatings-blast-it-off",
+    href: "/projects?case=bio-coatings-blast-it-off#featured",
   },
 ];
 
@@ -554,8 +561,16 @@ export const clientLogos = [
     alt: "Rochie’s Bridal Logo",
     href: "https://rochiesbridal.com/",
   },
-  { src: scc, alt: "Street Cat Clinic Logo" },
-  { src: meowmax, alt: "MeowMax Logo" },
+  {
+    src: scc,
+    alt: "Street Cat Clinic Logo",
+    href: "/projects?case=street-cat-clinic#featured",
+  },
+  {
+    src: meowmax,
+    alt: "MeowMax Logo",
+    href: "/projects?case=cat-solutions-305#featured",
+  },
   { src: blast, alt: "Blast-It-Off Logo", href: "https://blast-it-off.com/" },
   { src: bio, alt: "Bio Coatings Logo", href: "https://bio-coatings.com/" },
   { src: elc, alt: "ELC Real Estate Logo", href: "https://elchomes.com/" },
