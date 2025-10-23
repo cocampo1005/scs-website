@@ -7,8 +7,9 @@ import {
   Linkedin,
   Instagram,
   Box,
+  Facebook,
 } from "lucide-react";
-import { WhatsappLogo } from "@phosphor-icons/react";
+import { WhatsappLogo, XLogo } from "@phosphor-icons/react";
 import logo from "../assets/logos/scs-logo-cube.svg";
 import GlowCard from "./GlowCard";
 
@@ -43,27 +44,18 @@ export default function Footer() {
                   Solid Code Solutions
                 </span>
               </Link>
-              <p className="mt-4 text-gray-300 max-w-md">
+              <p className="mt-4 text-primary-white/40 max-w-md">
                 Tailor‑made web & software that fit like a glove—designed,
                 built, and iterated around your goals.
               </p>
 
               {/* Socials */}
               <div
-                className="mt-6 flex items-center gap-8 md:gap-4"
+                className="mt-6 flex items-center gap-4"
                 aria-label="Social links"
               >
                 <a
-                  href="https://github.com/cocampo1005"
-                  target="_blank"
-                  rel="noreferrer noopener"
-                  className="inline-flex items-center gap-2 rounded-lg border border-purple-500/20 bg-white/5 px-3 py-2 hover:border-fuchsia-500/50 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-fuchsia-500/60"
-                >
-                  <Github className="h-4 md:w-4" aria-hidden />
-                  <span className="sr-only">GitHub</span>
-                </a>
-                <a
-                  href="https://www.linkedin.com/in/christianocampodev/"
+                  href="https://www.linkedin.com/company/solid-code-solutions-llc"
                   target="_blank"
                   rel="noreferrer noopener"
                   className="inline-flex items-center gap-2 rounded-lg border border-purple-500/20 bg-white/5 px-3 py-2 hover:border-fuchsia-500/50 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-fuchsia-500/60"
@@ -72,12 +64,30 @@ export default function Footer() {
                   <span className="sr-only">LinkedIn</span>
                 </a>
                 <a
-                  href="https://www.instagram.com/"
+                  href="https://www.instagram.com/solidcodesolutions"
                   target="_blank"
                   rel="noreferrer noopener"
                   className="inline-flex items-center gap-2 rounded-lg border border-purple-500/20 bg-white/5 px-3 py-2 hover:border-fuchsia-500/50 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-fuchsia-500/60"
                 >
                   <Instagram className="h-4 md:w-4" aria-hidden />
+                  <span className="sr-only">Instagram</span>
+                </a>
+                <a
+                  href="https://www.facebook.com/solidcodesolutions"
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  className="inline-flex items-center gap-2 rounded-lg border border-purple-500/20 bg-white/5 px-3 py-2 hover:border-fuchsia-500/50 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-fuchsia-500/60"
+                >
+                  <Facebook className="h-4 md:w-4" aria-hidden />
+                  <span className="sr-only">Instagram</span>
+                </a>
+                <a
+                  href="https://x.com/SolidCodeSol"
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  className="inline-flex items-center gap-2 rounded-lg border border-purple-500/20 bg-white/5 px-3 py-2 hover:border-fuchsia-500/50 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-fuchsia-500/60"
+                >
+                  <XLogo className="h-4 md:w-4" aria-hidden />
                   <span className="sr-only">Instagram</span>
                 </a>
               </div>
@@ -177,7 +187,7 @@ export default function Footer() {
                     className="h-5 w-5 text-accent-fuchsia-light mt-0.5"
                     aria-hidden
                   />
-                  <span className="text-gray-400 italic">
+                  <span className="text-primary-white/40 italic">
                     Building Solid Solutions That Fit
                   </span>
                 </div>
