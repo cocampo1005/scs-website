@@ -109,22 +109,17 @@ export default function Footer() {
                     </Link>
                   </li>
                   <li>
-                    <a className="hover:text-fuchsia-200" href="/#services">
-                      Services
-                    </a>
+                    <Link className="hover:text-fuchsia-200" to="/contact#faq">
+                      FAQ
+                    </Link>
                   </li>
                   <li>
-                    <a className="hover:text-fuchsia-200" href="/#advantages">
-                      The Solid Code Advantage
-                    </a>
-                  </li>
-                  <li>
-                    <a
+                    <Link
                       className="hover:text-fuchsia-200"
-                      href="/#featured-projects"
+                      to="/projects#featured"
                     >
                       Featured Projects
-                    </a>
+                    </Link>
                   </li>
                 </ul>
               </div>

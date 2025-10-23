@@ -10,6 +10,7 @@ import "../styles/phone-input.css";
 import GlowCard from "../components/GlowCard";
 import Reveal, { Stagger } from "../components/Reveal";
 import heroImg from "../assets/images/contact-beam.webp";
+import { useScrollToHash } from "../hooks/useScrollToHash";
 
 export default function Contact() {
   const [searchParams] = useSearchParams();
@@ -32,9 +33,11 @@ export default function Contact() {
     "cat-solutions-305": "MeowMax — Appointment Scheduler",
     "street-cat-clinic": "Street Cat Clinic — Records Platform",
     "bio-coatings-blast-it-off": "Bio-Coatings & Blast-It-Off — Dual Website",
-    // add others as needed
   };
 
+  useScrollToHash(150, "nav");
+
+  // prefill message from intent
   useEffect(() => {
     const intent = searchParams.get("intent");
     if (intent !== "start-similar") return;
@@ -50,18 +53,7 @@ export default function Contact() {
       ...s,
       message: s.message?.trim() ? s.message : seed,
     }));
-
-    // Scroll smoothly to the form after render
-    const el = document.getElementById("form");
-    if (el) {
-      const headerOffset = 150; // adjust this to your navbar height in px
-      const y = el.getBoundingClientRect().top + window.scrollY - headerOffset;
-
-      setTimeout(() => {
-        window.scrollTo({ top: y, behavior: "smooth" });
-      }, 100);
-    }
-  }, [searchParams]);
+  }, [searchParams, setFormData]);
 
   const formRef = useRef(null);
 
@@ -548,7 +540,7 @@ export default function Contact() {
           </div>
 
           {/* RIGHT: FAQ Accordion */}
-          <div className="md:col-span-2 space-y-6">
+          <div id="faq" className="md:col-span-2 space-y-6">
             <Reveal>
               <h2 className="text-2xl font-display font-bold text-fuchsia-200 mb-2">
                 FAQ

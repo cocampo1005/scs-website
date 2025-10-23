@@ -16,6 +16,7 @@ import Lightbox from "../components/Lightbox";
 import LogoLoop from "../components/LogoLoop";
 import Reveal, { Stagger } from "../components/Reveal";
 import heroImg from "../assets/images/hex-bg.webp";
+import { useScrollToHash } from "../hooks/useScrollToHash";
 
 export default function Projects() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -47,19 +48,17 @@ export default function Projects() {
     [active]
   );
 
-  // --- initialize from URL on first render ---
+  // inside component
+  useScrollToHash(100, "nav");
+
+  // initialize active tab from ?case=...
   useEffect(() => {
     const caseParam = searchParams.get("case");
-    if (caseParam) {
-      const match = CASE_STUDIES.find((c) => c.key === caseParam);
-      if (match) {
-        setActive(match.key);
-        // optional: scroll into view if needed
-        const el = document.getElementById("featured");
-        if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-      }
-    }
-  }, []);
+    if (!caseParam) return;
+
+    const match = CASE_STUDIES.find((c) => c.key === caseParam);
+    if (match) setActive(match.key);
+  }, [searchParams, setActive]);
 
   // Helper to set both state and URL param
   const setActiveAndUrl = useCallback(
