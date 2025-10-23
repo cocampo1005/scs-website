@@ -17,7 +17,6 @@ export default function Contact() {
   const [errors, setErrors] = useState({});
   const [lastSentAt, setLastSentAt] = useState(0);
   const [openIdx, setOpenIdx] = useState(0);
-  const [message, setMessage] = useState("");
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -47,7 +46,10 @@ export default function Contact() {
 
     const seed = `Hello, I’d like to discuss starting a project similar to ${rawTitle}. Please see my details below and let me know next steps.`;
 
-    setMessage((prev) => (prev?.trim() ? prev : seed));
+    setFormData((s) => ({
+      ...s,
+      message: s.message?.trim() ? s.message : seed,
+    }));
 
     // Scroll smoothly to the form after render
     const el = document.getElementById("form");
@@ -144,7 +146,7 @@ export default function Contact() {
     // --- NORMAL VALIDATION ---
     const v = {
       ...formData,
-      phone: humanPhone, // human-readable for EmailJS
+      phone: humanPhone,
     };
     const errs = validate(v);
     if (Object.keys(errs).length) {
@@ -465,8 +467,8 @@ export default function Contact() {
                       id="message"
                       name="message"
                       required
-                      value={message}
-                      onChange={(e) => setMessage(e.target.value)}
+                      value={formData.message}
+                      onChange={handleChange}
                       rows={7}
                       className={`w-full px-4 py-3 bg-white/5 border-1 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-fuchsia-500 focus:ring-2 focus:ring-fuchsia-500/20 transition-all resize-none
                 ${
