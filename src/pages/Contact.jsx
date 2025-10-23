@@ -2,6 +2,9 @@
 import { useRef, useState } from "react";
 import { Mail, Send } from "lucide-react";
 import { motion } from "framer-motion";
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
+import "../styles/phone-input.css";
 
 import Reveal, { Stagger } from "../components/Reveal";
 import GlowCard from "../components/GlowCard";
@@ -18,21 +21,20 @@ export default function Contact() {
     name: "",
     email: "",
     phone: "",
+    phoneRaw: "",
+    phoneDial: "",
+    phoneLocal: "",
     message: "",
-    website: "", // honeypot
+    website: "",
   });
 
   const formRef = useRef(null);
 
+  const onlyDigits = (s = "") => s.replace(/\D/g, "");
+
   function isEmail(v = "") {
     // simple, robust email check for UI (server still enforces)
     return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim());
-  }
-
-  function normalizePhone(v = "") {
-    // keep digits and +; return E.164-ish if possible, else original
-    const digits = v.replace(/[^\d+]/g, "");
-    return digits || v;
   }
 
   function validate(form) {
@@ -44,9 +46,12 @@ export default function Contact() {
     if (!form.message || form.message.trim().length < 10)
       errs.message = "Tell us a bit more — at least 10 characters.";
 
-    // phone is optional; if present, light validation
-    if (form.phone && form.phone.replace(/\D/g, "").length < 7)
-      errs.phone = "If you include a phone, add at least 7 digits.";
+    // phone is optional — validate only if local digits exist
+    if (form.phoneLocal) {
+      if (form.phoneLocal.length !== 10) {
+        errs.phone = "Please enter a 10-digit local number.";
+      }
+    }
 
     return errs;
   }
@@ -75,8 +80,39 @@ export default function Contact() {
       return;
     }
 
-    // Validate
-    const v = { ...formData, phone: normalizePhone(formData.phone) };
+    // --- PHONE LOGIC ---
+    const localDigits = formData.phoneLocal?.trim() || "";
+    const dial = formData.phoneDial?.trim() || "";
+    let humanPhone = "";
+    let whatsAppNumber = "";
+
+    if (localDigits) {
+      const cleanLocal = localDigits.replace(/\D/g, ""); // digits only
+      if (cleanLocal.length !== 10) {
+        setErrors({ phone: "Please enter a 10-digit local number." });
+        setStatus({
+          sending: false,
+          ok: false,
+          err: "Please fix the highlighted fields.",
+        });
+        return;
+      }
+
+      // Build WhatsApp raw version (no +)
+      whatsAppNumber = `${dial}${cleanLocal}`;
+
+      // Build human-readable version like +1 (954) 559-2944
+      const area = cleanLocal.slice(0, 3);
+      const prefix = cleanLocal.slice(3, 6);
+      const line = cleanLocal.slice(6);
+      humanPhone = `+${dial} (${area}) ${prefix}-${line}`;
+    }
+
+    // --- NORMAL VALIDATION ---
+    const v = {
+      ...formData,
+      phone: humanPhone, // human-readable for EmailJS
+    };
     const errs = validate(v);
     if (Object.keys(errs).length) {
       setErrors(errs);
@@ -98,7 +134,8 @@ export default function Contact() {
       const templateParams = {
         name: v.name.trim(),
         email: v.email.trim(),
-        phone: v.phone || "—",
+        phone: humanPhone || "—",
+        whatsappNumber: whatsAppNumber || "",
         message: v.message.trim(),
         submitted_at: new Date().toLocaleString(),
       };
@@ -116,16 +153,24 @@ export default function Contact() {
       setStatus({ sending: false, ok: true, err: "" });
       setLastSentAt(Date.now());
       formRef.current?.reset();
-      setFormData({ name: "", email: "", phone: "", message: "", website: "" });
+      setFormData({
+        name: "",
+        email: "",
+        phone: "",
+        phoneRaw: "",
+        phoneDial: "",
+        phoneLocal: "",
+        message: "",
+        website: "",
+      });
     } catch (err) {
       let msg =
-        "Couldn’t send the message right now. Please try again or email us directly.";
-      // EmailJS sometimes exposes { status, text }
+        "Couldn't send the message right now. Please try again or email us directly.";
       const code = err?.status || err?.code || err?.message;
 
       if (code === 412)
         msg =
-          "Email service isn’t fully authorized. Try the email button while we fix it.";
+          "Email service isn't fully authorized. Try the email button while we fix it.";
       if (code === 429)
         msg = "Too many attempts. Please wait a moment and try again.";
       if (code === "timeout")
@@ -208,11 +253,11 @@ export default function Contact() {
         </div>
       </section>
 
-      {/* Main: Bento grid */}
+      {/* Body */}
       <section className="max-w-6xl mx-auto px-6 py-14">
+        {/* LEFT: Contacts and Form */}
         <div className="grid md:grid-cols-5 gap-8 items-start">
-          {/* LEFT (md: 3 cols): Contact tiles + form */}
-          <div className="md:col-span-3 space-y-6">
+          <div className="md:col-span-3 space-y-6 min-w-0">
             <Reveal>
               <h2 className="text-2xl font-display font-bold text-fuchsia-200">
                 Contacts
@@ -220,7 +265,7 @@ export default function Contact() {
             </Reveal>
             <div className="grid sm:grid-cols-2 gap-6">
               {/* Email */}
-              <Reveal>
+              <Reveal className="min-w-0">
                 <GlowCard className="p-5 md:p-6 h-full">
                   <div className="flex items-start gap-4">
                     <div className="grid place-items-center w-12 h-12 rounded-xl bg-gradient-to-br from-fuchsia-600 to-purple-700 ring-1 ring-purple-400/40 flex-shrink-0">
@@ -264,7 +309,7 @@ export default function Contact() {
                         +1 (954) 559-2944
                       </a>
                       <p className="text-xs text-white/60 mt-2">
-                        Mon–Fri, 9–6 ET
+                        Mon—Fri, 9–6 ET
                       </p>
                     </div>
                   </div>
@@ -342,22 +387,37 @@ export default function Contact() {
                     )}
                   </Field>
 
-                  <Field label="Phone">
-                    <input
-                      type="tel"
-                      name="phone"
-                      value={formData.phone}
-                      onChange={handleChange}
-                      autoComplete="tel"
-                      className={`w-full px-4 py-3 bg-white/5 border-1 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-fuchsia-500 focus:ring-2 focus:ring-fuchsia-500/20 transition-all
-                ${
-                  errors.phone
-                    ? "border-rose-400 focus:border-rose-400 focus:ring-rose-400/30"
-                    : "border-purple-500/30"
-                }`}
-                      aria-invalid={!!errors.phone}
-                      aria-describedby={errors.phone ? "err-phone" : undefined}
-                      placeholder="+1 555 555 5555"
+                  {/* PHONE (uses Field for consistent label + spacing) */}
+                  <Field label="Phone *" full>
+                    <PhoneInput
+                      country="us"
+                      value={formData.phoneRaw}
+                      onChange={(value, country) => {
+                        const digits = onlyDigits(value); // e.g. "17021234567"
+                        const dial = country?.dialCode || ""; // e.g. "1"
+                        const local = digits.startsWith(dial)
+                          ? digits.slice(dial.length)
+                          : digits; // fallback if user edits mid-string
+
+                        // Build E.164 (+country + local) ONLY if user actually typed local digits
+                        const combined = local ? `+${dial}${local}` : "";
+
+                        setFormData((prev) => ({
+                          ...prev,
+                          phoneRaw: value,
+                          phoneDial: dial,
+                          phoneLocal: local,
+                          phone: combined, // keep your readable +... string for EmailJS
+                        }));
+                      }}
+                      enableSearch
+                      disableDropdown={false}
+                      inputProps={{ name: "phone", autoComplete: "tel" }}
+                      containerClass="scs-phone w-full"
+                      inputClass="scs-phone__input !w-full !bg-white/5 !text-white !placeholder-gray-500 !py-3 !pl-[4.5rem] !pr-4 !rounded-r-lg !border !border-purple-500/30 focus:!border-fuchsia-500 focus:!ring-2 focus:!ring-fuchsia-500/20 !transition-all"
+                      buttonClass="scs-phone__btn !rounded-l-lg !border !border-purple-500/30"
+                      dropdownClass="scs-phone__dropdown"
+                      searchClass="scs-phone__search"
                     />
                     {errors.phone && (
                       <p id="err-phone" className="mt-1 text-sm text-rose-300">
@@ -450,7 +510,7 @@ export default function Contact() {
             </Reveal>
           </div>
 
-          {/* RIGHT (md: 2 cols): FAQ Accordion */}
+          {/* RIGHT: FAQ Accordion */}
           <div className="md:col-span-2 space-y-6">
             <Reveal>
               <h2 className="text-2xl font-display font-bold text-fuchsia-200 mb-2">

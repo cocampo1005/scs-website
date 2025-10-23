@@ -1,0 +1,98 @@
+/* ===== Scope all overrides to this instance ===== */
+.scs-phone {
+  position: relative;
+}
+
+/* ---- Button / flag area (left) ---- */
+.scs-phone .flag-dropdown {
+  background: rgba(255, 255, 255, 0.06) !important; /* no white */
+  border-right: 0 !important;
+  border-radius: 7px 0 0 7px !important;
+}
+/* Prevent white flash when active / dropdown open */
+.scs-phone .flag-dropdown.open,
+.scs-phone .selected-flag:active,
+.scs-phone .flag-dropdown.open .selected-flag {
+  background: rgba(217, 70, 239, 0.25) !important; /* fuchsia tint */
+  box-shadow: inset 0 0 0 1px rgba(217, 70, 239, 0.4) !important;
+  color: #fff !important;
+  border-radius: 7px 0 0 7px !important;
+}
+.scs-phone .selected-flag {
+  padding: 0 2rem 0 0.75rem !important; /* more right padding */
+  height: 48px !important;
+}
+.scs-phone .selected-flag .flag {
+  transform: translateY(0);
+}
+.scs-phone .selected-flag .arrow {
+  border-top-color: rgba(255, 255, 255, 0.9) !important;
+  right: 10px !important; /* space between arrow & border */
+}
+
+/* Hover/open states — remove white fill */
+.scs-phone .flag-dropdown:hover,
+.scs-phone .flag-dropdown.open,
+.scs-phone .selected-flag:hover {
+  background: rgba(217, 70, 239, 0.18) !important; /* fuchsia tint */
+  box-shadow: inset 0 0 0 1px rgba(217, 70, 239, 0.35);
+  border-radius: 7px 0 0 7px !important;
+}
+
+/* ---- Input (right) ---- */
+.scs-phone__input {
+  height: 48px !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-left: 1px solid rgba(147, 51, 234, 0.3) !important;
+  color: #fff !important;
+}
+
+/* ---- Dropdown panel ---- */
+.scs-phone__dropdown.country-list {
+  background: #1b0f2b !important; /* dark purple */
+  color: #fff !important;
+  border: 1px solid rgba(147, 51, 234, 0.4) !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5) !important;
+  max-height: 260px;
+}
+
+/* Search row – kill white */
+.scs-phone__dropdown .search-box {
+  background: #1b0f2b !important;
+  border: 1px solid rgba(147, 51, 234, 0.35) !important;
+}
+.scs-phone__search.search {
+  background: rgba(27, 15, 43, 0.85) !important;
+  color: #fff !important;
+  border: 1px solid rgba(147, 51, 234, 0.3) !important;
+}
+.scs-phone__search.search::placeholder {
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+/* Country rows */
+.scs-phone__dropdown .country {
+  background: transparent !important;
+}
+.scs-phone__dropdown .country:hover,
+.scs-phone__dropdown .country.highlight {
+  background: rgba(217, 70, 239, 0.2) !important; /* hover */
+}
+.scs-phone__dropdown .country.active {
+  background: rgba(217, 70, 239, 0.35) !important; /* selected */
+}
+
+/* Scrollbar (no white track) */
+.scs-phone__dropdown::-webkit-scrollbar {
+  width: 10px;
+}
+.scs-phone__dropdown::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.06);
+}
+.scs-phone__dropdown::-webkit-scrollbar-thumb {
+  background: rgba(217, 70, 239, 0.4);
+  border-radius: 999px;
+}
+.scs-phone__dropdown::-webkit-scrollbar-thumb:hover {
+  background: rgba(217, 70, 239, 0.6);
+}
