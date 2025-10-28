@@ -59,7 +59,7 @@ export default function HeroSection() {
                 ? "opacity-100 translate-y-0"
                 : "opacity-0 translate-y-3 absolute inset-0 pointer-events-none"
             }
-            motion-reduce:opacity-100 motion-reduce:translate-y-0
+            motion-reduce:translate-x-0 motion-reduce:translate-y-0 motion-reduce:transition-none
           `}
         >
           <Stagger gap={120}>

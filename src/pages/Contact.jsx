@@ -29,6 +29,14 @@ export default function Contact() {
     website: "",
   });
 
+  // Google Conversion Tracking
+  const ADS_SEND_TO = "AW-17675252735/cPPICNvM37QbEP_nm-xB";
+  function fireAdsLead() {
+    if (window.gtag) {
+      window.gtag("event", "conversion", { send_to: ADS_SEND_TO });
+    }
+  }
+
   const TITLE_BY_KEY = {
     "cat-solutions-305": "MeowMax — Appointment Scheduler",
     "street-cat-clinic": "Street Cat Clinic — Records Platform",
@@ -179,6 +187,7 @@ export default function Contact() {
 
       setStatus({ sending: false, ok: true, err: "" });
       setLastSentAt(Date.now());
+      fireAdsLead();
       formRef.current?.reset();
       setFormData({
         name: "",

@@ -101,3 +101,132 @@ body {
 .animate-float {
   animation: float 3s ease-in-out infinite;
 }
+
+/* Custom Scroll Bar for various Browsers */
+
+:root {
+  --scs-bg: #0c0216; /* primary background */
+  --scs-track: rgba(255, 255, 255, 0.04);
+
+  /* Gradient colors - matching button (light fuchsia to dark purple) */
+  --scs-grad-start: #d946ef; /* fuchsia-500 - top */
+  --scs-grad-end: #7c3aed; /* violet-600 - bottom */
+
+  /* Hover - brighter gradient */
+  --scs-grad-hover-start: #e879f9; /* fuchsia-400 */
+  --scs-grad-hover-end: #8b5cf6; /* violet-500 */
+
+  /* Active - deeper gradient */
+  --scs-grad-active-start: #c026d3; /* fuchsia-600 */
+  --scs-grad-active-end: #6d28d9; /* violet-700 */
+
+  /* Firefox fallback */
+  --scs-firefox-thumb: #a855f7;
+
+  --scs-track-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.03);
+  --scs-thumb-shadow: 0 20px 20px rgba(217, 70, 239, 0.5);
+}
+
+/* WebKit browsers - gradient works here! */
+html::-webkit-scrollbar {
+  width: 10px;
+}
+
+html::-webkit-scrollbar-track {
+  background: var(--scs-track);
+  border-radius: 3px;
+  box-shadow: var(--scs-track-shadow);
+}
+
+html::-webkit-scrollbar-thumb {
+  border-radius: 3px;
+  background: linear-gradient(
+    to bottom,
+    var(--scs-grad-start) 0%,
+    var(--scs-grad-end) 100%
+  );
+  box-shadow: var(--scs-thumb-shadow);
+  transition: all 0.2s ease;
+}
+
+html::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(
+    to bottom,
+    var(--scs-grad-hover-start) 0%,
+    var(--scs-grad-hover-end) 100%
+  );
+  box-shadow: 0 20px 20px rgba(217, 70, 239, 0.8);
+  border-color: transparent;
+}
+
+html::-webkit-scrollbar-thumb:active {
+  background: linear-gradient(
+    to bottom,
+    var(--scs-grad-active-start) 0%,
+    var(--scs-grad-active-end) 100%
+  );
+  box-shadow: 0 20px 20px rgba(217, 70, 239, 0.8);
+}
+
+/* Scrollbar corner (when both scrollbars are present) */
+html::-webkit-scrollbar-corner {
+  background: var(--scs-track);
+}
+
+/* Optional: For internal scrollable elements */
+.nice-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scs-firefox-thumb) var(--scs-track);
+}
+
+.nice-scrollbar::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+.nice-scrollbar::-webkit-scrollbar-track {
+  background: var(--scs-track);
+  border-radius: 8px;
+  box-shadow: var(--scs-track-shadow);
+}
+
+.nice-scrollbar::-webkit-scrollbar-thumb {
+  border-radius: 8px;
+  background: linear-gradient(
+    to bottom,
+    var(--scs-grad-start) 0%,
+    var(--scs-grad-end) 100%
+  );
+  background-clip: padding-box;
+  box-shadow: var(--scs-thumb-shadow);
+  transition: all 0.2s ease;
+}
+
+.nice-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(
+    to bottom,
+    var(--scs-grad-hover-start) 0%,
+    var(--scs-grad-hover-end) 100%
+  );
+  box-shadow: 0 2px 12px rgba(232, 121, 249, 0.4);
+}
+
+.nice-scrollbar::-webkit-scrollbar-thumb:active {
+  background: linear-gradient(
+    to bottom,
+    var(--scs-grad-active-start) 0%,
+    var(--scs-grad-active-end) 100%
+  );
+}
+
+.nice-scrollbar::-webkit-scrollbar-corner {
+  background: var(--scs-track);
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  html::-webkit-scrollbar-thumb,
+  .nice-scrollbar::-webkit-scrollbar-thumb {
+    transition: none;
+  }
+}
