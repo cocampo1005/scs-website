@@ -11,6 +11,8 @@ import GlowCard from "../components/GlowCard";
 import Reveal, { Stagger } from "../components/Reveal";
 import heroImg from "../assets/images/contact-beam.webp";
 import { useScrollToHash } from "../hooks/useScrollToHash";
+import SEO from "../components/SEO";
+import JsonLd from "../components/JsonLd";
 
 export default function Contact() {
   const [searchParams] = useSearchParams();
@@ -249,367 +251,430 @@ export default function Contact() {
 
   return (
     <>
-      {/* Hero with CTA style background */}
-      <section
-        className="relative overflow-hidden py-40 md:py-50 px-6 bg-primary-dark-purple bg-center bg-cover"
-        aria-labelledby="about-hero"
-        style={{ backgroundImage: `url(${heroImg})` }}
+      <SEO
+        title="Contact"
+        description="Start a project or ask a question. Reach Solid Code Solutions by email or WhatsApp and we will respond quickly."
+        path="/contact"
+        image="/assets/og/og-default.webp"
       >
-        <div
-          aria-hidden
-          className="absolute inset-0 bg-primary-dark-purple/80 md:bg-primary-dark-purple/60"
+        <JsonLd
+          data={{
+            "@context": "https://schema.org",
+            "@type": "ContactPage",
+            name: "Contact Solid Code Solutions",
+            url: "https://solidcodesolutionsllc.com/contact",
+            publisher: {
+              "@type": "Organization",
+              name: "Solid Code Solutions LLC",
+              url: "https://solidcodesolutionsllc.com/",
+            },
+            contactPoint: [
+              {
+                "@type": "ContactPoint",
+                contactType: "customer support",
+                email: "christian@solidcodesolutionsllc.com",
+                telephone: "+1-954-559-2944",
+                areaServed: "US, CO",
+                availableLanguage: ["en", "es"],
+              },
+            ],
+          }}
         />
-        <div
-          aria-hidden
-          className="absolute top-0 inset-x-0 h-20 bg-gradient-to-b from-primary-dark-purple to-transparent"
+        <JsonLd
+          data={{
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              {
+                "@type": "ListItem",
+                position: 1,
+                name: "Home",
+                item: "https://solidcodesolutionsllc.com/",
+              },
+              {
+                "@type": "ListItem",
+                position: 2,
+                name: "Contact",
+                item: "https://solidcodesolutionsllc.com/contact",
+              },
+            ],
+          }}
         />
-        <div
-          aria-hidden
-          className="absolute bottom-0 inset-x-0 h-20 bg-gradient-to-t from-primary-dark-purple to-transparent"
-        />
+      </SEO>
 
-        <div className="relative z-[1] max-w-6xl mx-auto text-center">
-          <Stagger>
-            <Reveal
-              as="h1"
-              id="about-hero"
-              className="font-logo text-5xl md:text-6xl font-bold mb-4 bg-gradient-to-r from-accent-fuchsia to-accent-purple bg-clip-text text-transparent"
-            >
-              Let's Build Something Solid
-            </Reveal>
-            <Reveal
-              as="p"
-              className="md:text-xl text-gray-200 max-w-3xl mx-auto"
-            >
-              Whether you're refining an idea or scaling a product, reach out
-              and let's shape it into something dependable, beautiful, and built
-              to last.
-            </Reveal>
-          </Stagger>
-        </div>
-      </section>
+      <div className="min-h-screen">
+        {/* Hero with CTA style background */}
+        <section
+          className="relative overflow-hidden py-40 md:py-50 px-6 bg-primary-dark-purple bg-center bg-cover"
+          aria-labelledby="about-hero"
+          style={{ backgroundImage: `url(${heroImg})` }}
+        >
+          <div
+            aria-hidden
+            className="absolute inset-0 bg-primary-dark-purple/80 md:bg-primary-dark-purple/60"
+          />
+          <div
+            aria-hidden
+            className="absolute top-0 inset-x-0 h-20 bg-gradient-to-b from-primary-dark-purple to-transparent"
+          />
+          <div
+            aria-hidden
+            className="absolute bottom-0 inset-x-0 h-20 bg-gradient-to-t from-primary-dark-purple to-transparent"
+          />
 
-      {/* Body */}
-      <section className="max-w-6xl mx-auto px-6 py-14">
-        {/* LEFT: Contacts and Form */}
-        <div className="grid md:grid-cols-5 gap-8 items-start">
-          <div className="md:col-span-3 space-y-6 min-w-0">
-            <Reveal>
-              <h2 className="text-2xl font-display font-bold text-fuchsia-200">
-                Contacts
-              </h2>
-            </Reveal>
-            <div className="grid sm:grid-cols-2 gap-6">
-              {/* Email */}
-              <Reveal className="min-w-0">
-                <GlowCard className="p-5 md:p-6 h-full">
-                  <div className="flex items-start gap-4">
-                    <div className="grid place-items-center w-12 h-12 rounded-xl bg-gradient-to-br from-fuchsia-600 to-purple-700 ring-1 ring-purple-400/40 flex-shrink-0">
-                      <Mail className="size-5" />
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <h3 className="text-lg font-bold text-fuchsia-100 mb-1">
-                        Email
-                      </h3>
-                      <a
-                        href="mailto:christian@solidcodesolutionsllc.com"
-                        className="text-sm text-gray-200 hover:text-white underline underline-offset-4 break-words block"
-                      >
-                        christian@solidcodesolutionsllc.com
-                      </a>
-                      <p className="text-xs text-white/60 mt-2">
-                        Avg response ~24 hrs
-                      </p>
-                    </div>
-                  </div>
-                </GlowCard>
+          <div className="relative z-[1] max-w-6xl mx-auto text-center">
+            <Stagger>
+              <Reveal
+                as="h1"
+                id="about-hero"
+                className="font-logo text-5xl md:text-6xl font-bold mb-4 bg-gradient-to-r from-accent-fuchsia to-accent-purple bg-clip-text text-transparent"
+              >
+                Let's Build Something Solid
               </Reveal>
-
-              {/* WhatsApp */}
-              <Reveal delay={80}>
-                <GlowCard className="p-5 md:p-6 h-full">
-                  <div className="flex items-start gap-4">
-                    <div className="grid place-items-center w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-600 to-emerald-700 ring-1 ring-emerald-400/40 flex-shrink-0">
-                      <WhatsappLogoIcon size={20} weight="fill" />
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <h3 className="text-lg font-bold text-fuchsia-100 mb-1">
-                        WhatsApp
-                      </h3>
-                      <a
-                        href="https://wa.me/19545592944"
-                        target="_blank"
-                        rel="noreferrer"
-                        className="text-sm text-gray-200 hover:text-white underline underline-offset-4 block"
-                      >
-                        +1 (954) 559-2944
-                      </a>
-                      <p className="text-xs text-white/60 mt-2">
-                        Mon—Fri, 9–6 ET
-                      </p>
-                    </div>
-                  </div>
-                </GlowCard>
+              <Reveal
+                as="p"
+                className="md:text-xl text-gray-200 max-w-3xl mx-auto"
+              >
+                Whether you're refining an idea or scaling a product, reach out
+                and let's shape it into something dependable, beautiful, and
+                built to last.
               </Reveal>
-            </div>
+            </Stagger>
+          </div>
+        </section>
 
-            {/* Form */}
-            <Reveal delay={120}>
-              <GlowCard className="p-5 md:p-6">
-                <form
-                  id="form"
-                  ref={formRef}
-                  onSubmit={handleSubmit}
-                  className="grid grid-cols-1 sm:grid-cols-2 gap-4"
-                  noValidate
-                >
-                  {/* Honeypot */}
-                  <input
-                    type="text"
-                    name="website"
-                    value={formData.website}
-                    onChange={handleChange}
-                    className="hidden"
-                    tabIndex={-1}
-                    autoComplete="off"
-                  />
+        {/* Body */}
+        <section className="max-w-6xl mx-auto px-6 py-14">
+          {/* LEFT: Contacts and Form */}
+          <div className="grid md:grid-cols-5 gap-8 items-start">
+            <div className="md:col-span-3 space-y-6 min-w-0">
+              <Reveal>
+                <h2 className="text-2xl font-display font-bold text-fuchsia-200">
+                  Contacts
+                </h2>
+              </Reveal>
+              <div className="grid sm:grid-cols-2 gap-6">
+                {/* Email */}
+                <Reveal className="min-w-0">
+                  <GlowCard className="p-5 md:p-6 h-full">
+                    <div className="flex items-start gap-4">
+                      <div className="grid place-items-center w-12 h-12 rounded-xl bg-gradient-to-br from-fuchsia-600 to-purple-700 ring-1 ring-purple-400/40 flex-shrink-0">
+                        <Mail className="size-5" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <h3 className="text-lg font-bold text-fuchsia-100 mb-1">
+                          Email
+                        </h3>
+                        <a
+                          href="mailto:christian@solidcodesolutionsllc.com"
+                          className="text-sm text-gray-200 hover:text-white underline underline-offset-4 break-words block"
+                        >
+                          christian@solidcodesolutionsllc.com
+                        </a>
+                        <p className="text-xs text-white/60 mt-2">
+                          Avg response ~24 hrs
+                        </p>
+                      </div>
+                    </div>
+                  </GlowCard>
+                </Reveal>
 
-                  <Field label="Your Name *">
+                {/* WhatsApp */}
+                <Reveal delay={80}>
+                  <GlowCard className="p-5 md:p-6 h-full">
+                    <div className="flex items-start gap-4">
+                      <div className="grid place-items-center w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-600 to-emerald-700 ring-1 ring-emerald-400/40 flex-shrink-0">
+                        <WhatsappLogoIcon size={20} weight="fill" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <h3 className="text-lg font-bold text-fuchsia-100 mb-1">
+                          WhatsApp
+                        </h3>
+                        <a
+                          href="https://wa.me/19545592944"
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-sm text-gray-200 hover:text-white underline underline-offset-4 block"
+                        >
+                          +1 (954) 559-2944
+                        </a>
+                        <p className="text-xs text-white/60 mt-2">
+                          Mon—Fri, 9–6 ET
+                        </p>
+                      </div>
+                    </div>
+                  </GlowCard>
+                </Reveal>
+              </div>
+
+              {/* Form */}
+              <Reveal delay={120}>
+                <GlowCard className="p-5 md:p-6">
+                  <form
+                    id="form"
+                    ref={formRef}
+                    onSubmit={handleSubmit}
+                    className="grid grid-cols-1 sm:grid-cols-2 gap-4"
+                    noValidate
+                  >
+                    {/* Honeypot */}
                     <input
                       type="text"
-                      name="name"
-                      required
-                      value={formData.name}
+                      name="website"
+                      value={formData.website}
                       onChange={handleChange}
-                      autoComplete="name"
-                      className={`w-full px-4 py-3 bg-white/5 border-1 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-fuchsia-500 focus:ring-2 focus:ring-fuchsia-500/20 transition-all
+                      className="hidden"
+                      tabIndex={-1}
+                      autoComplete="off"
+                    />
+
+                    <Field label="Your Name *">
+                      <input
+                        type="text"
+                        name="name"
+                        required
+                        value={formData.name}
+                        onChange={handleChange}
+                        autoComplete="name"
+                        className={`w-full px-4 py-3 bg-white/5 border-1 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-fuchsia-500 focus:ring-2 focus:ring-fuchsia-500/20 transition-all
                 ${
                   errors.name
                     ? "border-rose-400 focus:border-rose-400 focus:ring-rose-400/30"
                     : "border-purple-500/30"
                 }`}
-                      aria-invalid={!!errors.name}
-                      aria-describedby={errors.name ? "err-name" : undefined}
-                      placeholder="Jane Doe"
-                    />
-                    {errors.name && (
-                      <p id="err-name" className="mt-1 text-sm text-rose-300">
-                        {errors.name}
-                      </p>
-                    )}
-                  </Field>
+                        aria-invalid={!!errors.name}
+                        aria-describedby={errors.name ? "err-name" : undefined}
+                        placeholder="Jane Doe"
+                      />
+                      {errors.name && (
+                        <p id="err-name" className="mt-1 text-sm text-rose-300">
+                          {errors.name}
+                        </p>
+                      )}
+                    </Field>
 
-                  <Field label="Email *">
-                    <input
-                      type="email"
-                      name="email"
-                      required
-                      value={formData.email}
-                      onChange={handleChange}
-                      autoComplete="email"
-                      className={`w-full px-4 py-3 bg-white/5 border-1 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-fuchsia-500 focus:ring-2 focus:ring-fuchsia-500/20 transition-all
+                    <Field label="Email *">
+                      <input
+                        type="email"
+                        name="email"
+                        required
+                        value={formData.email}
+                        onChange={handleChange}
+                        autoComplete="email"
+                        className={`w-full px-4 py-3 bg-white/5 border-1 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-fuchsia-500 focus:ring-2 focus:ring-fuchsia-500/20 transition-all
                 ${
                   errors.email
                     ? "border-rose-400 focus:border-rose-400 focus:ring-rose-400/30"
                     : "border-purple-500/30"
                 }`}
-                      aria-invalid={!!errors.email}
-                      aria-describedby={errors.email ? "err-email" : undefined}
-                      placeholder="jane@company.com"
-                    />
-                    {errors.email && (
-                      <p id="err-email" className="mt-1 text-sm text-rose-300">
-                        {errors.email}
-                      </p>
-                    )}
-                  </Field>
+                        aria-invalid={!!errors.email}
+                        aria-describedby={
+                          errors.email ? "err-email" : undefined
+                        }
+                        placeholder="jane@company.com"
+                      />
+                      {errors.email && (
+                        <p
+                          id="err-email"
+                          className="mt-1 text-sm text-rose-300"
+                        >
+                          {errors.email}
+                        </p>
+                      )}
+                    </Field>
 
-                  {/* PHONE (uses Field for consistent label + spacing) */}
-                  <Field label="Phone" full>
-                    <PhoneInput
-                      country="us"
-                      value={formData.phoneRaw}
-                      onChange={(value, country) => {
-                        const digits = onlyDigits(value); // e.g. "17021234567"
-                        const dial = country?.dialCode || ""; // e.g. "1"
-                        const local = digits.startsWith(dial)
-                          ? digits.slice(dial.length)
-                          : digits; // fallback if user edits mid-string
+                    {/* PHONE (uses Field for consistent label + spacing) */}
+                    <Field label="Phone" full>
+                      <PhoneInput
+                        country="us"
+                        value={formData.phoneRaw}
+                        onChange={(value, country) => {
+                          const digits = onlyDigits(value); // e.g. "17021234567"
+                          const dial = country?.dialCode || ""; // e.g. "1"
+                          const local = digits.startsWith(dial)
+                            ? digits.slice(dial.length)
+                            : digits; // fallback if user edits mid-string
 
-                        // Build E.164 (+country + local) ONLY if user actually typed local digits
-                        const combined = local ? `+${dial}${local}` : "";
+                          // Build E.164 (+country + local) ONLY if user actually typed local digits
+                          const combined = local ? `+${dial}${local}` : "";
 
-                        setFormData((prev) => ({
-                          ...prev,
-                          phoneRaw: value,
-                          phoneDial: dial,
-                          phoneLocal: local,
-                          phone: combined, // keep your readable +... string for EmailJS
-                        }));
-                      }}
-                      enableSearch
-                      disableDropdown={false}
-                      inputProps={{ name: "phone", autoComplete: "tel" }}
-                      containerClass="scs-phone w-full"
-                      inputClass="scs-phone__input !w-full !bg-white/5 !text-white !placeholder-gray-500 !py-3 !pl-[4.5rem] !pr-4 !rounded-r-lg !border !border-purple-500/30 focus:!border-fuchsia-500 focus:!ring-2 focus:!ring-fuchsia-500/20 !transition-all"
-                      buttonClass="scs-phone__btn !rounded-l-lg !border !border-purple-500/30"
-                      dropdownClass="scs-phone__dropdown"
-                      searchClass="scs-phone__search"
-                    />
-                    {errors.phone && (
-                      <p id="err-phone" className="mt-1 text-sm text-rose-300">
-                        {errors.phone}
-                      </p>
-                    )}
-                  </Field>
+                          setFormData((prev) => ({
+                            ...prev,
+                            phoneRaw: value,
+                            phoneDial: dial,
+                            phoneLocal: local,
+                            phone: combined, // keep your readable +... string for EmailJS
+                          }));
+                        }}
+                        enableSearch
+                        disableDropdown={false}
+                        inputProps={{ name: "phone", autoComplete: "tel" }}
+                        containerClass="scs-phone w-full"
+                        inputClass="scs-phone__input !w-full !bg-white/5 !text-white !placeholder-gray-500 !py-3 !pl-[4.5rem] !pr-4 !rounded-r-lg !border !border-purple-500/30 focus:!border-fuchsia-500 focus:!ring-2 focus:!ring-fuchsia-500/20 !transition-all"
+                        buttonClass="scs-phone__btn !rounded-l-lg !border !border-purple-500/30"
+                        dropdownClass="scs-phone__dropdown"
+                        searchClass="scs-phone__search"
+                      />
+                      {errors.phone && (
+                        <p
+                          id="err-phone"
+                          className="mt-1 text-sm text-rose-300"
+                        >
+                          {errors.phone}
+                        </p>
+                      )}
+                    </Field>
 
-                  <Field label="Tell us about your project *" full>
-                    <textarea
-                      id="message"
-                      name="message"
-                      required
-                      value={formData.message}
-                      onChange={handleChange}
-                      rows={7}
-                      className={`w-full px-4 py-3 bg-white/5 border-1 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-fuchsia-500 focus:ring-2 focus:ring-fuchsia-500/20 transition-all resize-none
+                    <Field label="Tell us about your project *" full>
+                      <textarea
+                        id="message"
+                        name="message"
+                        required
+                        value={formData.message}
+                        onChange={handleChange}
+                        rows={7}
+                        className={`w-full px-4 py-3 bg-white/5 border-1 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-fuchsia-500 focus:ring-2 focus:ring-fuchsia-500/20 transition-all resize-none
                 ${
                   errors.message
                     ? "border-rose-400 focus:border-rose-400 focus:ring-rose-400/30"
                     : "border-purple-500/30"
                 }`}
-                      aria-invalid={!!errors.message}
-                      aria-describedby={
-                        errors.message ? "err-message" : undefined
-                      }
-                      placeholder="Goals, users, key features, and any links we should see…"
-                    />
-                    {errors.message && (
-                      <p
-                        id="err-message"
-                        className="mt-1 text-sm text-rose-300"
-                      >
-                        {errors.message}
-                      </p>
-                    )}
-                  </Field>
-
-                  {/* Status */}
-                  <div
-                    className="sm:col-span-2 space-y-1"
-                    role="status"
-                    aria-live="polite"
-                  >
-                    {status.ok && (
-                      <p className="text-emerald-300">
-                        Thanks — we'll be in touch shortly.
-                      </p>
-                    )}
-                    {status.err && (
-                      <p className="text-rose-300">{status.err}</p>
-                    )}
-                  </div>
-
-                  {/* Actions */}
-                  <div className="sm:col-span-2 flex flex-col sm:flex-row gap-3 sm:justify-end">
-                    <a
-                      href="mailto:christian@solidcodesolutionsllc.com"
-                      className="btn-secondary inline-flex items-center justify-center gap-2"
-                    >
-                      <Mail className="size-4" />
-                      Email Us Instead
-                    </a>
-                    <button
-                      type="submit"
-                      disabled={status.sending}
-                      className="btn-primary inline-flex items-center justify-center gap-2 cursor-pointer disabled:cursor-not-allowed disabled:opacity-60 transition-all"
-                      aria-busy={status.sending}
-                    >
-                      {status.sending ? (
-                        <motion.span
-                          aria-hidden
-                          animate={{ x: [0, 6, 0] }}
-                          transition={{
-                            duration: 0.6,
-                            repeat: Infinity,
-                            ease: "easeInOut",
-                          }}
-                          className="inline-flex"
-                        >
-                          <Send className="size-4" />
-                        </motion.span>
-                      ) : (
-                        <Send className="size-4" aria-hidden />
-                      )}
-                      {status.sending ? "Sending…" : "Send Message"}
-                    </button>
-                  </div>
-                </form>
-              </GlowCard>
-            </Reveal>
-          </div>
-
-          {/* RIGHT: FAQ Accordion */}
-          <div id="faq" className="md:col-span-2 space-y-6">
-            <Reveal>
-              <h2 className="text-2xl font-display font-bold text-fuchsia-200 mb-2">
-                FAQ
-              </h2>
-            </Reveal>
-
-            {faq.map((item, idx) => {
-              const open = openIdx === idx;
-              return (
-                <div key={idx} className="relative">
-                  <Reveal y={8}>
-                    <GlowCard
-                      className="p-5 md:p-6 cursor-pointer select-none transition-colors hover:bg-white/5"
-                      onClick={() => setOpenIdx(open ? null : idx)}
-                      role="button"
-                      aria-expanded={open}
-                      tabIndex={0}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter" || e.key === " ") {
-                          e.preventDefault();
-                          setOpenIdx(open ? null : idx);
+                        aria-invalid={!!errors.message}
+                        aria-describedby={
+                          errors.message ? "err-message" : undefined
                         }
-                      }}
-                    >
-                      <div className="flex items-center justify-between gap-4">
-                        <p className="font-semibold text-white">{item.q}</p>
-                        <span
-                          className={`text-2xl transition-transform duration-300 ${
-                            open ? "rotate-45" : ""
-                          }`}
-                          aria-hidden
+                        placeholder="Goals, users, key features, and any links we should see…"
+                      />
+                      {errors.message && (
+                        <p
+                          id="err-message"
+                          className="mt-1 text-sm text-rose-300"
                         >
-                          +
-                        </span>
-                      </div>
-                      <div
-                        className={`grid transition-[grid-template-rows] duration-300 ease-out ${
-                          open ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
-                        }`}
-                      >
-                        <div className="overflow-hidden">
-                          <p className="text-sm text-gray-300 mt-3">{item.a}</p>
-                        </div>
-                      </div>
-                    </GlowCard>
-                  </Reveal>
+                          {errors.message}
+                        </p>
+                      )}
+                    </Field>
 
-                  {/* Synapse connector (shows only when open) */}
-                  {open && (
+                    {/* Status */}
                     <div
-                      aria-hidden
-                      className="mx-auto h-6 w-px my-2 bg-gradient-to-b from-fuchsia-500/70 via-purple-400/60 to-transparent blur-[0.5px]"
-                    />
-                  )}
-                </div>
-              );
-            })}
+                      className="sm:col-span-2 space-y-1"
+                      role="status"
+                      aria-live="polite"
+                    >
+                      {status.ok && (
+                        <p className="text-emerald-300">
+                          Thanks — we'll be in touch shortly.
+                        </p>
+                      )}
+                      {status.err && (
+                        <p className="text-rose-300">{status.err}</p>
+                      )}
+                    </div>
+
+                    {/* Actions */}
+                    <div className="sm:col-span-2 flex flex-col sm:flex-row gap-3 sm:justify-end">
+                      <a
+                        href="mailto:christian@solidcodesolutionsllc.com"
+                        className="btn-secondary inline-flex items-center justify-center gap-2"
+                      >
+                        <Mail className="size-4" />
+                        Email Us Instead
+                      </a>
+                      <button
+                        type="submit"
+                        disabled={status.sending}
+                        className="btn-primary inline-flex items-center justify-center gap-2 cursor-pointer disabled:cursor-not-allowed disabled:opacity-60 transition-all"
+                        aria-busy={status.sending}
+                      >
+                        {status.sending ? (
+                          <motion.span
+                            aria-hidden
+                            animate={{ x: [0, 6, 0] }}
+                            transition={{
+                              duration: 0.6,
+                              repeat: Infinity,
+                              ease: "easeInOut",
+                            }}
+                            className="inline-flex"
+                          >
+                            <Send className="size-4" />
+                          </motion.span>
+                        ) : (
+                          <Send className="size-4" aria-hidden />
+                        )}
+                        {status.sending ? "Sending…" : "Send Message"}
+                      </button>
+                    </div>
+                  </form>
+                </GlowCard>
+              </Reveal>
+            </div>
+
+            {/* RIGHT: FAQ Accordion */}
+            <div id="faq" className="md:col-span-2 space-y-6">
+              <Reveal>
+                <h2 className="text-2xl font-display font-bold text-fuchsia-200 mb-2">
+                  FAQ
+                </h2>
+              </Reveal>
+
+              {faq.map((item, idx) => {
+                const open = openIdx === idx;
+                return (
+                  <div key={idx} className="relative">
+                    <Reveal y={8}>
+                      <GlowCard
+                        className="p-5 md:p-6 cursor-pointer select-none transition-colors hover:bg-white/5"
+                        onClick={() => setOpenIdx(open ? null : idx)}
+                        role="button"
+                        aria-expanded={open}
+                        tabIndex={0}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" || e.key === " ") {
+                            e.preventDefault();
+                            setOpenIdx(open ? null : idx);
+                          }
+                        }}
+                      >
+                        <div className="flex items-center justify-between gap-4">
+                          <p className="font-semibold text-white">{item.q}</p>
+                          <span
+                            className={`text-2xl transition-transform duration-300 ${
+                              open ? "rotate-45" : ""
+                            }`}
+                            aria-hidden
+                          >
+                            +
+                          </span>
+                        </div>
+                        <div
+                          className={`grid transition-[grid-template-rows] duration-300 ease-out ${
+                            open ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
+                          }`}
+                        >
+                          <div className="overflow-hidden">
+                            <p className="text-sm text-gray-300 mt-3">
+                              {item.a}
+                            </p>
+                          </div>
+                        </div>
+                      </GlowCard>
+                    </Reveal>
+
+                    {/* Synapse connector (shows only when open) */}
+                    {open && (
+                      <div
+                        aria-hidden
+                        className="mx-auto h-6 w-px my-2 bg-gradient-to-b from-fuchsia-500/70 via-purple-400/60 to-transparent blur-[0.5px]"
+                      />
+                    )}
+                  </div>
+                );
+              })}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </div>
     </>
   );
 }

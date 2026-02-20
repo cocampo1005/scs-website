@@ -230,3 +230,56 @@ html::-webkit-scrollbar-corner {
     transition: none;
   }
 }
+
+/* Horizontal case study scrollbar */
+.horizontal-scrollbar {
+  overflow-x: auto;
+  overflow-y: hidden;
+
+  /* Firefox */
+  scrollbar-width: thin;
+  scrollbar-color: var(--scs-firefox-thumb) var(--scs-track);
+}
+
+/* WebKit */
+.horizontal-scrollbar::-webkit-scrollbar {
+  height: 10px; /* horizontal height */
+}
+
+.horizontal-scrollbar::-webkit-scrollbar-track {
+  background: var(--scs-track);
+  border-radius: 8px;
+  box-shadow: var(--scs-track-shadow);
+}
+
+.horizontal-scrollbar::-webkit-scrollbar-thumb {
+  border-radius: 8px;
+  background: linear-gradient(
+    to right,
+    var(--scs-grad-start) 0%,
+    var(--scs-grad-end) 100%
+  );
+  box-shadow: var(--scs-thumb-shadow);
+  transition: all 0.2s ease;
+}
+
+.horizontal-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(
+    to right,
+    var(--scs-grad-hover-start) 0%,
+    var(--scs-grad-hover-end) 100%
+  );
+}
+
+.horizontal-scrollbar::-webkit-scrollbar-thumb:active {
+  background: linear-gradient(
+    to right,
+    var(--scs-grad-active-start) 0%,
+    var(--scs-grad-active-end) 100%
+  );
+}
+
+.horizontal-scrollbar::-webkit-scrollbar-corner {
+  background: var(--scs-track);
+}
+

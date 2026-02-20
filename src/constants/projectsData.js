@@ -1,6 +1,7 @@
 import SCCHero from "../assets/projects/street-cat/street-cat-clinic-case-study-hero.webp";
 import MMHero from "../assets/projects/meowmax/meowmax-case-study-hero.webp";
 import BIOHero from "../assets/projects/bio/bio-case-study-hero.webp";
+import LMSYCHero from "../assets/projects/lmsyc/lmsyc-case-study-hero.webp";
 import { Award, BarChart3, Clock, Rocket } from "lucide-react";
 
 // Street Cat Clinic Screenshots
@@ -34,6 +35,14 @@ import mmMob7 from "../assets/projects/meowmax/meowmax-confirm-release-all.webp"
 import mmMob8 from "../assets/projects/meowmax/meowmax-fully-booked.webp";
 import mmMob9 from "../assets/projects/meowmax/meowmax-appointments-history.webp";
 import mmMob10 from "../assets/projects/meowmax/meowmax-user-profile.webp";
+
+// Let Me Style Your Career Screenshots
+import lmsycBookingForm from "../assets/projects/lmsyc/lmsyc-booking-form.webp";
+import lmsycBookingSetup from "../assets/projects/lmsyc/lmsyc-booking-setup.webp";
+import lmsycFreeLeadMagnet from "../assets/projects/lmsyc/lmsyc-free-lead-magnet.webp";
+import lmsycMasterclassLeadMagnet from "../assets/projects/lmsyc/lmsyc-masterclass-lead-magnet.webp";
+import lmsycPopup from "../assets/projects/lmsyc/lmsyc-popup.webp";
+import lmsycBio from "../assets/projects/lmsyc/lmsyc-bio.webp";
 
 // Bio-Coatings Screenshots
 import BioHomepage from "../assets/projects/bio/bio-coatings-homepage.webp";
@@ -264,6 +273,45 @@ const mmMobileScreenshots = [
   },
 ];
 
+export const lmsycScreenshots = [
+  {
+    src: lmsycBookingForm,
+    alt: "Let Me Style Your Career 1:1 coaching booking form",
+    caption:
+      "Custom 1:1 booking experience built to move users from intent to paid session with minimal friction.",
+  },
+  {
+    src: lmsycBookingSetup,
+    alt: "SuperProfile 1:1 session setup dashboard for Let Me Style Your Career",
+    caption:
+      "Backend session configuration integrating scheduling, payment processing, and automated confirmations.",
+  },
+  {
+    src: lmsycFreeLeadMagnet,
+    alt: "FREE Fashion Career Guide lead capture funnel",
+    caption:
+      "Lead capture funnel for the free Fashion Career Guide, designed to convert traffic into segmented email subscribers.",
+  },
+  {
+    src: lmsycMasterclassLeadMagnet,
+    alt: "Masterclass waitlist lead capture funnel",
+    caption:
+      "Masterclass waitlist funnel structured to qualify prospects and nurture higher-intent leads.",
+  },
+  {
+    src: lmsycPopup,
+    alt: "10 percent off first booking promotional popup",
+    caption:
+      "Strategic promotional popup used to increase booking conversions and capture high-intent visitors.",
+  },
+  {
+    src: lmsycBio,
+    alt: "Meet the coach bio section for Let Me Style Your Career",
+    caption:
+      "Brand positioning section establishing authority, credibility, and trust to support premium pricing.",
+  },
+];
+
 export const bioCoatingsScreenshots = [
   {
     src: BioHomepage,
@@ -444,6 +492,58 @@ export const CASE_STUDIES = [
     href: "/projects?case=cat-solutions-305#featured",
   },
   {
+    key: "let-me-style-your-career",
+    title: "Let Me Style Your Career — Funnel & CRM Transformation",
+    subtitle:
+      "From fragmented forms and manual follow-ups to a streamlined, conversion-focused digital funnel",
+    heroImage: LMSYCHero,
+    gallery: lmsycScreenshots,
+    deviceType: "desktop",
+    context:
+    "Let Me Style Your Career began as a personal brand with no website, no booking system, and no structured funnel infrastructure. The goal was to build a fully functional digital ecosystem from the ground up that could capture leads, nurture prospects, and convert them into paid 1:1 coaching clients and masterclass participants.",
+    problems: [
+    "No website or centralized digital presence.",
+    "No lead capture system for the free guide or masterclass.",
+    "No structured 1:1 booking flow or payment pathway.",
+    "No CRM tagging or segmentation to track user intent.",
+    "Manual communication required for follow-ups and scheduling.",
+  ],
+    solution: [
+    "Designed and developed a brand-aligned WordPress website to serve as the digital foundation.",
+    "Built a complete funnel architecture including lead magnets, masterclass waitlist, and premium 1:1 booking flows.",
+    "Integrated SuperProfile for session scheduling, payment processing, and automated confirmations.",
+    "Implemented structured CRM tagging and segmentation for guide downloads, waitlist signups, and coaching inquiries.",
+    "Created automated follow-up sequences to nurture leads and reduce manual admin workload.",
+    "Developed promotional mechanisms including booking discount popups and strategic CTA placement.",
+  ],
+    metrics: [
+      { icon: BarChart3, label: "Inbound Leads", value: "+120%" },
+      { icon: Rocket, label: "Booking Completion Rate", value: "+30%" },
+      { icon: Clock, label: "Manual Admin Time", value: "-60%" },
+    ],
+    tech: [
+      "WordPress",
+      "Elementor",
+      "Fluent Forms Pro",
+      "SuperProfile",
+      "CRM Automation",
+      "Email Sequencing",
+      "Funnel Optimization",
+    ],
+    links: [
+      {
+        label: "Visit Let Me Style Your Career",
+        url: "https://letmestyleyourcareer.com",
+      },
+    ],
+    cta: {
+      label: "View full case study",
+      to: "/projects/let-me-style-your-career",
+    },
+    slug: "let-me-style-your-career",
+    href: "/projects?case=let-me-style-your-career#featured",
+  },
+  {
     key: "bio-coatings-blast-it-off",
     title: "Bio-Coatings & Blast-It-Off — Dual Website Ecosystem",
     subtitle: "Two brands, one cohesive digital identity",
@@ -510,7 +610,7 @@ export const OTHER_PROJECTS = [
     role: "WordPress Website Rebuild",
     summary:
       "Complete redesign and rebuild to modernize their online presence, strengthen credibility, and better showcase engineering services and certifications.",
-    url: "https://icongroupengineers.com/",
+    url: "https://icongroupusa.com/",
   },
   {
     title: "A & A Recreations",
