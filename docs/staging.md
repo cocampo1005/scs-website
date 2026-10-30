@@ -1,5 +1,9 @@
 # Hostinger staging setup
 
+> **Not in use.** Since 30 Oct 2026, releases go directly to production (see
+> `docs/deployment.md`). This guide is kept in case a staging site is needed
+> later.
+
 Steps marked **(you)** are done in hPanel. I can't access the hosting account.
 Do them in order. Each step says what to send back to me, if anything.
 

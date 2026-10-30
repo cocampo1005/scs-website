@@ -18,7 +18,8 @@ Marketing/portfolio site for Solid Code Solutions LLC (https://solidcodesolution
 - `npm run e2e` — Playwright against `vite preview` on port 4173, using the installed Chrome (`e2e/`)
 - `npm run check` — lint, test, test:php, build, e2e
 - `npm run build:release` — production build behind `scripts/check-release.mjs` (endpoint, `.htaccess` `/api` rules, locked server deps, no EmailJS)
-- `npm run package:release -- --target=staging|production --server-dir=<abs path>` — builds `release/site-*.zip`, `release/server-*.zip` and `release/htaccess.<target>` (see `docs/staging.md`)
+- `npm run package:release -- --server-dir=<abs path>` — builds `release/site-*.zip`, `release/server-*.zip` and `release/htaccess.production` (`--target=staging` also exists); releases go directly to production, see `docs/deployment.md`
+- `BASE_URL=https://solidcodesolutionsllc.com npx playwright test` — the e2e suite against the live site (contact tests are mocked; nothing is sent)
 
 ## Architecture
 

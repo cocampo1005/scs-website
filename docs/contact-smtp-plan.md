@@ -1,7 +1,8 @@
 # Contact form: replacing EmailJS with PHP + authenticated SMTP
 
 Status: **approved; implemented on branch `feat/smtp-contact`** (roadmap
-increment 1). Not yet verified on staging. No credentials are requested or
+increment 1). It ships directly to production (no staging site); see
+`docs/deployment.md`. No credentials are requested or
 stored in the repository.
 
 ### Implementation notes (where the code differs from the text below)

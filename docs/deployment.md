@@ -4,9 +4,20 @@ The site is a static build (`dist/`) served by Hostinger (Apache/LiteSpeed,
 `public_html`). Nothing deploys automatically. **Production releases need the
 owner's explicit approval.**
 
-The step-by-step Hostinger setup, the staging checklist and the release and
-rollback runbook are in `docs/staging.md`. The planned contact-form change is
-in `docs/contact-smtp-plan.md`.
+Releases go **directly to production** (decided 30 Oct 2026: low traffic, so
+no separate staging site). The safety net is the automated checks, a verified
+rollback copy, and a smoke test of the live site right after upload.
+`docs/staging.md` is kept for if a staging site is ever needed. The contact
+endpoint's design is in `docs/contact-smtp-plan.md`.
+
+Server layout:
+
+```
+/home/u772950047/domains/solidcodesolutionsllc.com/
+├── public_html/   web root (site archive)
+├── scs-server/    contact endpoint code, config.php, var/ (never web-served)
+└── rollback/      previous public_html as a zip (never web-served)
+```
 
 ## What production runs today
 
@@ -55,36 +66,47 @@ Needs Node, PHP 8.2+ and Composer locally. No `.env.local` values are needed.
    - `/about` loads and the SOLID exhibit can be completed;
    - a test message sent from `/contact` lands in `server/var/outbox/`.
      Locally nothing is emailed.
-4. **Package.** From a clean, tagged commit, run
-   `npm run package:release -- --target=staging --server-dir=<absolute path>`
-   (or `--target=production`). It produces the following in `release/`:
-   - `site-<commit>-<target>.zip`;
-   - `server-<commit>.zip`;
-   - `htaccess.<target>`;
+4. **Package.** From a clean commit, run
+   `npm run package:release -- --server-dir=/home/u772950047/domains/solidcodesolutionsllc.com/scs-server`.
+   It produces the following in `release/`:
+   - `site-<commit>-production.zip`: the contents of `public_html`, without `.htaccess`;
+   - `server-<commit>.zip`: the contents of `scs-server/`, without `config.php` or `var/`;
+   - `htaccess.production`: the repository rules, to merge with the server's file;
    - `SHA256SUMS`.
 
-   These are exactly what gets uploaded (`docs/staging.md` S4).
+## One-time server setup (contact endpoint)
 
-## Staging (recommended before the first release)
-
-Follow `docs/staging.md` S1–S5: the subdomain, password protection, PHP and
-the private `scs-server-staging` folder, then the upload of the packaged
-archives and the validation checklist. The Open Graph check needs the real
-domain, so do it right after release.
+1. **PHP.** In hPanel → Advanced → PHP Configuration, select PHP 8.3 and enable
+   `openssl`, `mbstring`, `pdo_sqlite` and `json`.
+2. **Mailbox.** Create `website@solidcodesolutionsllc.com` (the sending
+   mailbox). Keep its password only in a password manager.
+3. **Probe.** Upload `server/tools/hostinger-probe.php` to `public_html`
+   under an unguessable name, open it once, then delete it. It confirms the PHP
+   version and extensions, access to the private folder, SMTP reachability, and
+   whether the CDN hides the visitor IP (`client_ip_header`).
+4. **Server folder.** Extract `server-<commit>.zip` into `scs-server/`. Copy
+   `config.example.php` to `config.php` in File Manager and fill in the
+   mailbox password and a fresh `ip_salt`. Then set `config.php` to 600 and
+   `scs-server/` to 700. Credentials are typed only into the server copy.
 
 ## Release
 
-Follow `docs/staging.md` S0 (backup outside the web root, `.htaccess`
-capture) and S6 (release). In short:
+1. **Rollback copy.** In File Manager, compress `public_html` into
+   `rollback/public_html-<date>.zip` (outside the web root), then download
+   it. Check that the zip lists `index.html`, `assets/` and `.htaccess`.
+2. **`.htaccess`.** Merge `htaccess.production` with the server's current
+   file. Keep any host-added blocks (for example LiteSpeed cache or PHP
+   handler lines), and replace only the app's rewrite rules.
+3. **Upload.** Delete the old app files from `public_html` (`index.html`,
+   `assets/`, and any old images), but leave `.htaccess`, `.well-known/` and
+   host files. Then extract the site archive into `public_html` and save the
+   merged `.htaccess`.
+4. **Purge cache.** Purge the Hostinger CDN cache (hPanel → Performance → CDN).
+5. **Smoke test.** Run the checklist below, plus
+   `BASE_URL=https://solidcodesolutionsllc.com npx playwright test`. The
+   contact tests mock the endpoint, so this sends no email.
 
-1. **Back up.** Back up via hPanel → Files → Backups and download it. Never
-   leave an archive inside `public_html`.
-2. **Compare `.htaccess`.** Use the reviewed, merged configuration.
-3. **Upload.** Upload the site archive, extract it, and remove old hashed
-   assets.
-4. **Purge cache.** Purge the Hostinger CDN cache.
-
-## Validation checklist (staging and production)
+## Validation checklist (production)
 
 - [ ] `curl -s https://<host>/ | grep og:image` shows `/og-default.jpg`
 - [ ] `curl -sI https://<host>/robots.txt` returns `text/plain`
@@ -93,15 +115,19 @@ capture) and S6 (release). In short:
 - [ ] `/about`, `/projects?case=street-cat-clinic#featured` and `/contact#form` load directly
 - [ ] Hero: drag on desktop; drag and swipe-scroll on a real phone; "Place it for me"
 - [ ] SOLID exhibit: drag, keyboard buttons, reset
-- [ ] A contact form test message arrives with the phone number formatted
+- [ ] A contact form test message arrives with the phone number formatted;
+      From is `website@`, Reply-To is the sender, SPF and DKIM pass
+- [ ] `GET /api/contact` returns 405; `/api/other`, `/api/contact.php.bak`,
+      `/scs-server/config.php` and `/rollback/` return 404; `/.htaccess` returns 403
 - [ ] A Google Ads conversion fires once after a successful send (Tag Assistant)
 - [ ] LinkedIn Post Inspector and the Facebook Sharing Debugger show the new preview
 
 ## Rollback
 
-1. Upload the backup archive to the folder **above** `public_html`. Empty
-   `public_html`, extract the backup into it, then delete the uploaded
-   archive.
+1. In File Manager, empty `public_html` and extract
+   `rollback/public_html-<date>.zip` into it. This restores the previous
+   `.htaccess` too. `scs-server/` can stay: nothing reaches it without
+   `api/contact.php`.
 2. Purge the CDN cache, then check that `/` loads and shows the previous hero.
 
 The previous build is also reproducible from git: check out `f154762`, restore

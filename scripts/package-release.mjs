@@ -1,6 +1,9 @@
-// Builds the upload archives described in docs/staging.md (S4):
+// Builds the upload archives described in docs/deployment.md:
 //
-//   npm run package:release -- --target=staging --server-dir=/home/u…/domains/…/scs-server-staging
+//   npm run package:release -- --server-dir=/home/u…/domains/…/scs-server
+//
+// --target defaults to production; --target=staging (docs/staging.md) is kept
+// for a future staging site.
 //
 // Writes to release/:
 //   site-<commit>-<target>.zip    web root contents (no .htaccess; never overwrite the server's)
@@ -19,7 +22,7 @@ const work = join(out, "work");
 
 const { values: args } = parseArgs({
   options: {
-    target: { type: "string", default: "staging" },
+    target: { type: "string", default: "production" },
     "server-dir": { type: "string" },
   },
 });
@@ -101,7 +104,7 @@ const header =
   args.target === "staging"
     ? `# Staging rules: paste BELOW the "Password Protect Directories" lines; keep those.\n` +
       `<IfModule mod_headers.c>\n  Header always set X-Robots-Tag "noindex, nofollow"\n</IfModule>\n\n`
-    : `# Production base rules: merge with the reviewed production .htaccess (docs/staging.md S0, S6).\n\n`;
+    : `# Production base rules: merge with the reviewed production .htaccess (docs/deployment.md).\n\n`;
 writeFileSync(
   join(out, `htaccess.${args.target}`),
   `${header}# Private server folder for the contact endpoint (outside every document root)\n` +

@@ -2,12 +2,13 @@
 /**
  * One-off, read-only capability probe for the SMTP contact endpoint.
  *
- * Upload to the password-protected STAGING document root, open it once in the
- * browser, copy the output, then DELETE this file. It sends no email, needs no
- * credentials and writes only a temporary test file it removes again.
+ * Upload to public_html under an unguessable name (probe-<random>.php), open it
+ * once in the browser, copy the output, then DELETE this file. It sends no
+ * email, needs no credentials and writes only a temporary test file it removes
+ * again.
  *
  * Expected private folder: a sibling of the domain's public_html, e.g.
- *   /home/uXXXX/domains/solidcodesolutionsllc.com/scs-server-staging
+ *   /home/uXXXX/domains/solidcodesolutionsllc.com/scs-server
  */
 
 declare(strict_types=1);
@@ -44,8 +45,8 @@ $out[] = '== Private folder';
 $docRoot = realpath($_SERVER['DOCUMENT_ROOT'] ?? __DIR__) ?: __DIR__;
 $out[] = '     document root ' . $docRoot;
 $candidates = array_unique([
+    dirname($docRoot) . '/scs-server',
     dirname($docRoot) . '/scs-server-staging',
-    dirname($docRoot, 2) . '/scs-server-staging',
 ]);
 foreach ($candidates as $dir) {
     $inside = str_starts_with($dir . '/', rtrim($docRoot, '/') . '/');
@@ -74,6 +75,9 @@ foreach (['HTTP_X_FORWARDED_FOR', 'HTTP_X_REAL_IP', 'HTTP_CF_CONNECTING_IP', 'HT
         $out[] = "     present {$h} ({$hops} " . ($hops === 1 ? 'entry' : 'entries') . ')';
     }
 }
+$names = array_filter(array_keys($_SERVER), static fn ($k) => str_starts_with((string) $k, 'HTTP_'));
+sort($names);
+$out[] = '     request headers: ' . implode(' ', $names);
 $out[] = '     REMOTE_ADDR equals the right-most X-Forwarded-For entry: '
     . (isset($_SERVER['HTTP_X_FORWARDED_FOR'])
         ? (trim((string) array_slice(explode(',', (string) $_SERVER['HTTP_X_FORWARDED_FOR']), -1)[0]) === ($_SERVER['REMOTE_ADDR'] ?? '') ? 'yes' : 'no')
