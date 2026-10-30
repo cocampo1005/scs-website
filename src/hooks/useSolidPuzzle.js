@@ -53,7 +53,7 @@ export function useSolidPuzzle(total) {
 
 export function useMediaQuery(query) {
   const [matches, setMatches] = useState(
-    () => typeof window !== "undefined" && window.matchMedia(query).matches,
+    () => false, // read after mount so prerendered HTML matches the first render
   );
   useEffect(() => {
     const mq = window.matchMedia(query);

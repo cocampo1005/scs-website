@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { ChevronDown, ChevronUp, X } from "lucide-react";
 import GlowCard from "./GlowCard";
@@ -106,6 +106,9 @@ function SheetDetail({ detail }) {
 export function SolidInfoSheet({ piece, show, minimized, onMinimize, onExpand, onClose }) {
   const swipe = useRef(null);
   const visible = show && !!piece;
+  // Portal target only exists in the browser (not while prerendering)
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
 
   const onPointerDown = (e) => {
     swipe.current = { y: e.clientY, id: e.pointerId };
@@ -119,6 +122,7 @@ export function SolidInfoSheet({ piece, show, minimized, onMinimize, onExpand, o
     else if (dy < -36 && minimized) onExpand();
   };
 
+  if (!mounted) return null;
   return createPortal(
     <>
       {/* Announce each newly opened piece, whatever state the sheet is in */}

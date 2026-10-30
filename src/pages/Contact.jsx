@@ -3,7 +3,9 @@ import { useSearchParams } from "react-router-dom";
 import { Mail, Send } from "lucide-react";
 import { WhatsappLogoIcon } from "@phosphor-icons/react";
 import { motion } from "framer-motion";
-import PhoneInput from "react-phone-input-2";
+import PhoneInputModule from "react-phone-input-2";
+// CommonJS package: the component is on .default when imported during prerendering
+const PhoneInput = PhoneInputModule.default ?? PhoneInputModule;
 import emailjs from "@emailjs/browser";
 import "react-phone-input-2/lib/style.css";
 import "../styles/phone-input.css";

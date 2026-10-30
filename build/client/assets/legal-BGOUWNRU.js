@@ -1,0 +1,1 @@
+const o="2026-10-30",t="2026-02-20",e="christian@solidcodesolutionsllc.com";function a(n){return new Date(`${n}T12:00:00Z`).toLocaleDateString("en-US",{year:"numeric",month:"long",day:"numeric",timeZone:"UTC"})}export{e as C,o as P,t as T,a as f};

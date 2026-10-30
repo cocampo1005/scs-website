@@ -2,7 +2,10 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { hasWebGL } from "../three/webgl";
 
 export function useHeroPuzzle() {
-  const [webgl] = useState(hasWebGL);
+  // null until checked after mount, so the prerendered HTML and the first
+  // client render match
+  const [webgl, setWebgl] = useState(null);
+  useEffect(() => setWebgl(hasWebGL()), []);
   const [failed, setFailed] = useState(false);
   const [ready, setReady] = useState(false);
   const [solved, setSolved] = useState(false);
@@ -59,12 +62,14 @@ export function useHeroPuzzle() {
   // and then reports solved
   const skipPuzzle = useCallback(() => setSkipped(true), []);
 
-  const sceneAvailable = webgl && !failed;
+  const sceneAvailable = webgl === true && !failed;
+  const showPoster = webgl === false || failed;
 
   return {
     containerRef,
     sceneAvailable,
-    ready: ready || !sceneAvailable,
+    showPoster,
+    ready: ready || showPoster,
     solved,
     skipped,
     active: inView && pageVisible,

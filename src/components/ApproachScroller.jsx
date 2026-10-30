@@ -37,7 +37,7 @@ export default function ApproachScroller() {
 
   // --- Media query to know which layout is live ---
   const [isDesktop, setIsDesktop] = useState(
-    () => window.matchMedia("(min-width: 768px)").matches
+    () => typeof window !== "undefined" && window.matchMedia("(min-width: 768px)").matches
   );
   useEffect(() => {
     const mql = window.matchMedia("(min-width: 768px)");

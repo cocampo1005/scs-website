@@ -29,7 +29,8 @@ export default function SolidPuzzle() {
   const { attempt, seed, placedIds, activeInfoId, placedCount, solved } = puzzle;
   const activePiece = activeInfoId ? SOLID_PIECE_BY_ID[activeInfoId] : null;
 
-  const [webglSupported] = useState(hasWebGL);
+  const [webglSupported, setWebglSupported] = useState(true);
+  useEffect(() => setWebglSupported(hasWebGL()), []);
   // A lost context (GPU reset, driver issue) also falls back to the text version
   const [contextLost, setContextLost] = useState(false);
   const handleContextLost = useCallback(() => setContextLost(true), []);

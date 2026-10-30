@@ -53,6 +53,7 @@ export default function HeroSection() {
   const {
     containerRef,
     sceneAvailable,
+    showPoster,
     ready,
     solved,
     skipped,
@@ -123,13 +124,12 @@ export default function HeroSection() {
         ref={stageRef}
         className="pointer-events-none relative z-0 mt-4 h-[clamp(300px,46svh,480px)] w-full max-w-3xl"
       >
-        {!sceneAvailable && <PuzzlePoster />}
-        {sceneAvailable && <CubeLoader ready={ready} />}
+        {showPoster ? <PuzzlePoster /> : <CubeLoader ready={ready} />}
       </div>
 
       {/* Hint and touch/keyboard alternative before; the story beat after */}
       <div className="relative z-10 flex min-h-12 flex-wrap items-center justify-center gap-x-4 gap-y-2 text-center">
-        {sceneAvailable && !solved ? (
+        {!showPoster && !solved ? (
           <>
             <p className="text-sm text-gray-light md:text-base">
               Can’t find software that fits? Drag the missing piece into place.
