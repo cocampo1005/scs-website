@@ -1,24 +1,17 @@
-import { lazy, Suspense } from "react";
-import { ArrowBigDown } from "lucide-react";
 import Reveal, { Stagger } from "../components/Reveal";
 import GlowCard from "../components/GlowCard";
 import CTASection from "../components/CTASection";
-import CubeLoader from "../components/CubeLoader";
 import MissionVisionTabs from "../components/MissionVisionTabs";
 import ApproachScroller from "../components/ApproachScroller";
 import ValuesGrid from "../components/ValuesGrid";
-import { useSplineSimple } from "../hooks/useSplineSimple";
 import { CountOnReveal } from "../utils/Counter";
 import heroImg from "../assets/images/stacked-blocks.webp";
 import fitImg from "../assets/images/hex-tesselation-fit.webp";
 import SEO from "../components/SEO";
 import JsonLd from "../components/JsonLd";
-
-const Spline = lazy(() => import("@splinetool/react-spline"));
+import SolidPuzzle from "../components/SolidPuzzle";
 
 export default function About() {
-  const { ready, handleLoad, handleWheelCapture } = useSplineSimple();
-
   return (
     <>
       <SEO
@@ -288,124 +281,10 @@ export default function About() {
             they keep products flexible and dependable as you grow.
           </Reveal>
 
-          {/* Instruction text */}
-          <div
-            className="animate-float relative flex flex-col items-center gap-3"
-            id="solid-instructions"
-          >
-            <p className="text-sm md:text-base font-medium text-accent-fuchsia/90 tracking-wide text-center">
-              <span className="hidden md:inline">Hover over the pieces</span>
-              <span className="inline md:hidden">Tap and hold the pieces</span>
-            </p>
-            <ArrowBigDown className="w-7 h-7 md:w-8 md:h-8 text-accent-fuchsia animate-bob drop-shadow-[0_0_12px_rgba(216,70,239,0.45)] pointer-events-none" />
-          </div>
-
-          {/* Spline scene — hidden from assistive tech since we provide a full text alt */}
+          {/* Interactive SOLID wall (React Three Fiber) */}
           <Reveal delay={100}>
-            <div
-              className="relative w-full h-[400px] md:min-h-[710px] select-none touch-pan-y"
-              aria-hidden="true"
-              onWheelCapture={handleWheelCapture}
-            >
-              <Suspense fallback={null}>
-                <Spline
-                  scene="https://prod.spline.design/mcVwR6VPMi2iZIXS/scene.splinecode"
-                  onLoad={handleLoad}
-                  renderOnDemand
-                />
-              </Suspense>
-              <CubeLoader ready={ready} />
-            </div>
+            <SolidPuzzle />
           </Reveal>
-
-          {/* Accessible text alternative (visible toggle + SR content) */}
-          <details className="mx-auto max-w-3xl mb-6 rounded-xl border border-white/10 bg-white/5 p-4 open:bg-white/7">
-            <summary className="cursor-pointer select-none text-sm md:text-base font-semibold text-white/70 hover:text-white/100 transition-colors duration-300 ease-in-out">
-              Accessible text version of the SOLID pieces
-              <span className="sr-only">
-                {" "}
-                — expands to reveal descriptions for screen readers and keyboard
-                users
-              </span>
-            </summary>
-
-            {/* Semantic definitions list */}
-            <dl
-              className="mt-3 space-y-3 text-sm text-gray-200"
-              id="solid-a11y"
-            >
-              <div>
-                <dt className="font-semibold text-white">
-                  S — Single Responsibility
-                </dt>
-                <dd>
-                  Each part has one clear job. Simpler updates and fewer issues.
-                </dd>
-              </div>
-              <div>
-                <dt className="font-semibold text-white">O — Open / Closed</dt>
-                <dd>
-                  Add new ideas without breaking what already works. Fast, safe
-                  progress.
-                </dd>
-              </div>
-              <div>
-                <dt className="font-semibold text-white">
-                  L — Liskov Substitution
-                </dt>
-                <dd>
-                  Pieces swap in cleanly. Things stay consistent and dependable.
-                </dd>
-              </div>
-              <div>
-                <dt className="font-semibold text-white">
-                  I — Interface Segregation
-                </dt>
-                <dd>
-                  Only what’s needed — no clutter. Cleaner connections, quicker
-                  builds.
-                </dd>
-              </div>
-              <div>
-                <dt className="font-semibold text-white">
-                  D — Dependency Inversion
-                </dt>
-                <dd>
-                  Big-picture logic is separate from small details. Smooth,
-                  stress-free upgrades.
-                </dd>
-              </div>
-            </dl>
-          </details>
-
-          {/* No-JS fallback */}
-          <noscript>
-            <div className="mx-auto max-w-3xl mt-6 text-sm text-gray-200">
-              <p>Interactive 3D is disabled. Here’s the SOLID summary:</p>
-              <ul className="list-disc pl-5 mt-2 space-y-1">
-                <li>
-                  <strong>S</strong> — Each part has one clear job. Simpler
-                  updates, fewer issues.
-                </li>
-                <li>
-                  <strong>O</strong> — Add new ideas safely without breaking
-                  what works.
-                </li>
-                <li>
-                  <strong>L</strong> — Pieces swap cleanly. Consistent and
-                  dependable.
-                </li>
-                <li>
-                  <strong>I</strong> — Only what’s needed. Clean connections,
-                  quick builds.
-                </li>
-                <li>
-                  <strong>D</strong> — Strong architecture; details can change
-                  freely.
-                </li>
-              </ul>
-            </div>
-          </noscript>
         </section>
 
         {/* Our Approach with scroll follower highlight */}

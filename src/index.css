@@ -102,6 +102,28 @@ body {
   animation: float 3s ease-in-out infinite;
 }
 
+/* SOLID puzzle info panel swap */
+@keyframes panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-panel-in {
+  animation: panel-in 300ms ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-panel-in {
+    animation: none;
+  }
+}
+
 /* Custom Scroll Bar for various Browsers */
 
 :root {

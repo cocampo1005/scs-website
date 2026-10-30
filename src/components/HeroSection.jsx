@@ -1,29 +1,42 @@
 import { lazy, Suspense } from "react";
 import { Link } from "react-router-dom";
-const Spline = lazy(() => import("@splinetool/react-spline"));
-import { useSplineHero } from "../hooks/useSplineHero";
+import { useReducedMotion } from "framer-motion";
+const HeroPuzzleCanvas = lazy(() => import("./hero3d/HeroPuzzleCanvas"));
+import { useHeroPuzzle } from "../hooks/useHeroPuzzle";
 import Reveal, { Stagger } from "../components/Reveal";
 import CubeLoader from "./CubeLoader";
 
 export default function HeroSection() {
-  const { containerRef, ready, showUI, handleLoad, skipPuzzle } =
-    useSplineHero();
+  const {
+    containerRef,
+    ready,
+    showUI,
+    skipped,
+    active,
+    handleReady,
+    handleSolved,
+    skipPuzzle,
+  } = useHeroPuzzle();
+  const reducedMotion = useReducedMotion();
 
   return (
     <section className="relative h-[100svh] md:min-h-[800px] overflow-hidden flex flex-col items-center justify-start pt-[10svh] md:pt-[clamp(10vh,18vh,24vh)]">
-      {/* Spline background */}
+      {/* 3D puzzle background */}
       <div className="absolute inset-0" aria-hidden="true">
         <div
           ref={containerRef}
-          className={`h-full w-full spline-wrap overscroll-contain select-none ${
+          className={`h-full w-full overscroll-contain select-none ${
             showUI ? "touch-auto" : "touch-none"
           }`}
         >
           <Suspense fallback={null}>
-            <Spline
-              scene="https://prod.spline.design/7sWk3IF3iLADtCBs/scene.splinecode"
-              onLoad={handleLoad}
-              renderOnDemand
+            <HeroPuzzleCanvas
+              active={active}
+              continuous={!reducedMotion}
+              skipped={skipped}
+              reducedMotion={!!reducedMotion}
+              onSolved={handleSolved}
+              onReady={handleReady}
             />
           </Suspense>
           <CubeLoader ready={ready} />
