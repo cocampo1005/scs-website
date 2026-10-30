@@ -1,5 +1,6 @@
 import JsonLd from "../components/JsonLd";
 import SEO from "../components/SEO";
+import { TERMS_LAST_UPDATED, formatLegalDate } from "../constants/legal";
 
 export default function Terms() {
   return (
@@ -8,7 +9,6 @@ export default function Terms() {
         title="Terms of Service"
         description="Terms and conditions for using the Solid Code Solutions website."
         path="/terms"
-        image="/assets/og/og-legal.webp"
       >
         <JsonLd
           data={{
@@ -16,7 +16,7 @@ export default function Terms() {
             "@type": "WebPage",
             name: "Terms of Service",
             url: "https://solidcodesolutionsllc.com/terms",
-            dateModified: new Date().toISOString(),
+            dateModified: TERMS_LAST_UPDATED,
           }}
         />
         <JsonLd
@@ -101,7 +101,10 @@ export default function Terms() {
           </p>
 
           <p className="mt-12 text-sm text-gray-400">
-            Last updated: {new Date().toLocaleDateString()}
+            Last updated:{" "}
+            <time dateTime={TERMS_LAST_UPDATED}>
+              {formatLegalDate(TERMS_LAST_UPDATED)}
+            </time>
           </p>
         </section>
       </div>

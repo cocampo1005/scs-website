@@ -1,14 +1,37 @@
 import JsonLd from "../components/JsonLd";
 import SEO from "../components/SEO";
+import {
+  CONTACT_EMAIL,
+  PRIVACY_LAST_UPDATED,
+  formatLegalDate,
+} from "../constants/legal";
+
+const H2 = "text-xl font-semibold mt-10 mb-3 text-fuchsia-300";
+const LINK = "text-fuchsia-300 underline hover:text-fuchsia-200";
+
+function Email() {
+  return (
+    <a href={`mailto:${CONTACT_EMAIL}`} className={LINK}>
+      {CONTACT_EMAIL}
+    </a>
+  );
+}
+
+function External({ href, children }) {
+  return (
+    <a href={href} target="_blank" rel="noopener noreferrer" className={LINK}>
+      {children}
+    </a>
+  );
+}
 
 export default function Privacy() {
   return (
     <>
       <SEO
         title="Privacy Policy"
-        description="How Solid Code Solutions collects and uses information, your rights, and how to contact us."
+        description="What information the Solid Code Solutions website collects, which services process it, and how to reach us about it."
         path="/privacy"
-        image="/assets/og/og-legal.webp"
       >
         <JsonLd
           data={{
@@ -16,7 +39,7 @@ export default function Privacy() {
             "@type": "WebPage",
             name: "Privacy Policy",
             url: "https://solidcodesolutionsllc.com/privacy",
-            dateModified: new Date().toISOString(),
+            dateModified: PRIVACY_LAST_UPDATED,
           }}
         />
         <JsonLd
@@ -42,51 +65,93 @@ export default function Privacy() {
       </SEO>
 
       <div className="min-h-screen">
-        <section className="max-w-4xl mx-auto px-6 pb-20 pt-20 md:pt-30 text-gray-200">
-          <h1 className="text-3xl md:text-4xl font-bold mb-6 bg-gradient-to-r from-fuchsia-300 to-purple-300 bg-clip-text text-transparent">
+        <article className="max-w-3xl mx-auto px-6 pb-20 pt-28 md:pt-36 text-gray-200 leading-relaxed">
+          <h1 className="text-3xl md:text-4xl font-bold mb-3 bg-gradient-to-r from-fuchsia-300 to-purple-300 bg-clip-text text-transparent">
             Privacy Policy
           </h1>
-          <p className="mb-4">
-            Solid Code Solutions respects your privacy. This website is
-            primarily an informational portfolio and does not collect personal
-            data such as names, emails, or payment details.
+          <p className="text-sm text-gray-400">
+            Last updated:{" "}
+            <time dateTime={PRIVACY_LAST_UPDATED}>
+              {formatLegalDate(PRIVACY_LAST_UPDATED)}
+            </time>
           </p>
-          <h2 className="text-xl font-semibold mt-8 mb-3 text-fuchsia-300">
-            Information We Collect
-          </h2>
-          <p className="mb-4">
-            We do not actively collect personal information. Any data shared
-            through the contact form (such as your name or email) is used solely
-            for the purpose of responding to your inquiry and is not stored,
-            sold, or shared with third parties.
+
+          <p className="mt-6">
+            This policy explains what information Solid Code Solutions LLC
+            (“we”, “us”) collects through solidcodesolutionsllc.com, which
+            services handle it, and the choices you have. Questions can be sent
+            to <Email />.
           </p>
-          <h2 className="text-xl font-semibold mt-8 mb-3 text-fuchsia-300">
-            Cookies & Analytics
-          </h2>
-          <p className="mb-4">
-            We may use basic website analytics (such as Google Analytics) to
-            understand general site traffic. These tools collect anonymized,
-            non-personally identifiable information like page views or browser
-            type.
+
+          <h2 className={H2}>Information you send us</h2>
+          <p>
+            When you use the contact form, we collect the name, email address
+            and message you enter, and a phone or WhatsApp number if you choose
+            to give one. The form is delivered to our inbox through{" "}
+            <External href="https://www.emailjs.com/legal/privacy-policy/">EmailJS</External>,
+            an email delivery service that processes the message on our behalf.
+            If you email us or message us on WhatsApp directly, we receive the
+            details you include there.
           </p>
-          <h2 className="text-xl font-semibold mt-8 mb-3 text-fuchsia-300">
-            Your Rights
-          </h2>
-          <p className="mb-4">
-            If you contact us and later wish to have your information deleted,
-            you can request this at any time by emailing{" "}
-            <a
-              href="mailto:christian@solidcodesolutionsllc.com"
-              className="text-fuchsia-300 underline hover:text-fuchsia-200"
-            >
-              christian@solidcodesolutionsllc.com
-            </a>
-            .
+          <p className="mt-3">
+            We use this information only to reply to you and to discuss or
+            deliver the work you ask about. We do not sell it or share it for
+            others’ marketing. We keep correspondence for as long as it is
+            needed for that purpose and for our ordinary business records.
           </p>
-          <p className="mt-12 text-sm text-gray-400">
-            Last updated: {new Date().toLocaleDateString()}
+
+          <h2 className={H2}>Advertising measurement (Google Ads)</h2>
+          <p>
+            Every page loads Google’s tag (gtag.js) for Google Ads conversion
+            measurement. Google may set cookies and receive information such as
+            your IP address, browser and device details, and the pages you
+            visit. When you send the contact form, the tag records a conversion
+            so we can see which ads lead to inquiries; the content of your
+            message is not sent to Google. Google’s use of this data is
+            described in{" "}
+            <External href="https://policies.google.com/technologies/partner-sites">
+              How Google uses information from sites that use its services
+            </External>
+            . You can limit ad personalization in{" "}
+            <External href="https://myadcenter.google.com/">My Ad Center</External>{" "}
+            and block cookies in your browser settings.
           </p>
-        </section>
+
+          <h2 className={H2}>Other services the site relies on</h2>
+          <ul className="list-disc pl-6 space-y-2">
+            <li>
+              <strong>Google Fonts</strong>: typefaces load from Google’s
+              servers, which receive your IP address and browser details.
+            </li>
+            <li>
+              <strong>Hosting</strong>: the site is hosted by Hostinger, whose
+              servers keep standard access logs (such as IP address, time and
+              page requested) for security and operation.
+            </li>
+            <li>
+              <strong>External links</strong>: links to WhatsApp, LinkedIn,
+              Instagram, Facebook, X and client websites take you to services
+              with their own privacy policies.
+            </li>
+          </ul>
+          <p className="mt-3">
+            The site itself does not use analytics beyond the Google tag above
+            and does not store information in your browser’s local storage.
+          </p>
+
+          <h2 className={H2}>Your choices</h2>
+          <p>
+            You can ask us what information we hold about you, ask us to correct
+            or delete it, or withdraw from further contact, by emailing{" "}
+            <Email />.
+          </p>
+
+          <h2 className={H2}>Changes</h2>
+          <p>
+            If this policy changes, we will update this page and the date at
+            the top.
+          </p>
+        </article>
       </div>
     </>
   );

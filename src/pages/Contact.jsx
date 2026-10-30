@@ -13,6 +13,27 @@ import heroImg from "../assets/images/contact-beam.webp";
 import { useScrollToHash } from "../hooks/useScrollToHash";
 import SEO from "../components/SEO";
 import JsonLd from "../components/JsonLd";
+import { CASE_STUDIES } from "../constants/projectsData";
+import { validateContact } from "../utils/contactValidation";
+
+const EMPTY_FORM = {
+  name: "",
+  email: "",
+  message: "",
+  website: "", // honeypot
+  phoneDigits: "", // full international number, digits only
+  phoneDial: "",
+  phoneDisplay: "", // formatted for the email, e.g. +44 7700 900123
+};
+
+// Titles for "Start similar" links that arrive without one
+const TITLE_BY_KEY = Object.fromEntries(CASE_STUDIES.map((c) => [c.key, c.title]));
+
+// Google Ads conversion (see /privacy)
+const ADS_SEND_TO = "AW-17675252735/cPPICNvM37QbEP_nm-xB";
+function fireAdsLead() {
+  window.gtag?.("event", "conversion", { send_to: ADS_SEND_TO });
+}
 
 export default function Contact() {
   const [searchParams] = useSearchParams();
@@ -20,30 +41,7 @@ export default function Contact() {
   const [errors, setErrors] = useState({});
   const [lastSentAt, setLastSentAt] = useState(0);
   const [openIdx, setOpenIdx] = useState(0);
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    phoneRaw: "",
-    phoneDial: "",
-    phoneLocal: "",
-    message: "",
-    website: "",
-  });
-
-  // Google Conversion Tracking
-  const ADS_SEND_TO = "AW-17675252735/cPPICNvM37QbEP_nm-xB";
-  function fireAdsLead() {
-    if (window.gtag) {
-      window.gtag("event", "conversion", { send_to: ADS_SEND_TO });
-    }
-  }
-
-  const TITLE_BY_KEY = {
-    "cat-solutions-305": "MeowMax — Appointment Scheduler",
-    "street-cat-clinic": "Street Cat Clinic — Records Platform",
-    "bio-coatings-blast-it-off": "Bio-Coatings & Blast-It-Off — Dual Website",
-  };
+  const [formData, setFormData] = useState(EMPTY_FORM);
 
   useScrollToHash(150, "nav");
 
@@ -63,35 +61,9 @@ export default function Contact() {
       ...s,
       message: s.message?.trim() ? s.message : seed,
     }));
-  }, [searchParams, setFormData]);
+  }, [searchParams]);
 
   const formRef = useRef(null);
-
-  const onlyDigits = (s = "") => s.replace(/\D/g, "");
-
-  function isEmail(v = "") {
-    // simple, robust email check for UI (server still enforces)
-    return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim());
-  }
-
-  function validate(form) {
-    const errs = {};
-    if (!form.name || form.name.trim().length < 2)
-      errs.name = "Please enter your name.";
-    if (!form.email || !isEmail(form.email))
-      errs.email = "Enter a valid email address.";
-    if (!form.message || form.message.trim().length < 10)
-      errs.message = "Tell us a bit more — at least 10 characters.";
-
-    // phone is optional — validate only if local digits exist
-    if (form.phoneLocal) {
-      if (form.phoneLocal.length !== 10) {
-        errs.phone = "Please enter a 10-digit local number.";
-      }
-    }
-
-    return errs;
-  }
 
   function handleChange(e) {
     const { name, value } = e.target;
@@ -117,40 +89,12 @@ export default function Contact() {
       return;
     }
 
-    // --- PHONE LOGIC ---
-    const localDigits = formData.phoneLocal?.trim() || "";
-    const dial = formData.phoneDial?.trim() || "";
-    let humanPhone = "";
-    let whatsAppNumber = "";
-
-    if (localDigits) {
-      const cleanLocal = localDigits.replace(/\D/g, ""); // digits only
-      if (cleanLocal.length !== 10) {
-        setErrors({ phone: "Please enter a 10-digit local number." });
-        setStatus({
-          sending: false,
-          ok: false,
-          err: "Please fix the highlighted fields.",
-        });
-        return;
-      }
-
-      // Build WhatsApp raw version (no +)
-      whatsAppNumber = `${dial}${cleanLocal}`;
-
-      // Build human-readable version like +1 (954) 559-2944
-      const area = cleanLocal.slice(0, 3);
-      const prefix = cleanLocal.slice(3, 6);
-      const line = cleanLocal.slice(6);
-      humanPhone = `+${dial} (${area}) ${prefix}-${line}`;
-    }
-
-    // --- NORMAL VALIDATION ---
-    const v = {
-      ...formData,
-      phone: humanPhone,
-    };
-    const errs = validate(v);
+    const errs = validateContact({
+      name: formData.name,
+      email: formData.email,
+      message: formData.message,
+      phone: { digits: formData.phoneDigits, dialCode: formData.phoneDial },
+    });
     if (Object.keys(errs).length) {
       setErrors(errs);
       setStatus({
@@ -161,6 +105,8 @@ export default function Contact() {
       return;
     }
 
+    const hasPhone = formData.phoneDigits && formData.phoneDigits !== formData.phoneDial;
+
     try {
       setStatus({ sending: true, ok: false, err: "" });
 
@@ -169,11 +115,11 @@ export default function Contact() {
       const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
 
       const templateParams = {
-        name: v.name.trim(),
-        email: v.email.trim(),
-        phone: humanPhone || "—",
-        whatsappNumber: whatsAppNumber || "",
-        message: v.message.trim(),
+        name: formData.name.trim(),
+        email: formData.email.trim(),
+        phone: hasPhone ? formData.phoneDisplay : "—",
+        whatsappNumber: hasPhone ? formData.phoneDigits : "",
+        message: formData.message.trim(),
         submitted_at: new Date().toLocaleString(),
       };
 
@@ -191,37 +137,15 @@ export default function Contact() {
       setLastSentAt(Date.now());
       fireAdsLead();
       formRef.current?.reset();
-      setFormData({
-        name: "",
-        email: "",
-        phone: "",
-        phoneRaw: "",
-        phoneDial: "",
-        phoneLocal: "",
-        message: "",
-        website: "",
-      });
+      setFormData(EMPTY_FORM);
     } catch (err) {
       let msg =
         "Couldn't send the message right now. Please try again or email us directly.";
       const code = err?.status || err?.code || err?.message;
-
-      if (code === 412)
-        msg =
-          "Email service isn't fully authorized. Try the email button while we fix it.";
       if (code === 429)
         msg = "Too many attempts. Please wait a moment and try again.";
       if (code === "timeout")
         msg = "Network seems slow. Please try again in a moment.";
-      if (
-        String(err?.text || "")
-          .toLowerCase()
-          .includes("invalid")
-      ) {
-        msg =
-          "The email service configuration looks invalid. Use the email button for now.";
-      }
-
       setStatus({ sending: false, ok: false, err: msg });
     }
   }
@@ -255,7 +179,6 @@ export default function Contact() {
         title="Contact"
         description="Start a project or ask a question. Reach Solid Code Solutions by email or WhatsApp and we will respond quickly."
         path="/contact"
-        image="/assets/og/og-default.webp"
       >
         <JsonLd
           data={{
@@ -306,7 +229,7 @@ export default function Contact() {
         {/* Hero with CTA style background */}
         <section
           className="relative overflow-hidden py-40 md:py-50 px-6 bg-primary-dark-purple bg-center bg-cover"
-          aria-labelledby="about-hero"
+          aria-labelledby="contact-hero"
           style={{ backgroundImage: `url(${heroImg})` }}
         >
           <div
@@ -326,7 +249,7 @@ export default function Contact() {
             <Stagger>
               <Reveal
                 as="h1"
-                id="about-hero"
+                id="contact-hero"
                 className="font-logo text-5xl md:text-6xl font-bold mb-4 bg-gradient-to-r from-accent-fuchsia to-accent-purple bg-clip-text text-transparent"
               >
                 Let's Build Something Solid
@@ -371,9 +294,6 @@ export default function Contact() {
                         >
                           christian@solidcodesolutionsllc.com
                         </a>
-                        <p className="text-xs text-white/60 mt-2">
-                          Avg response ~24 hrs
-                        </p>
                       </div>
                     </div>
                   </GlowCard>
@@ -487,28 +407,23 @@ export default function Contact() {
                     <Field label="Phone" full>
                       <PhoneInput
                         country="us"
-                        value={formData.phoneRaw}
-                        onChange={(value, country) => {
-                          const digits = onlyDigits(value); // e.g. "17021234567"
-                          const dial = country?.dialCode || ""; // e.g. "1"
-                          const local = digits.startsWith(dial)
-                            ? digits.slice(dial.length)
-                            : digits; // fallback if user edits mid-string
-
-                          // Build E.164 (+country + local) ONLY if user actually typed local digits
-                          const combined = local ? `+${dial}${local}` : "";
-
+                        value={formData.phoneDigits}
+                        onChange={(value, country, _event, formatted) => {
                           setFormData((prev) => ({
                             ...prev,
-                            phoneRaw: value,
-                            phoneDial: dial,
-                            phoneLocal: local,
-                            phone: combined, // keep your readable +... string for EmailJS
+                            phoneDigits: value,
+                            phoneDial: country?.dialCode || "",
+                            phoneDisplay: formatted,
                           }));
                         }}
                         enableSearch
                         disableDropdown={false}
-                        inputProps={{ name: "phone", autoComplete: "tel" }}
+                        inputProps={{
+                          name: "phone",
+                          autoComplete: "tel",
+                          "aria-invalid": !!errors.phone,
+                          "aria-describedby": errors.phone ? "err-phone" : undefined,
+                        }}
                         containerClass="scs-phone w-full"
                         inputClass="scs-phone__input !w-full !bg-white/5 !text-white !placeholder-gray-500 !py-3 !pl-[4.5rem] !pr-4 !rounded-r-lg !border !border-purple-500/30 focus:!border-fuchsia-500 focus:!ring-2 focus:!ring-fuchsia-500/20 !transition-all"
                         buttonClass="scs-phone__btn !rounded-l-lg !border !border-purple-500/30"
@@ -623,31 +538,32 @@ export default function Contact() {
                 return (
                   <div key={idx} className="relative">
                     <Reveal y={8}>
-                      <GlowCard
-                        className="p-5 md:p-6 cursor-pointer select-none transition-colors hover:bg-white/5"
-                        onClick={() => setOpenIdx(open ? null : idx)}
-                        role="button"
-                        aria-expanded={open}
-                        tabIndex={0}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter" || e.key === " ") {
-                            e.preventDefault();
-                            setOpenIdx(open ? null : idx);
-                          }
-                        }}
-                      >
-                        <div className="flex items-center justify-between gap-4">
-                          <p className="font-semibold text-white">{item.q}</p>
-                          <span
-                            className={`text-2xl transition-transform duration-300 ${
-                              open ? "rotate-45" : ""
-                            }`}
-                            aria-hidden
+                      <GlowCard className="p-5 md:p-6 transition-colors hover:bg-white/5">
+                        <h3>
+                          <button
+                            type="button"
+                            id={`faq-q-${idx}`}
+                            aria-expanded={open}
+                            aria-controls={`faq-a-${idx}`}
+                            onClick={() => setOpenIdx(open ? null : idx)}
+                            className="flex w-full cursor-pointer items-center justify-between gap-4 rounded text-left font-semibold text-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent-fuchsia"
                           >
-                            +
-                          </span>
-                        </div>
+                            {item.q}
+                            <span
+                              className={`text-2xl transition-transform duration-300 ${
+                                open ? "rotate-45" : ""
+                              }`}
+                              aria-hidden="true"
+                            >
+                              +
+                            </span>
+                          </button>
+                        </h3>
                         <div
+                          id={`faq-a-${idx}`}
+                          role="region"
+                          aria-labelledby={`faq-q-${idx}`}
+                          inert={!open}
                           className={`grid transition-[grid-template-rows] duration-300 ease-out ${
                             open ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
                           }`}
