@@ -8,8 +8,8 @@ import sccScreenshot1 from "../assets/projects/street-cat/street-cat-clinic-new-
 import sccScreenshot2 from "../assets/projects/street-cat/street-cat-clinic-edit-record-sanitized.webp";
 import sccScreenshot3 from "../assets/projects/street-cat/street-cat-clinic-settings-chart.webp";
 import sccScreenshot4 from "../assets/projects/street-cat/street-cat-clinic-settings-options.webp";
-import sccScreenshot5 from "../assets/projects/street-cat/street-cat-clinic-trappers-list.webp";
-import sccScreenshot6 from "../assets/projects/street-cat/street-cat-clinic-add-new-trapper.webp";
+import sccScreenshot5 from "../assets/projects/street-cat/street-cat-clinic-trappers-list-sanitized.webp";
+import sccScreenshot6 from "../assets/projects/street-cat/street-cat-clinic-add-new-trapper-sanitized.webp";
 import sccScreenshot7 from "../assets/projects/street-cat/street-cat-clinic-forms-filtered.webp";
 import sccScreenshot8 from "../assets/projects/street-cat/street-cat-clinic-forms-page.webp";
 import sccScreenshot9 from "../assets/projects/street-cat/street-cat-clinic-profile-page.webp";

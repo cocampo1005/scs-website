@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 import { CASE_STUDIES, OTHER_PROJECTS } from "../constants/projectsData";
@@ -38,8 +38,9 @@ describe("case studies", () => {
 });
 
 describe("screenshot privacy", () => {
-  // These originals show third parties' names or identifiers; only their
-  // "-sanitized" copies may ship (see docs/content-review.md).
+  // These originals show (or may show) third parties' names or identifiers.
+  // They are kept outside the repository; only "-sanitized" copies are tracked
+  // (see docs/content-review.md).
   const UNSANITIZED = [
     "meowmax-accounts-manager",
     "meowmax-appointments-manager-daily",
@@ -52,9 +53,20 @@ describe("screenshot privacy", () => {
     "street-cat-clinic-edit-record",
     "street-cat-clinic-records-details",
     "street-cat-clinic-case-study-hero",
+    "street-cat-clinic-trappers-list",
+    "street-cat-clinic-add-new-trapper",
     "mm-feature-image",
     "scc-feature-image",
   ];
+
+  it("keeps the unsanitized originals out of the repository", () => {
+    const projects = resolve(__dirname, "../assets");
+    for (const name of UNSANITIZED) {
+      for (const dir of ["images", "projects/meowmax", "projects/street-cat"]) {
+        expect(existsSync(resolve(projects, dir, `${name}.webp`)), `${dir}/${name}`).toBe(false);
+      }
+    }
+  });
 
   it("ships only sanitized copies of screenshots that show personal data", () => {
     const sources = ["src/constants/projectsData.js", "src/constants/homeData.js"]
