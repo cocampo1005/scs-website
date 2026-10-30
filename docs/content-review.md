@@ -1,66 +1,82 @@
-# Content, asset and privacy review
+# Content and asset review checklist
 
-These items need the owner's confirmation before the redesign ships. Nothing
-here has been removed yet, except where noted.
+Items marked **Decision** need your confirmation before staging or production.
+Done items are recorded for traceability.
 
-## Claims
+## 1. Personal data in screenshots (highest priority)
 
-| Claim | Status |
+All screenshots were reviewed (contact sheets of every Street Cat Clinic and
+MeowMax image, plus the home feature images).
+
+| Asset | What was exposed | Status |
+|---|---|---|
+| `meowmax-accounts-manager` | Full names of 4 other users (admins and trappers) | **Done:** sanitized copy shipped |
+| `meowmax-appointments-manager-daily`, `-overview`, `meowmax-manage-appointments` | About 20 trapper full names with trapper numbers | **Done:** sanitized copies |
+| `meowmax-edit-capacity-modal`, `meowmax-manager-appointment` | The same names, behind a dimmed dialog | **Done:** background blurred |
+| `meowmax-case-study-hero`, `images/mm-feature-image` | Trapper chips and accounts table names in the composites | **Done:** sanitized copies |
+| `street-cat-clinic-records-details`, `-edit-record`, `-new-entry-form`, `-case-study-hero`, `images/scc-feature-image` | Veterinarian field "Toscano-17161": a person's name plus what may be a licence number | **Done:** blurred. **Decision:** confirm whether it is a real vet |
+| `street-cat-clinic-trappers-list`, `-add-new-trapper` | Names, addresses and phones that look like sample data (555 numbers, repeated rows) | **Decision:** confirm it is sample data |
+| Records, forms and profile screens | Developer's own name, email and phone; fictional "221B Baker St" address | OK (owner's data) |
+| `meowmax-appointment-confirmation` | Street Cat Clinic's business address | OK (public business address) |
+| LMSYC, Bio-Coatings, Blast-It-Off screenshots | Public marketing pages | OK |
+
+How it was done:
+- Sanitized copies sit next to the originals as `*-sanitized.webp`. The
+  originals are untouched and not referenced, so they never ship.
+- A test (`src/__tests__/content.test.js`) fails if the project data
+  references an unsanitized original.
+- Names were blurred rather than replaced with fictional text. Blurring keeps
+  the real interface intact without inventing data. If you prefer fictional
+  sample names, the clean way is to re-capture those screens from a demo
+  account.
+
+**Decision:** do you have written permission from Street Cat Clinic and Cat
+Solutions 305 to publish these interfaces at all, even sanitized?
+
+## 2. Client logos (Projects page logo loop)
+
+Being publicly visible does not mean a client has agreed to be shown as an
+endorsement. **Decision:** confirm each logo, or tell me which to remove.
+
+| Logo | Related work on the site | Permission |
+|---|---|---|
+| Street Cat Clinic | Featured case study | ☐ |
+| MeowMax / Cat Solutions 305 | Featured case study | ☐ |
+| Bio-Coatings | Case study | ☐ |
+| Blast-It-Off | Case study | ☐ |
+| Icon Group | Other projects | ☐ |
+| A & A Playgrounds | Other projects | ☐ |
+| ELC Real Estate | Other projects | ☐ |
+| The Flats at Bradenton | Logo only | ☐ |
+| Gold Standard Care | Logo only | ☐ |
+| Pinnacle SMP | Logo only | ☐ |
+| Rochie's Bridal | Logo only | ☐ |
+| LWP | Logo only | ☐ |
+| Let Me Style Your Career | Case study (no logo) | ☐ |
+
+The logo-only clients are the most uncertain: there's no case study showing
+the work.
+
+## 3. Claims and copy
+
+| Item | Status |
 |---|---|
-| Case-study percentages and multipliers (−75%, +90%, +5.5×, −70%, −50%, +2.3×, +120%, +30%, −60%, +65%, +40%, +2×) | **Removed** and replaced with factual outcomes. Reinstate a figure only with a source (client report, analytics export) recorded in the case-study data. |
-| About statistics ("15+ industries", "4–12 week avg", "100% custom", "24 hr response") | **Removed** and replaced with qualitative cards. |
-| "Avg response within 24 hours · NDA available" (CTA), "Avg response ~24 hrs" (Contact) | **Removed.** |
-| "Mon–Fri, 9–6 ET" (Contact, WhatsApp card) | **Kept. Confirm** these are real hours. |
-| "Get A Free Quote" (CTA button) | **Kept. Confirm** that quotes are free. |
-| Contact JSON-LD `availableLanguage: en, es`, `areaServed: US, CO` | **Confirm.** |
+| Case-study percentages and multipliers; About statistics; "24 hr response"; "NDA available" | **Done:** removed (Phase 1) |
+| "Mon–Fri, 9–6 ET" on Contact | **Done:** removed |
+| "Get A Free Quote" (current CTA section) | Replaced by "Discuss your project" in the redesign. **Decision:** change the current site's button now, or with the redesign? |
+| "In English or Spanish" (MeowMax) | Comes from the project data (full English/Spanish UI). OK |
+| Case-study architecture details shown as `[Confirm …]` in the design canvas | **Decision:** provide accurate details, or keep them generic |
 
-## Screenshots that show people's data
+## 4. Tracking and privacy
 
-Several screenshots were reviewed one by one, and each needs client
-confirmation that it may be published.
+| Item | Status |
+|---|---|
+| Google Ads tag (`AW-17675252735`) | Kept unchanged. **Decision:** see `docs/tracking-assessment.md` |
+| Privacy policy | Accurate for the current setup. It must change in the same release as the SMTP migration, and again if the Ads tag is removed or consent is added |
+| Contact JSON-LD `areaServed: US, CO`, `availableLanguage: en, es` | **Decision:** confirm (this also affects the consent assessment) |
 
-| Asset | What it shows | Action |
-|---|---|---|
-| `meowmax/meowmax-accounts-manager.webp` | Full names of other users (admins and trappers) in clear text. Codes and phones are blurred. | **Needs review.** Blur the names, or confirm consent from each person shown. |
-| `meowmax/meowmax-user-profile.webp`, `meowmax-manager-appointment.webp`, `meowmax-appointment-details.webp` | Profile and appointment details | Review for real names, addresses and notes. |
-| `street-cat/street-cat-clinic-trappers-list.webp` | Names, addresses and phones that appear to be sample data (555 numbers, repeated rows) | Confirm with the client that this is sample data. |
-| `street-cat/street-cat-clinic-records-details.webp` and other record/form screens | Test records under the developer's own name. The trapper tag "Toscano-17161" may be a real person. | Confirm; blur the tag if it is real. |
-| `street-cat/street-cat-clinic-add-new-trapper.webp`, `street-cat-clinic-profile-page.webp` | Form with signature upload; account page | Check for real signatures and emails. |
-| LMSYC, Bio-Coatings and Blast-It-Off screenshots | Public marketing pages | Low risk. Confirm the client is happy to be featured. |
+## 5. Spanish (future)
 
-## Client logos (Projects page logo loop)
-
-A & A Playgrounds, The Flats at Bradenton, Gold Standard Care, Pinnacle SMP,
-Icon Group, Rochie's Bridal, Street Cat Clinic, MeowMax, Blast-It-Off,
-Bio-Coatings, ELC Real Estate and LWP. **Confirm** permission to show each.
-Remove any client that has not agreed.
-
-## Analytics and third-party data
-
-What is active today (verified in `index.html`, `src/` and the production
-bundle):
-
-| Service | What it does | Needed? |
-|---|---|---|
-| Google tag `AW-17675252735` (gtag.js) | Loads on every page. Sends Google Ads page views and sets Google cookies. A conversion event fires after a successful contact form send. | Needed only while Google Ads campaigns run. If no ads are running, remove it: that removes most third-party data collection. |
-| EmailJS | Delivers contact form messages | Needed for the form |
-| Google Fonts | Loads typefaces; Google receives the visitor's IP address | Could be self-hosted later to remove this transfer |
-| Hostinger | Hosting and server logs | Needed |
-
-No Google Analytics 4, no Meta pixel, no browser storage, no other trackers.
-Nothing new was added in Phase 1.
-
-**Consent.** For US-only visitors, a disclosure (now in `/privacy`) is the
-common baseline. If ads target or reach visitors in the EU/UK, or other regions
-with opt-in rules, Google requires consent before ad cookies are set. In that
-case, use Google Consent Mode v2 with a consent banner, or load the tag only
-after consent. Decide this with the ads audience in mind. It is not implemented
-yet, by design (no new tracking or tooling in Phase 1).
-
-## Spanish (future)
-
-English stays primary. To keep a future translation clean, Phase 3 keeps user
-copy in content modules (`src/constants/*` today, typed `src/content/*` later)
-rather than inline in components. Each module can then gain an `es` variant
-with a locale-prefixed route (`/es/...`) and `hreflang` tags. No i18n library
-is needed until then.
+English stays primary. Copy lives in content modules (`src/constants/*` today,
+typed `src/content/*` in Phase 3), so a later `es` variant can be added with
+`/es/...` routes and `hreflang` tags, without restructuring components.

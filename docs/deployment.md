@@ -4,6 +4,10 @@ The site is a static build (`dist/`) served by Hostinger (Apache/LiteSpeed,
 `public_html`). Nothing deploys automatically. **Production releases need the
 owner's explicit approval.**
 
+The step-by-step Hostinger setup, the staging checklist and the release and
+rollback runbook are in `docs/staging.md`. The planned contact-form change is
+in `docs/contact-smtp-plan.md`.
+
 ## What production runs today
 
 Verified on 30 Oct 2026:
