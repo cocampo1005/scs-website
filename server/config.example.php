@@ -39,8 +39,11 @@ return [
     'ip_salt' => '',
 
     // Leave null unless the probe shows a CDN or proxy in front of PHP; then
-    // the $_SERVER key carrying the visitor IP, e.g. 'HTTP_X_FORWARDED_FOR'
+    // the $_SERVER key carrying the visitor IP, e.g. 'HTTP_X_FORWARDED_FOR'.
+    // The header is used only when the connecting address (REMOTE_ADDR) is in
+    // trusted_proxies (IPs or CIDRs of that proxy); otherwise REMOTE_ADDR is.
     'client_ip_header' => null,
+    'trusted_proxies' => [],
 
     // e.g. '[staging] ' so test messages are easy to tell apart
     'subject_prefix' => '',

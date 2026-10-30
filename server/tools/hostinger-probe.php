@@ -75,6 +75,10 @@ foreach (['HTTP_X_FORWARDED_FOR', 'HTTP_X_REAL_IP', 'HTTP_CF_CONNECTING_IP', 'HT
         $out[] = "     present {$h} ({$hops} " . ($hops === 1 ? 'entry' : 'entries') . ')';
     }
 }
+if (isset($_SERVER['HTTP_X_FORWARDED_FOR']) || isset($_SERVER['HTTP_X_REAL_IP'])) {
+    // With a forwarding header present, REMOTE_ADDR is the proxy, not you
+    $out[] = '     connecting address (proxy candidate for trusted_proxies): ' . ($_SERVER['REMOTE_ADDR'] ?? '?');
+}
 $names = array_filter(array_keys($_SERVER), static fn ($k) => str_starts_with((string) $k, 'HTTP_'));
 sort($names);
 $out[] = '     request headers: ' . implode(' ', $names);

@@ -15,6 +15,7 @@ final class Config
      * @param array{address: string, name?: string} $from
      * @param array{address: string, name?: string} $to
      * @param list<string> $blockedTerms
+     * @param list<string> $trustedProxies
      */
     public function __construct(
         public readonly string $transport,
@@ -24,6 +25,7 @@ final class Config
         public readonly array $from = ['address' => ''],
         public readonly array $to = ['address' => ''],
         public readonly ?string $clientIpHeader = null,
+        public readonly array $trustedProxies = [],
         public readonly string $subjectPrefix = '',
         public readonly string $timezone = 'UTC',
         public readonly int $perClientPerHour = 5,
@@ -64,6 +66,7 @@ final class Config
             from: (array) ($v['from'] ?? ['address' => '']),
             to: (array) ($v['to'] ?? ['address' => '']),
             clientIpHeader: isset($v['client_ip_header']) ? (string) $v['client_ip_header'] : null,
+            trustedProxies: array_values(array_map('strval', (array) ($v['trusted_proxies'] ?? []))),
             subjectPrefix: (string) ($v['subject_prefix'] ?? ''),
             timezone: (string) ($v['timezone'] ?? 'UTC'),
             perClientPerHour: (int) ($limits['per_client_per_hour'] ?? 5),
@@ -94,6 +97,15 @@ final class Config
         foreach (['perClientPerHour', 'sitePerDay', 'attemptsPerClient', 'attemptsWindow', 'attemptsSitePerHour'] as $limit) {
             if ($this->{$limit} < 1) {
                 $problems[] = "limits.{$limit}";
+            }
+        }
+        // A forwarded-IP header is only safe from known proxy addresses
+        if ($this->clientIpHeader !== null && $this->trustedProxies === []) {
+            $problems[] = 'trusted_proxies';
+        }
+        foreach ($this->trustedProxies as $range) {
+            if (!IpRange::isValid($range)) {
+                $problems[] = 'trusted_proxies';
             }
         }
         if (!in_array($this->timezone, timezone_identifiers_list(), true)) {

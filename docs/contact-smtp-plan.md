@@ -31,7 +31,10 @@ stored in the repository.
   host's or CDN's job.
 - **Client IP.** `REMOTE_ADDR` by default. If the probe shows a CDN or proxy in
   front of PHP, `client_ip_header` in `config.php` names the header, and only
-  its right-most entry (added by the proxy, not the visitor) is used.
+  its right-most entry (added by the proxy, not the visitor) is used. The header
+  is trusted only when `REMOTE_ADDR` is in `trusted_proxies` (IPs or CIDRs).
+  From any other peer it is ignored, so visitors can't spoof it. Config loading
+  fails if a header is set without that list.
 - **Prerendering** isn't in yet, so the endpoint ships in `dist/api/` (not
   `build/client/api/`). Increment 2 must keep `public/api/contact.php`.
 - **Body format.** `{name, email, message, phone: {digits, dialCode, display} | null, website, elapsedMs}`.

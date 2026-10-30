@@ -46,6 +46,23 @@ final class ConfigTest extends TestCase
         }
     }
 
+    public function testAForwardedIpHeaderNeedsTrustedProxies(): void
+    {
+        $base = ['transport' => 'file', 'allowed_origins' => ['https://example.com'], 'ip_salt' => str_repeat('s', 64)];
+
+        foreach ([[], ['10.0.0.0/99']] as $proxies) {
+            try {
+                Config::fromArray($base + ['client_ip_header' => 'HTTP_X_FORWARDED_FOR', 'trusted_proxies' => $proxies]);
+                self::fail('expected an invalid config');
+            } catch (RuntimeException $e) {
+                self::assertSame('config_invalid:trusted_proxies', $e->getMessage());
+            }
+        }
+
+        $config = Config::fromArray($base + ['client_ip_header' => 'HTTP_X_FORWARDED_FOR', 'trusted_proxies' => ['10.0.0.0/8']]);
+        self::assertSame(['10.0.0.0/8'], $config->trustedProxies);
+    }
+
     public function testMissingFile(): void
     {
         $this->expectExceptionMessage('config_missing');

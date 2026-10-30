@@ -23,7 +23,7 @@ return static function (): void {
         $config = Config::load(__DIR__ . '/config.php');
         date_default_timezone_set($config->timezone);
         $response = ContactHandler::create($config, $varDir, $log)
-            ->handle(Request::fromGlobals($config->clientIpHeader));
+            ->handle(Request::fromGlobals($config->clientIpHeader, $config->trustedProxies));
     } catch (Throwable $e) {
         // Config and storage problems: log a code, never the exception text
         $code = $e instanceof RuntimeException && str_starts_with($e->getMessage(), 'config_')
