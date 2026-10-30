@@ -58,48 +58,42 @@ export const ADVANTAGES = [
   },
 ];
 
+// Home-page feature cards. `caseKey` is the CASE_STUDIES key in projectsData.js.
 export const PROJECTS = [
   {
-    slug: "street-cat-clinic",
+    caseKey: "street-cat-clinic",
     title: "Street Cat Clinic Data Management App",
     blurb:
       "End-to-end records system for staff and coordinators – database setup, record entry and keeping, staff management, and automated PDF Form generation in one place.",
     image: sccFeatureImg,
     alt: "Screenshot concept of a data management interface",
-    slug: "street-cat-clinic",
-    href: "/projects?case=street-cat-clinic#featured",
     tags: ["React", "Firebase", "PDF Gen", "Role-based UI"],
   },
   {
-    slug: "meowmax",
+    caseKey: "cat-solutions-305",
     title: "MeowMax Appointment Scheduling App",
     blurb:
       "Mobile-first scheduling web app, admin oversight, and real-time updates for TNR and foster workflows.",
     image: mmFeatureImg,
     alt: "Scheduling grid showing available appointment slots",
-    slug: "cat-solutions-305",
-    href: "/projects?case=cat-solutions-305#featured",
     tags: ["React", "Firebase", "Realtime", "Admin Tools", "UX/UI"],
   },
   {
-    slug: "let-me-style-your-career",
+    caseKey: "let-me-style-your-career",
     title: "Let Me Style Your Career Funnel & CRM Transformation",
     blurb:
       "Built a conversion-focused website and funnel ecosystem with lead magnets, booking flows, and CRM segmentation to turn traffic into paid coaching clients.",
     image: lmsycFeatureImg,
     alt: "Let Me Style Your Career funnel and booking flow preview",
-    href: "/projects?case=let-me-style-your-career#featured",
     tags: ["WordPress", "SuperProfile", "CRM", "Funnel"],
   },
   {
-    slug: "bio-blast",
+    caseKey: "bio-coatings-blast-it-off",
     title: "Blast It Off & Bio Coatings Websites",
     blurb:
       "Two sister sites working in tandem – sandblasting and powder-coating service funnels with fast, SEO-ready pages.",
     image: bbFeatureImg,
     alt: "Website mockups for industrial services",
-    slug: "bio-coatings-blast-it-off",
-    href: "/projects?case=bio-coatings-blast-it-off#featured",
     tags: ["WordPress", "SEO", "Performance", "Conversion"],
   },
 ];

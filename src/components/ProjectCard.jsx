@@ -1,15 +1,13 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { buildStartSimilarLink } from "../utils/similarProjectLinks";
+import { buildStartSimilarLink, caseStudyHref } from "../utils/similarProjectLinks";
 
 function ProjectCard({
   title,
   blurb,
   image,
   alt,
-  href,
-  slug,
-  key,
+  caseKey,
   tags,
   index,
 }) {
@@ -134,7 +132,7 @@ function ProjectCard({
             {/* Action buttons */}
             <div className="flex flex-col sm:flex-row gap-4 pt-4">
               <Link
-                to={href}
+                to={caseStudyHref(caseKey)}
                 className="btn-primary"
                 aria-label={`Open project: ${title}`}
               >
@@ -148,7 +146,7 @@ function ProjectCard({
               </Link>
 
               <Link
-                to={buildStartSimilarLink(key ?? slug, title)}
+                to={buildStartSimilarLink(caseKey, title)}
                 className="btn-secondary"
               >
                 Start Similar Project

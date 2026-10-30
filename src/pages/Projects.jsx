@@ -3,7 +3,6 @@ import { Link, useSearchParams } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowRight, ChevronDown, ExternalLink } from "lucide-react";
 import { buildStartSimilarLink } from "../utils/similarProjectLinks";
-import { CountOnReveal } from "../utils/Counter";
 import {
   CASE_STUDIES,
   OTHER_PROJECTS,
@@ -77,7 +76,6 @@ export default function Projects() {
         title="Projects and case studies"
         description="Behind the builds. Explore selected projects and case studies that blend clean UX, solid engineering, and measurable results."
         path="/projects"
-        image="/assets/og/og-default.webp"
       >
         <JsonLd
           data={{
@@ -95,7 +93,7 @@ export default function Projects() {
             itemListElement: (CASE_STUDIES || []).map((c, i) => ({
               "@type": "ListItem",
               position: i + 1,
-              url: "https://solidcodesolutionsllc.com/projects#featured",
+              url: `https://solidcodesolutionsllc.com/projects?case=${c.key}`,
               name: c.title,
             })),
           }}
@@ -183,6 +181,8 @@ export default function Projects() {
           return (
             <button
               key={t.key}
+              type="button"
+              aria-pressed={isActive}
               onClick={() => setActiveAndUrl(t.key)}
               className={[
                 "relative cursor-pointer rounded-xl px-4 py-3 text-left transition-all",
@@ -211,7 +211,10 @@ export default function Projects() {
           <div className="md:hidden mb-6">
             <GlowCard className="p-2">
               <button
+                type="button"
                 onClick={() => setMobileDropdownOpen(!mobileDropdownOpen)}
+                aria-expanded={mobileDropdownOpen}
+                aria-label={`Case study: ${activeProject.title}. Choose another`}
                 className="w-full px-3 py-3 bg-white/5 border border-purple-500/30 rounded-xl flex items-center justify-between"
               >
                 <span className="font-semibold">{activeProject.title}</span>
@@ -384,39 +387,16 @@ export default function Projects() {
                           onImageClick={openLightbox}
                         />
 
-                        <div
-                          className="
-        grid
-        grid-cols-[repeat(auto-fit,minmax(130px,1fr))]
-        md:grid-cols-3
-        gap-3
-      "
-                        >
-                          {activeProject.metrics.map(
-                            ({ icon: Icon, label, value }) => (
-                              <GlowCard
-                                key={label}
-                                className="p-3 sm:p-4 text-center"
-                              >
-                                <Icon className="w-4 h-4 sm:w-5 sm:h-5 mx-auto mb-2 opacity-80" />
-                                <p
-                                  className="
-              text-[11px] sm:text-xs uppercase
-              tracking-normal sm:tracking-wide
-              text-white/70 mb-1 leading-snug
-              break-words
-            "
-                                >
-                                  {label}
-                                </p>
-                                <p className="text-lg sm:text-xl font-bold">
-                                  {/* ✅ Animated counter */}
-                                  <CountOnReveal value={value} />
-                                </p>
-                              </GlowCard>
-                            )
-                          )}
-                        </div>
+                        <GlowCard className="p-4">
+                          <h4 className="text-sm uppercase tracking-wide text-white/70 mb-2">
+                            Outcomes
+                          </h4>
+                          <ul className="list-disc list-inside text-gray-200/90 space-y-2 text-sm">
+                            {activeProject.outcomes.map((o) => (
+                              <li key={o}>{o}</li>
+                            ))}
+                          </ul>
+                        </GlowCard>
                       </div>
                     </div>
                     <div className="pt-4 flex justify-end w-full">
@@ -453,7 +433,7 @@ export default function Projects() {
           scaleOnHover
           fadeOut
           fadeOutColor="#0c0216"
-          ariaLabel="Technology partners"
+          ariaLabel="Clients"
           className="my-14"
         />
 
@@ -488,13 +468,15 @@ export default function Projects() {
 
                 {/* Text body uses GlowCard so it matches site chrome, but no border around the image */}
                 <GlowCard className="rounded-t-none p-5">
-                  <Link
-                    to={p.url}
+                  <a
+                    href={p.url}
                     target="_blank"
+                    rel="noopener noreferrer"
                     className="text-lg flex items-center gap-2 font-semibold font-display text-accent-fuchsia-light hover:text-white"
                   >
-                    {p.title} <ExternalLink className="w-5 h-5" />
-                  </Link>
+                    {p.title} <ExternalLink className="w-5 h-5" aria-hidden="true" />
+                    <span className="sr-only">(opens in a new tab)</span>
+                  </a>
                   <p className="mt-2 text-sm text-gray-300">{p.summary}</p>
                   <div className="pt-3 flex justify-end">
                     <Link

@@ -2,7 +2,6 @@ import SCCHero from "../assets/projects/street-cat/street-cat-clinic-case-study-
 import MMHero from "../assets/projects/meowmax/meowmax-case-study-hero.webp";
 import BIOHero from "../assets/projects/bio/bio-case-study-hero.webp";
 import LMSYCHero from "../assets/projects/lmsyc/lmsyc-case-study-hero.webp";
-import { Award, BarChart3, Clock, Rocket } from "lucide-react";
 
 // Street Cat Clinic Screenshots
 import sccScreenshot1 from "../assets/projects/street-cat/street-cat-clinic-new-entry-form.webp";
@@ -80,7 +79,6 @@ import lwp from "../assets/logos/client-logos/lwp-logo.svg";
 import iconGroupCover from "../assets/images/icon-group-website-cover.webp";
 import aaPlaygroundsCover from "../assets/images/aaplaygrounds-website-cover.webp";
 import elcRealEstateCover from "../assets/images/elc-real-estate-website-cover.webp";
-import { href } from "react-router-dom";
 
 const sccScreenshots = [
   {
@@ -425,10 +423,10 @@ export const CASE_STUDIES = [
       "Robust record search and multi-field filters, plus batch CSV/PDF exports.",
       "Seamless CRUD for records, forms, and users, with admin tools to edit charts and menus.",
     ],
-    metrics: [
-      { icon: Clock, label: "Form Processing Time", value: "-75%" },
-      { icon: BarChart3, label: "Data Consistency", value: "+90%" },
-      { icon: Rocket, label: "Operational Efficiency", value: "+5.5×" },
+    outcomes: [
+      "MDAS TIP forms are generated from each record instead of being filled out by hand.",
+      "Records can be searched, filtered by month and year, and exported in batches.",
+      "Staff and admins work in one shared system, each with the access their role needs.",
     ],
     tech: [
       "React",
@@ -438,7 +436,6 @@ export const CASE_STUDIES = [
       "Vite",
       "Custom PDF engine",
     ],
-    cta: { label: "View full case study", to: "/projects/street-cat-clinic" },
     slug: "street-cat-clinic",
     href: "/projects?case=street-cat-clinic#featured",
   },
@@ -473,10 +470,10 @@ export const CASE_STUDIES = [
       "Trappers can update their own information, including foster and equipment capacity, and view appointment history.",
       "Full bilingual interface (English/Spanish) to improve accessibility and communication across Miami’s diverse user base.",
     ],
-    metrics: [
-      { icon: Clock, label: "Scheduling Time", value: "-70%" },
-      { icon: BarChart3, label: "Admin Workload", value: "-50%" },
-      { icon: Rocket, label: "User Engagement", value: "+2.3×" },
+    outcomes: [
+      "Trappers book and release clinic appointments themselves, from their phones.",
+      "Daily Foster and TNR capacity is enforced at booking, so a full day can't be overbooked.",
+      "Admins manage appointments, availability and users from one dashboard, in English or Spanish.",
     ],
     tech: [
       "React",
@@ -487,7 +484,6 @@ export const CASE_STUDIES = [
       "Responsive UI",
       "i18n (English/Spanish)",
     ],
-    cta: { label: "View full case study", to: "/projects/cat-solutions-305" },
     slug: "cat-solutions-305",
     href: "/projects?case=cat-solutions-305#featured",
   },
@@ -516,10 +512,10 @@ export const CASE_STUDIES = [
     "Created automated follow-up sequences to nurture leads and reduce manual admin workload.",
     "Developed promotional mechanisms including booking discount popups and strategic CTA placement.",
   ],
-    metrics: [
-      { icon: BarChart3, label: "Inbound Leads", value: "+120%" },
-      { icon: Rocket, label: "Booking Completion Rate", value: "+30%" },
-      { icon: Clock, label: "Manual Admin Time", value: "-60%" },
+    outcomes: [
+      "Visitors can download the guide, join the masterclass waitlist or book a paid session without manual back-and-forth.",
+      "Every signup is tagged in the CRM by intent, so follow-ups go to the right people.",
+      "Confirmations and nurture emails are sent automatically.",
     ],
     tech: [
       "WordPress",
@@ -536,10 +532,6 @@ export const CASE_STUDIES = [
         url: "https://letmestyleyourcareer.com",
       },
     ],
-    cta: {
-      label: "View full case study",
-      to: "/projects/let-me-style-your-career",
-    },
     slug: "let-me-style-your-career",
     href: "/projects?case=let-me-style-your-career#featured",
   },
@@ -571,10 +563,10 @@ export const CASE_STUDIES = [
       "Linked both websites strategically to cross-reference and funnel traffic between services.",
       "Optimized each page for SEO, refreshed Google Business profiles, and implemented conversion-ready contact forms.",
     ],
-    metrics: [
-      { icon: BarChart3, label: "Organic Traffic Growth", value: "+65%" },
-      { icon: Rocket, label: "Lead Conversions", value: "+40%" },
-      { icon: Award, label: "Brand Consistency", value: "+2×" },
+    outcomes: [
+      "Bio-Coatings regained a website it can update, rebuilt with modern SEO structure.",
+      "Blast-It-Off launched with a logo and site that match its sister company.",
+      "The two sites refer visitors to each other and route inquiries through quote forms.",
     ],
     tech: [
       "WordPress",
@@ -594,10 +586,6 @@ export const CASE_STUDIES = [
         url: "https://blast-it-off.com",
       },
     ],
-    cta: {
-      label: "View full case study",
-      to: "/projects/bio-coatings-blast-it-off",
-    },
     slug: "bio-coatings-blast-it-off",
     href: "/projects?case=bio-coatings-blast-it-off#featured",
   },

@@ -217,10 +217,6 @@ export default function CTASection() {
                 </svg>
               </Link>
 
-              {/* Professional microcopy */}
-              <p className="text-xs text-white/60 mb-0">
-                Avg response within 24 hours · NDA available
-              </p>
             </div>
           </div>
         </div>

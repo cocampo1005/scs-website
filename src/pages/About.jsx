@@ -4,12 +4,35 @@ import CTASection from "../components/CTASection";
 import MissionVisionTabs from "../components/MissionVisionTabs";
 import ApproachScroller from "../components/ApproachScroller";
 import ValuesGrid from "../components/ValuesGrid";
-import { CountOnReveal } from "../utils/Counter";
+import { Blocks, LifeBuoy, MessagesSquare, Workflow } from "lucide-react";
 import heroImg from "../assets/images/stacked-blocks.webp";
 import fitImg from "../assets/images/hex-tesselation-fit.webp";
 import SEO from "../components/SEO";
 import JsonLd from "../components/JsonLd";
 import SolidPuzzle from "../components/SolidPuzzle";
+
+const GLANCE = [
+  {
+    icon: Blocks,
+    title: "Software first",
+    text: "Records platforms, scheduling systems, client portals and the automation between them.",
+  },
+  {
+    icon: Workflow,
+    title: "Built around your process",
+    text: "Each project starts from how your team actually works, not from a template.",
+  },
+  {
+    icon: MessagesSquare,
+    title: "Direct collaboration",
+    text: "You work with the developer building your software, from discovery to launch.",
+  },
+  {
+    icon: LifeBuoy,
+    title: "Support after launch",
+    text: "Maintenance, fixes and new features when you need them.",
+  },
+];
 
 export default function About() {
   return (
@@ -18,7 +41,6 @@ export default function About() {
         title="About"
         description="Tailor made software and websites that fit your goals and your users. Learn our approach, values, and what we stand for."
         path="/about"
-        image="/assets/og/og-default.webp"
       >
         <JsonLd
           data={{
@@ -111,83 +133,27 @@ export default function About() {
           </GlowCard>
         </section>
 
-        {/* At a Glance with animated counters */}
-        <section className="max-w-6xl mx-auto px-6 mt-12 mb-20">
+        {/* At a Glance: what working with us looks like (no unverified figures) */}
+        <section className="max-w-6xl mx-auto px-6 mt-12 mb-20" aria-labelledby="glance-heading">
           <Stagger gap={120} startAt={40}>
             <Reveal
               as="h2"
+              id="glance-heading"
               className="text-4xl md:text-5xl font-bold font-logo text-center mb-10 bg-gradient-to-r from-accent-fuchsia to-accent-purple bg-clip-text text-transparent"
             >
               At a Glance
             </Reveal>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-              <Reveal>
-                <GlowCard className="text-center py-8">
-                  <CountOnReveal
-                    value={15}
-                    delay={200}
-                    className="text-4xl font-bold text-fuchsia-200"
-                  />
-                  <span className="text-4xl font-bold text-fuchsia-200 pl-1">
-                    +
-                  </span>
-                  <div className="text-sm text-gray-300 mt-1">
-                    Industries served
-                  </div>
-                </GlowCard>
-              </Reveal>
-
-              <Reveal>
-                <GlowCard className="text-center py-8">
-                  <CountOnReveal
-                    value={4}
-                    delay={200}
-                    className="text-4xl font-bold text-fuchsia-200"
-                  />
-                  <span className="ml-1 text-4xl font-bold text-fuchsia-200">
-                    -
-                  </span>
-                  <CountOnReveal
-                    value={12}
-                    delay={200}
-                    className="text-4xl font-bold text-fuchsia-200"
-                  />
-                  <div className="text-sm text-gray-300 mt-1">
-                    Week Avg timeline
-                  </div>
-                </GlowCard>
-              </Reveal>
-
-              <Reveal>
-                <GlowCard className="text-center py-8">
-                  <CountOnReveal
-                    value={100}
-                    delay={200}
-                    className="text-4xl font-bold text-fuchsia-200"
-                  />
-                  <span className="text-2xl align-top text-fuchsia-200">%</span>
-                  <div className="text-sm text-gray-300 mt-1">
-                    Custom builds
-                  </div>
-                </GlowCard>
-              </Reveal>
-
-              <Reveal>
-                <GlowCard className="text-center py-8">
-                  <CountOnReveal
-                    value={24}
-                    delay={200}
-                    className="text-4xl font-bold text-fuchsia-200"
-                  />
-                  <span className="text-2xl font-bold text-fuchsia-200 pl-1">
-                    hr
-                  </span>
-                  <div className="text-sm text-gray-300 mt-1">
-                    Avg response time
-                  </div>
-                </GlowCard>
-              </Reveal>
-            </div>
+            <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {GLANCE.map(({ icon: Icon, title, text }) => (
+                <li key={title}>
+                  <GlowCard className="h-full p-6">
+                    <Icon className="mb-3 size-7 text-accent-fuchsia" aria-hidden="true" />
+                    <h3 className="font-display text-lg font-bold text-fuchsia-100">{title}</h3>
+                    <p className="mt-1 text-sm text-gray-300">{text}</p>
+                  </GlowCard>
+                </li>
+              ))}
+            </ul>
           </Stagger>
         </section>
 
@@ -209,9 +175,9 @@ export default function About() {
               {/* Right-aligned title + subheading */}
               <div className="absolute inset-x-0 bottom-0 p-6 md:p-10">
                 <div className="ml-auto max-w-[42rem] text-right">
-                  <h3 className="text-3xl md:text-5xl font-logo font-bold text-fuchsia-100">
+                  <p className="text-3xl md:text-5xl font-logo font-bold text-fuchsia-100">
                     Built To Fit
-                  </h3>
+                  </p>
                   <p className="text-gray-200 mt-1">
                     Your needs, your users, your stack. We make the pieces
                     click.
