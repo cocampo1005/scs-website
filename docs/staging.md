@@ -87,15 +87,32 @@ front, search engines can't index it at all.
 2. In File Manager, create `scs-server-staging` **next to** (not inside) the
    domain's `public_html`, for example
    `/home/u123456789/domains/solidcodesolutionsllc.com/scs-server-staging`.
-3. I'll provide a one-off `probe.php` that prints the PHP version, extensions,
-   whether that folder is readable and writable, and whether
-   `smtp.hostinger.com:465` is reachable. It never prints secrets. You upload
-   it, open it once, send me the output, then delete it.
-4. **Credentials, when we reach implementation.**
+3. Upload `server/tools/hostinger-probe.php` from the repository to the
+   staging document root, open
+   `https://staging.solidcodesolutionsllc.com/hostinger-probe.php` once, copy
+   the output, then **delete the file**. It reports:
+   - the PHP version and extensions;
+   - whether that folder is outside the document root, readable and writable;
+   - which proxy/CDN IP headers reach PHP (names only);
+   - whether `smtp.hostinger.com` is reachable on 465 and 587, with the
+     certificate verified.
+
+   It sends no email and never prints secrets.
+
+   **Send me:** the probe output and the absolute path of
+   `scs-server-staging`.
+4. **Credentials** (after S4 step 1 has put the server files in place):
    - Upload `server-<commit>.zip` into `scs-server-staging` and extract it.
-   - Copy `config.example.php` to `config.php` in File Manager and fill in the
-     SMTP mailbox and password there.
-   - Set permissions to `600` on `config.php` and `700` on `var/`.
+   - Copy `config.example.php` to `config.php` in File Manager and fill in:
+     - the SMTP mailbox password;
+     - a new `ip_salt` (64 random hex characters; I can generate one for you to
+       paste, or run `php -r "echo bin2hex(random_bytes(32));"`);
+     - for staging, `allowed_origins` =
+       `['https://staging.solidcodesolutionsllc.com']` and `subject_prefix` =
+       `'[staging] '`;
+     - `client_ip_header`, only if the probe shows a proxy in front.
+   - Set permissions to `600` on `config.php`. `var/` is created on the
+     first request with `700`.
    - The password never goes into git, chat, the build, or a `VITE_` variable.
 
 Recommended: create a dedicated mailbox for the website, such as
@@ -106,19 +123,22 @@ differ.
 
 ## S4. Upload the release candidate **(you, with files from me)**
 
-I will hand you two archives built from a tagged commit on `scs-2.0`:
+I build these from a clean, tagged commit with
+`npm run package:release -- --target=staging --server-dir=<path from S3>`.
+The files land in `release/` with a `SHA256SUMS` file:
 
-| Archive | Goes to | Contents |
+| File | Goes to | Contents |
 |---|---|---|
-| `site-<commit>.zip` | staging document root | The built site (HTML, JS/CSS, models, fonts, `robots.txt`, `sitemap.xml`, `api/contact.php`) plus `.htaccess.staging` |
-| `server-<commit>.zip` | `scs-server-staging/` | PHP endpoint code and PHPMailer (only after the SMTP plan is approved) |
+| `site-<commit>-staging.zip` | staging document root | The built site (HTML, JS/CSS, models, fonts, `sitemap.xml`, `api/contact.php`) with a disallow-all `robots.txt`. **No `.htaccess`**, so extracting it never overwrites the password lines. |
+| `server-<commit>.zip` | `scs-server-staging/` | `bootstrap.php`, `src/`, `vendor/` (PHPMailer only), `config.example.php`. Never `config.php`, `var/` or tests. |
+| `htaccess.staging` | pasted into the staging `.htaccess` | The `noindex` header, `SetEnv SCS_SERVER_DIR …`, the `/api/` rules, the app routes and the real-404 rule |
 
 Steps:
 
 1. Upload `site-<commit>.zip` to the staging document root and **extract**
    it. Do not delete the existing `.htaccess` (it holds the password lines).
 2. Open the existing `.htaccess` in the File Manager editor. Paste the
-   contents of `.htaccess.staging` **below** the password-protection lines and
+   contents of `htaccess.staging` **below** the password-protection lines and
    save. That file contains:
    - the app routes and real-404 rules;
    - the `/api/` rule;
@@ -128,9 +148,8 @@ Steps:
    use `RewriteBase /`. The file I hand you will already match the path you
    send me in S1.
 
-Until the SMTP plan is approved, the release candidate uses the current
-EmailJS form. In that case I'll need `.env.local` values at build time
-(`npm run build:release`), and `server-<commit>.zip` is skipped.
+The build needs no `.env.local` values. The contact form no longer uses
+EmailJS.
 
 ## S5. Validation checklist (run on staging)
 

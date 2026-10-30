@@ -5,17 +5,19 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:api": "node scripts/dev-api.mjs",
     "build": "vite build",
-    "build:release": "node scripts/check-release-env.mjs && vite build",
+    "build:release": "node scripts/check-release.mjs && vite build",
+    "package:release": "node scripts/package-release.mjs",
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:php": "composer --working-dir=server test",
     "e2e": "playwright test",
-    "check": "npm run lint && npm run test && npm run build && npm run e2e"
+    "check": "npm run lint && npm run test && npm run test:php && npm run build && npm run e2e"
   },
   "dependencies": {
-    "@emailjs/browser": "^4.4.1",
     "@phosphor-icons/react": "^2.1.10",
     "@react-three/drei": "^10.7.6",
     "@react-three/fiber": "^9.3.0",

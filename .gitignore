@@ -34,3 +34,6 @@ dist-ssr
 playwright-report
 test-results
 coverage
+
+# Release archives (scripts/package-release.mjs)
+release

@@ -32,41 +32,45 @@ Range `f154762..scs-2.0` changes 60 files in `src/`, `public/` and
 | Homepage hero | Spline scene replaced by the native React Three Fiber puzzle (same model and story). The software-first headline, copy and CTAs are visible before the puzzle is solved. A "Place it for me" control is added. Phones can scroll past the hero. A static poster appears without WebGL or if the model fails. |
 | About page | Spline SOLID wall replaced by the native R3F exhibit, with keyboard buttons, an info panel or bottom sheet, and a text version. "At a Glance" statistics are replaced with qualitative cards. |
 | Projects | Percentages and multipliers are replaced with factual outcomes. Slideshows are pausable. Screenshots open from the keyboard. |
-| Contact | International phone numbers are accepted. The FAQ is now an accessible accordion. The "Avg response ~24 hrs" claim is removed. |
-| Privacy / Terms | Accurate privacy policy (EmailJS, Google Ads, Google Fonts, hosting logs). Fixed revision dates. |
+| Contact | The form posts to our own PHP endpoint (`/api/contact`), which sends through the Hostinger mailbox over authenticated SMTP; EmailJS is removed. Server-side validation, spam traps and rate limits. International phone numbers are accepted. The FAQ is now an accessible accordion. The "Avg response ~24 hrs" claim is removed. |
+| Privacy / Terms | Accurate privacy policy (own server + Hostinger email, rate-limit records, Google Ads, Google Fonts, hosting logs). Fixed revision dates. |
 | SEO | Static fallback title, description and OG tags in `index.html`. New OG image. Real `robots.txt` and `sitemap.xml`. Not Found page. |
-| Server | New `.htaccess`: app routes are served by the app, unknown paths return a real 404, and real files (robots, sitemap, models) are served as-is. |
+| Server | New private server folder (`scs-server/`, outside `public_html`) with `config.php`. New `.htaccess`: `/api/contact` reaches the PHP endpoint, other `/api` paths 404, app routes are served by the app, unknown paths return a real 404, and real files (robots, sitemap, models) are served as-is. |
 | Performance | Routes are lazy-loaded (main JS 561 KB → 280 KB). Spline runtime removed. Six unused Google Font families dropped. |
 
 Unchanged: the URLs (`/`, `/about`, `/projects`, `/contact`, `/privacy`,
-`/terms`), the EmailJS template parameters, and the Google Ads tag and
+`/terms`) and the Google Ads tag and
 conversion event.
 
 ## Build a release candidate
 
-1. **Environment.** Copy `.env.example` to `.env.local` and fill in the three
-   EmailJS values from the EmailJS dashboard.
-2. **Checks.** Run `npm ci`, then `npm run check`, which runs lint, unit tests,
-   the build and the e2e tests.
-3. **Release build.** Run `npm run build:release`. It refuses to build without
-   the EmailJS values.
-4. **Smoke test.** Run `npm run preview` and check, at desktop and phone width,
-   that:
+Needs Node, PHP 8.2+ and Composer locally. No `.env.local` values are needed.
+
+1. **Install.** Run `npm ci`, then `composer install` in `server/`.
+2. **Checks.** Run `npm run check`, which runs lint, unit tests, PHPUnit, the
+   build and the e2e tests.
+3. **Local smoke test.** Run `npm run dev:api` and `npm run dev` side by side,
+   and check, at desktop and phone width, that:
    - the hero is solvable and "Place it for me" works;
    - `/about` loads and the SOLID exhibit can be completed;
-   - a test message sent from `/contact` arrives.
-5. **Archive.** Zip `dist/` as `scs-<commit>-<date>.zip`. This archive is
-   exactly what gets uploaded.
+   - a test message sent from `/contact` lands in `server/var/outbox/`.
+     Locally nothing is emailed.
+4. **Package.** From a clean, tagged commit, run
+   `npm run package:release -- --target=staging --server-dir=<absolute path>`
+   (or `--target=production`). It produces the following in `release/`:
+   - `site-<commit>-<target>.zip`;
+   - `server-<commit>.zip`;
+   - `htaccess.<target>`;
+   - `SHA256SUMS`.
+
+   These are exactly what gets uploaded (`docs/staging.md` S4).
 
 ## Staging (recommended before the first release)
 
-1. In hPanel, create `staging.solidcodesolutionsllc.com` and protect it with
-   **Password Protect Directories**.
-2. Upload the release-candidate `dist/` contents to its document root.
-3. Add `Header set X-Robots-Tag "noindex, nofollow"` to the staging
-   `.htaccess` only.
-4. Run the validation checklist below against staging. The Open Graph check
-   needs the real domain, so do it right after release.
+Follow `docs/staging.md` S1–S5: the subdomain, password protection, PHP and
+the private `scs-server-staging` folder, then the upload of the packaged
+archives and the validation checklist. The Open Graph check needs the real
+domain, so do it right after release.
 
 ## Release
 

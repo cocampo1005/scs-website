@@ -51,5 +51,13 @@ describe("validateContact", () => {
     expect(isEmail("a@b.co")).toBe(true);
     expect(isEmail("a@b")).toBe(false);
     expect(isEmail("a b@c.com")).toBe(false);
+    expect(isEmail(`${"a".repeat(250)}@b.com`)).toBe(false);
+  });
+
+  it("applies the server's length limits and rejects line breaks in the name", () => {
+    expect(validateContact({ ...valid, name: "é".repeat(100) })).toEqual({});
+    expect(validateContact({ ...valid, name: "é".repeat(101) }).name).toMatch(/under 100/);
+    expect(validateContact({ ...valid, message: "a".repeat(5001) }).message).toMatch(/under 5,000/);
+    expect(validateContact({ ...valid, name: "Jane\r\nBcc: x@y.com" }).name).toBe("Please enter your name.");
   });
 });

@@ -27,6 +27,19 @@ describe("crawler files", () => {
     expect(rule.sort()).toEqual(PAGE_PATHS.filter((p) => p !== "/").map((p) => p.slice(1)).sort());
     expect(htaccess).toMatch(/ErrorDocument 404 \/index\.html/);
   });
+
+  it(".htaccess sends /api/contact to the PHP endpoint and 404s the rest of /api", () => {
+    const htaccess = read("public/.htaccess");
+    expect(existsSync(resolve(root, "public/api/contact.php"))).toBe(true);
+    const pass = htaccess.indexOf("RewriteRule ^api/contact\\.php$ - [L]");
+    const route = htaccess.indexOf("RewriteRule ^api/contact/?$ api/contact.php [L]");
+    const notFound = htaccess.indexOf("RewriteRule ^api(/|$) - [R=404,L]");
+    expect(pass).toBeGreaterThan(-1);
+    expect(route).toBeGreaterThan(pass);
+    expect(notFound).toBeGreaterThan(route);
+    // Must run before the real-file rule, or /api/<anything>.php would execute
+    expect(notFound).toBeLessThan(htaccess.indexOf("RewriteCond %{REQUEST_FILENAME} -f"));
+  });
 });
 
 describe("social previews", () => {

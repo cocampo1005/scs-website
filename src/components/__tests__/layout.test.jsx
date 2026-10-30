@@ -35,7 +35,9 @@ describe("Privacy page", () => {
   it("discloses the contact form processor and Google Ads, with a fixed date", () => {
     inRouter(<Privacy />);
     expect(screen.getByText(/Last updated/)).toHaveTextContent("October 30, 2026");
-    expect(screen.getByRole("link", { name: "EmailJS" })).toBeInTheDocument();
+    expect(screen.getByText(/processed on our own web server/)).toHaveTextContent("Hostinger");
+    expect(screen.queryByText(/EmailJS/)).toBeNull();
+    expect(screen.getByText(/deletes these records within 24/)).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: /Google Ads/ })).toBeInTheDocument();
     expect(screen.queryByText(/does not collect personal data/)).toBeNull();
   });

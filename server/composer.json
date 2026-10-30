@@ -1,0 +1,31 @@
+{
+    "name": "solid-code-solutions/contact-endpoint",
+    "description": "Contact form endpoint for solidcodesolutionsllc.com (PHPMailer over authenticated SMTP).",
+    "type": "project",
+    "license": "proprietary",
+    "require": {
+        "php": ">=8.2",
+        "ext-json": "*",
+        "ext-mbstring": "*",
+        "ext-openssl": "*",
+        "ext-pdo_sqlite": "*",
+        "phpmailer/phpmailer": "^7.1"
+    },
+    "autoload": {
+        "psr-4": { "Scs\\Contact\\": "src/" }
+    },
+    "autoload-dev": {
+        "psr-4": { "Scs\\Contact\\Tests\\": "tests/" }
+    },
+    "config": {
+        "platform": { "php": "8.2.0" },
+        "sort-packages": true,
+        "optimize-autoloader": true
+    },
+    "scripts": {
+        "test": "phpunit"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^11.5"
+    }
+}

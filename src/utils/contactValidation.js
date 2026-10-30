@@ -1,11 +1,18 @@
 // Contact form validation. Pure functions so the rules can be unit tested.
+// The server repeats these rules (server/src/ContactValidator.php); keep the
+// limits and messages in sync.
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+export const NAME_MAX = 100;
+export const EMAIL_MAX = 254;
+export const MESSAGE_MAX = 5000;
 
 export const onlyDigits = (s = "") => s.replace(/\D/g, "");
 
 export function isEmail(value = "") {
-  return EMAIL_RE.test(value.trim());
+  const email = value.trim();
+  return email.length <= EMAIL_MAX && EMAIL_RE.test(email);
 }
 
 // Phone is optional. `digits` is the full international number without "+"
@@ -22,10 +29,15 @@ export function validatePhone({ digits = "", dialCode = "" } = {}) {
 
 export function validateContact({ name = "", email = "", message = "", phone } = {}) {
   const errors = {};
-  if (name.trim().length < 2) errors.name = "Please enter your name.";
+  const nameLength = [...name.trim()].length;
+  const messageLength = [...message.trim()].length;
+  if (nameLength < 2 || /[\p{Cc}\u2028\u2029]/u.test(name)) errors.name = "Please enter your name.";
+  else if (nameLength > NAME_MAX) errors.name = "Please keep your name under 100 characters.";
   if (!isEmail(email)) errors.email = "Enter a valid email address.";
-  if (message.trim().length < 10)
+  if (messageLength < 10)
     errors.message = "Tell us a bit more — at least 10 characters.";
+  else if (messageLength > MESSAGE_MAX)
+    errors.message = "Please keep your message under 5,000 characters.";
   const phoneError = validatePhone(phone);
   if (phoneError) errors.phone = phoneError;
   return errors;

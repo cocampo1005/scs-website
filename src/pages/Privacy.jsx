@@ -87,11 +87,20 @@ export default function Privacy() {
           <p>
             When you use the contact form, we collect the name, email address
             and message you enter, and a phone or WhatsApp number if you choose
-            to give one. The form is delivered to our inbox through{" "}
-            <External href="https://www.emailjs.com/legal/privacy-policy/">EmailJS</External>,
-            an email delivery service that processes the message on our behalf.
-            If you email us or message us on WhatsApp directly, we receive the
-            details you include there.
+            to give one. The form is processed on our own web server and
+            delivered to our inbox through our email provider, Hostinger; no
+            other service receives it. If you email us or message us on
+            WhatsApp directly, we receive the details you include there.
+          </p>
+          <p className="mt-3">
+            To protect the form from spam and abuse, the server limits how many
+            requests and messages can come from one connection. For that it
+            briefly stores a pseudonymized (hashed) form of your IP address and
+            the time of each request, and deletes these records within 24
+            hours. It also keeps a
+            short technical log of form requests (time, result and the hashed
+            address) that never includes your name, email address or message,
+            and that is overwritten as it grows.
           </p>
           <p className="mt-3">
             We use this information only to reply to you and to discuss or

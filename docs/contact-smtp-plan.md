@@ -1,7 +1,41 @@
 # Contact form: replacing EmailJS with PHP + authenticated SMTP
 
-Status: **proposal, awaiting approval.** Nothing in this plan has been
-implemented. No credentials are requested or stored in the repository.
+Status: **approved; implemented on branch `feat/smtp-contact`** (roadmap
+increment 1). Not yet verified on staging. No credentials are requested or
+stored in the repository.
+
+### Implementation notes (where the code differs from the text below)
+
+- **Timing check.** The client sends `elapsedMs` (time since the form
+  mounted) instead of `startedAt`, so visitor clock skew can't trip it. A
+  missing value is allowed; only a number under `min_fill_ms` (3 s) is a trap.
+- **Two independent limits** in one SQLite file, each checked and recorded in
+  one `BEGIN IMMEDIATE` transaction:
+  - **Attempts.** This limit counts every POST, whatever its outcome:
+    - invalid fields, bad JSON or the wrong content type;
+    - an oversized body or a wrong origin;
+    - honeypot or timing traps, and SMTP failures.
+
+    The defaults are 20 per client per 10 minutes and 300 per hour
+    site-wide. It is checked right after the method, before any parsing.
+    Repeated bad requests therefore get 429 quickly.
+  - **Sends.** This limit counts messages handed to SMTP, failures included,
+    at 5 per client per hour and 30 per day site-wide. It is checked after
+    validation, so a typo never uses up a real visitor's sends.
+
+  Over-limit requests are not stored, so rows stay bounded by the limits under
+  a flood. The log rotates at 1 MB and keeps one old file, so it stays at
+  about 2 MB. Non-POST requests get 405 without touching the database.
+  Volumetric floods are beyond what a PHP endpoint can absorb; those are the
+  host's or CDN's job.
+- **Client IP.** `REMOTE_ADDR` by default. If the probe shows a CDN or proxy in
+  front of PHP, `client_ip_header` in `config.php` names the header, and only
+  its right-most entry (added by the proxy, not the visitor) is used.
+- **Prerendering** isn't in yet, so the endpoint ships in `dist/api/` (not
+  `build/client/api/`). Increment 2 must keep `public/api/contact.php`.
+- **Body format.** `{name, email, message, phone: {digits, dialCode, display} | null, website, elapsedMs}`.
+- **Local development** uses `npm run dev:api` (PHP's built-in server) with
+  a `file` transport that writes to `server/var/outbox/`; no mock.
 
 ## Recommendation
 

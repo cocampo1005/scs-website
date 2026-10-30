@@ -63,6 +63,22 @@ foreach ($candidates as $dir) {
     $out[] = $ok($writable) . ' writable (needed for var/ rate-limit store and log)';
 }
 
+// Proxy/CDN in front of PHP: decides config.php's client_ip_header. Header
+// names only; values (IP addresses) are not printed.
+$out[] = '';
+$out[] = '== Client IP headers';
+$out[] = '     REMOTE_ADDR is ' . (filter_var($_SERVER['REMOTE_ADDR'] ?? '', FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE) ? 'a public address' : 'private/reserved (a proxy is in front)');
+foreach (['HTTP_X_FORWARDED_FOR', 'HTTP_X_REAL_IP', 'HTTP_CF_CONNECTING_IP', 'HTTP_TRUE_CLIENT_IP', 'HTTP_X_CLIENT_IP'] as $h) {
+    if (!empty($_SERVER[$h])) {
+        $hops = count(explode(',', (string) $_SERVER[$h]));
+        $out[] = "     present {$h} ({$hops} " . ($hops === 1 ? 'entry' : 'entries') . ')';
+    }
+}
+$out[] = '     REMOTE_ADDR equals the right-most X-Forwarded-For entry: '
+    . (isset($_SERVER['HTTP_X_FORWARDED_FOR'])
+        ? (trim((string) array_slice(explode(',', (string) $_SERVER['HTTP_X_FORWARDED_FOR']), -1)[0]) === ($_SERVER['REMOTE_ADDR'] ?? '') ? 'yes' : 'no')
+        : 'n/a');
+
 // SMTP reachability and certificate verification (no login, no email)
 $out[] = '';
 $out[] = '== SMTP connectivity (smtp.hostinger.com)';

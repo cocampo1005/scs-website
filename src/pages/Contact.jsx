@@ -4,7 +4,6 @@ import { Mail, Send } from "lucide-react";
 import { WhatsappLogoIcon } from "@phosphor-icons/react";
 import { motion } from "framer-motion";
 import PhoneInput from "react-phone-input-2";
-import emailjs from "@emailjs/browser";
 import "react-phone-input-2/lib/style.css";
 import "../styles/phone-input.css";
 import GlowCard from "../components/GlowCard";
@@ -15,6 +14,7 @@ import SEO from "../components/SEO";
 import JsonLd from "../components/JsonLd";
 import { CASE_STUDIES } from "../constants/projectsData";
 import { validateContact } from "../utils/contactValidation";
+import { sendContactMessage } from "../utils/contactApi";
 
 const EMPTY_FORM = {
   name: "",
@@ -35,6 +35,19 @@ function fireAdsLead() {
   window.gtag?.("event", "conversion", { send_to: ADS_SEND_TO });
 }
 
+function sendErrorMessage(error) {
+  switch (error) {
+    case "validation":
+      return "Please fix the highlighted fields.";
+    case "rate_limited":
+      return "Too many attempts. Please try again later or email us directly.";
+    case "timeout":
+      return "Network seems slow. Please try again in a moment.";
+    default:
+      return "Couldn't send the message right now. Please try again or email us directly.";
+  }
+}
+
 export default function Contact() {
   const [searchParams] = useSearchParams();
   const [status, setStatus] = useState({ sending: false, ok: false, err: "" });
@@ -42,6 +55,12 @@ export default function Contact() {
   const [lastSentAt, setLastSentAt] = useState(0);
   const [openIdx, setOpenIdx] = useState(0);
   const [formData, setFormData] = useState(EMPTY_FORM);
+  // When the visitor started filling the form; the server treats near-instant sends as bots
+  const startedAtRef = useRef(0);
+
+  useEffect(() => {
+    startedAtRef.current = Date.now();
+  }, []);
 
   useScrollToHash(150, "nav");
 
@@ -107,47 +126,34 @@ export default function Contact() {
 
     const hasPhone = formData.phoneDigits && formData.phoneDigits !== formData.phoneDial;
 
-    try {
-      setStatus({ sending: true, ok: false, err: "" });
+    setStatus({ sending: true, ok: false, err: "" });
+    const result = await sendContactMessage({
+      name: formData.name.trim(),
+      email: formData.email.trim(),
+      message: formData.message.trim(),
+      phone: hasPhone
+        ? {
+            digits: formData.phoneDigits,
+            dialCode: formData.phoneDial,
+            display: formData.phoneDisplay,
+          }
+        : null,
+      website: formData.website,
+      elapsedMs: Date.now() - startedAtRef.current,
+    });
 
-      const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID;
-      const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
-      const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
-
-      const templateParams = {
-        name: formData.name.trim(),
-        email: formData.email.trim(),
-        phone: hasPhone ? formData.phoneDisplay : "—",
-        whatsappNumber: hasPhone ? formData.phoneDigits : "",
-        message: formData.message.trim(),
-        submitted_at: new Date().toLocaleString(),
-      };
-
-      // 12s safety timeout so the button can't get stuck
-      const sendPromise = emailjs.send(serviceId, templateId, templateParams, {
-        publicKey,
-      });
-      const timeout = new Promise((_, rej) =>
-        setTimeout(() => rej(new Error("timeout")), 12000)
-      );
-
-      await Promise.race([sendPromise, timeout]);
-
-      setStatus({ sending: false, ok: true, err: "" });
-      setLastSentAt(Date.now());
-      fireAdsLead();
-      formRef.current?.reset();
-      setFormData(EMPTY_FORM);
-    } catch (err) {
-      let msg =
-        "Couldn't send the message right now. Please try again or email us directly.";
-      const code = err?.status || err?.code || err?.message;
-      if (code === 429)
-        msg = "Too many attempts. Please wait a moment and try again.";
-      if (code === "timeout")
-        msg = "Network seems slow. Please try again in a moment.";
-      setStatus({ sending: false, ok: false, err: msg });
+    if (!result.ok) {
+      setErrors(result.fields || {});
+      setStatus({ sending: false, ok: false, err: sendErrorMessage(result.error) });
+      return;
     }
+
+    setStatus({ sending: false, ok: true, err: "" });
+    setLastSentAt(Date.now());
+    startedAtRef.current = Date.now();
+    fireAdsLead();
+    formRef.current?.reset();
+    setFormData(EMPTY_FORM);
   }
 
   const faq = [

@@ -141,3 +141,64 @@ test.describe("projects page", () => {
     await expect(page.locator("main")).not.toContainText(/[+-]\d+(\.\d+)?(%|×)/);
   });
 });
+
+test.describe("contact form", () => {
+  const conversions = (page) =>
+    page.evaluate(
+      () => (window.dataLayer || []).filter((a) => a[0] === "event" && a[1] === "conversion").length
+    );
+
+  async function fillForm(page) {
+    await page.route("**/googletagmanager.com/**", (route) => route.abort());
+    await page.goto("/contact");
+    for (const [name, value] of [
+      [/Your Name/, "Jane Doe"],
+      [/Email/, "jane@example.com"],
+      [/Tell us about your project/, "We need a booking site."],
+    ]) {
+      const field = page.getByRole("textbox", { name });
+      // Focus first: under mobile emulation fill() on an unfocused field is dropped
+      await field.click();
+      await field.fill(value);
+      await expect(field).toHaveValue(value);
+    }
+  }
+
+  test("posts JSON to /api/contact and records one conversion on success", async ({ page }) => {
+    let sent;
+    await page.route("**/api/contact", async (route) => {
+      sent = route.request();
+      await route.fulfill({ status: 200, contentType: "application/json", body: '{"ok":true}' });
+    });
+    await fillForm(page);
+    await page.getByRole("button", { name: "Send Message" }).click();
+
+    await expect(page.getByText("Thanks — we'll be in touch shortly.")).toBeVisible();
+    expect(sent.method()).toBe("POST");
+    expect(sent.headers()["content-type"]).toBe("application/json");
+    expect(sent.postDataJSON()).toMatchObject({ name: "Jane Doe", email: "jane@example.com", website: "" });
+    expect(await conversions(page)).toBe(1);
+  });
+
+  test("shows the server's errors and records no conversion", async ({ page }) => {
+    await page.route("**/api/contact", (route) =>
+      route.fulfill({
+        status: 429,
+        contentType: "application/json",
+        headers: { "Retry-After": "1200" },
+        body: '{"ok":false,"error":"rate_limited","retryAfter":1200}',
+      })
+    );
+    await fillForm(page);
+    await page.getByRole("button", { name: "Send Message" }).click();
+    await expect(page.getByText(/Too many attempts/)).toBeVisible();
+
+    await page.unroute("**/api/contact");
+    await page.route("**/api/contact", (route) =>
+      route.fulfill({ status: 503, contentType: "application/json", body: '{"ok":false,"error":"unavailable"}' })
+    );
+    await page.getByRole("button", { name: "Send Message" }).click();
+    await expect(page.getByText(/Couldn't send the message right now/)).toBeVisible();
+    expect(await conversions(page)).toBe(0);
+  });
+});

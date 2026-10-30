@@ -7,6 +7,13 @@ DirectoryIndex index.html
 <IfModule mod_rewrite.c>
   RewriteEngine On
 
+  # Contact endpoint (public/api/contact.php). Anything else under /api is a
+  # 404, never the app. The first rule stops the rewritten request from
+  # matching the 404 rule on mod_rewrite's second pass.
+  RewriteRule ^api/contact\.php$ - [L]
+  RewriteRule ^api/contact/?$ api/contact.php [L]
+  RewriteRule ^api(/|$) - [R=404,L]
+
   # Real files (assets, models, robots.txt, sitemap.xml) and folders as-is
   RewriteCond %{REQUEST_FILENAME} -f [OR]
   RewriteCond %{REQUEST_FILENAME} -d
