@@ -411,14 +411,16 @@ export default function SolidPuzzleScene({
   }, [parts, seed]);
 
   // Per-piece mutable state, updated every frame without touching React
+  // Pieces already placed before the board loaded (keyboard buttons) start in
+  // the wall.
   const runtime = useRef(null);
   if (runtime.current === null) {
     runtime.current = Object.fromEntries(
       parts.map((p) => [
         p.id,
         {
-          phase: "floating", // floating | dragging | returning | snapping | placed
-          pos: homes[p.id].clone(),
+          phase: placedIds.includes(p.id) ? "placed" : "floating", // floating | dragging | returning | snapping | placed
+          pos: placedIds.includes(p.id) ? p.target.clone() : homes[p.id].clone(),
           home: homes[p.id].clone(),
           dragTarget: new THREE.Vector2(),
           grab: new THREE.Vector2(),
@@ -441,7 +443,7 @@ export default function SolidPuzzleScene({
   const outlineRefs = useRef({});
   const stageRef = useRef(null);
   const glowRef = useRef(null);
-  const placedCount = useRef(0);
+  const placedCount = useRef(placedIds.length);
   const solveElapsed = useRef(0);
 
   // New homes: jump there on first load or a layout switch; otherwise (the tray

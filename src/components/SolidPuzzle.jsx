@@ -1,35 +1,14 @@
-import { Component, lazy, Suspense, useCallback, useEffect, useRef, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { useReducedMotion } from "framer-motion";
 import { RotateCcw, Sparkles } from "lucide-react";
 import CubeLoader from "./CubeLoader";
+import SceneBoundary from "./SceneBoundary";
+import { hasWebGL } from "../three/webgl";
 import SolidInfoPanel, { SolidInfoSheet } from "./SolidInfoPanel";
 import { LAYOUTS, SOLID_PIECES, SOLID_PIECE_BY_ID } from "../constants/solidPuzzleData";
 import { useMediaQuery, useSolidPuzzle } from "../hooks/useSolidPuzzle";
 
 const SolidPuzzleCanvas = lazy(() => import("./solid3d/SolidPuzzleCanvas"));
-
-function hasWebGL() {
-  try {
-    const canvas = document.createElement("canvas");
-    const gl = canvas.getContext("webgl2") || canvas.getContext("webgl");
-    gl?.getExtension("WEBGL_lose_context")?.loseContext();
-    return !!gl;
-  } catch {
-    return false;
-  }
-}
-
-// If the 3D board throws (driver issues, lost context on load), fall back to the
-// text version instead of taking the page down.
-class BoardBoundary extends Component {
-  state = { failed: false };
-  static getDerivedStateFromError() {
-    return { failed: true };
-  }
-  render() {
-    return this.state.failed ? this.props.fallback : this.props.children;
-  }
-}
 
 const FALLBACK_NOTE = (
   <p className="absolute inset-0 flex items-center justify-center p-6 text-center text-gray-300">
@@ -50,7 +29,11 @@ export default function SolidPuzzle() {
   const { attempt, seed, placedIds, activeInfoId, placedCount, solved } = puzzle;
   const activePiece = activeInfoId ? SOLID_PIECE_BY_ID[activeInfoId] : null;
 
-  const [webgl] = useState(hasWebGL);
+  const [webglSupported] = useState(hasWebGL);
+  // A lost context (GPU reset, driver issue) also falls back to the text version
+  const [contextLost, setContextLost] = useState(false);
+  const handleContextLost = useCallback(() => setContextLost(true), []);
+  const webgl = webglSupported && !contextLost;
   const [ready, setReady] = useState(false);
   const handleReady = useCallback(() => setReady(true), []);
 
@@ -118,7 +101,12 @@ export default function SolidPuzzle() {
 
   // Keyboard / assistive placement goes through the same snap as a drop
   const commandsRef = useRef(null);
-  const placeWithKeyboard = (id) => commandsRef.current?.place(id);
+  // Before the board has loaded, or without WebGL, the placement is recorded
+  // directly; a board that loads later starts with those pieces in the wall.
+  const placeWithKeyboard = (id) => {
+    if (commandsRef.current) commandsRef.current.place(id);
+    else puzzle.place(id);
+  };
 
   const onChipClick = (piece) => {
     if (placedIds.includes(piece.id)) puzzle.toggleInfo(piece.id);
@@ -184,7 +172,7 @@ export default function SolidPuzzle() {
         aria-hidden="true"
       >
         {webgl ? (
-          <BoardBoundary fallback={FALLBACK_NOTE}>
+          <SceneBoundary fallback={FALLBACK_NOTE}>
             {nearView && (
               <Suspense fallback={null}>
                 <SolidPuzzleCanvas
@@ -201,11 +189,12 @@ export default function SolidPuzzle() {
                   onStageChange={handleStageChange}
                   placedIds={placedIds}
                   commandsRef={commandsRef}
+                  onContextLost={handleContextLost}
                 />
               </Suspense>
             )}
             <CubeLoader ready={ready} />
-          </BoardBoundary>
+          </SceneBoundary>
         ) : (
           FALLBACK_NOTE
         )}

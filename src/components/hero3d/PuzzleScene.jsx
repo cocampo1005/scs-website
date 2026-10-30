@@ -260,6 +260,31 @@ export default function PuzzleScene({
     [pieceMaterials, indicatorMaterials, bubbleGeometry, bubbles],
   );
 
+  // A touch that starts on the logo cube drags it, so stop the browser from
+  // treating it as a page scroll. Touches anywhere else keep scrolling the page.
+  useEffect(() => {
+    const el = gl.domElement;
+    const raycaster = new THREE.Raycaster();
+    const ndc = new THREE.Vector2();
+    const onTouchStart = (e) => {
+      if (e.touches.length !== 1 || !logoRef.current) return;
+      // pointerdown fires before touchstart, so this touch may already be dragging
+      if (phase.current !== "idle" && phase.current !== "dragging") return;
+      const touch = e.touches[0];
+      const rect = el.getBoundingClientRect();
+      ndc.set(
+        ((touch.clientX - rect.left) / rect.width) * 2 - 1,
+        -((touch.clientY - rect.top) / rect.height) * 2 + 1,
+      );
+      raycaster.setFromCamera(ndc, camera);
+      if (raycaster.intersectObject(logoRef.current, true).length > 0 && e.cancelable) {
+        e.preventDefault();
+      }
+    };
+    el.addEventListener("touchstart", onTouchStart, { passive: false });
+    return () => el.removeEventListener("touchstart", onTouchStart);
+  }, [gl, camera]);
+
   const setCursor = (value) => {
     gl.domElement.style.cursor = value;
   };

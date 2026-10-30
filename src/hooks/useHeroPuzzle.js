@@ -1,8 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { hasWebGL } from "../three/webgl";
 
 export function useHeroPuzzle() {
+  const [webgl] = useState(hasWebGL);
+  const [failed, setFailed] = useState(false);
   const [ready, setReady] = useState(false);
-  const [showUI, setShowUI] = useState(false);
+  const [solved, setSolved] = useState(false);
   const [skipped, setSkipped] = useState(false);
   const [inView, setInView] = useState(true);
   const [pageVisible, setPageVisible] = useState(
@@ -41,26 +44,33 @@ export function useHeroPuzzle() {
 
   const handleReady = useCallback(() => setReady(true), []);
 
+  // The scene could not render (model failed to load, shader error, lost
+  // context): show the static poster instead
+  const handleFailure = useCallback(() => setFailed(true), []);
+
   // Called once by the scene when the logo cube settles into its slot
   const handleSolved = useCallback(() => {
     if (solvedRef.current) return;
     solvedRef.current = true;
-    setShowUI(true);
+    setSolved(true);
   }, []);
 
-  const skipPuzzle = useCallback(() => {
-    setSkipped(true);
-    handleSolved();
-  }, [handleSolved]);
+  // "Place it for me": the scene animates the same snap as a successful drag
+  // and then reports solved
+  const skipPuzzle = useCallback(() => setSkipped(true), []);
+
+  const sceneAvailable = webgl && !failed;
 
   return {
     containerRef,
-    ready,
-    showUI,
+    sceneAvailable,
+    ready: ready || !sceneAvailable,
+    solved,
     skipped,
     active: inView && pageVisible,
     handleReady,
     handleSolved,
+    handleFailure,
     skipPuzzle,
   };
 }

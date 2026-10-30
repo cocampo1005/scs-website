@@ -18,6 +18,11 @@ export const CAMERA = {
 // Below this width the camera zooms out so the puzzle keeps some breathing room
 export const ZOOM_REFERENCE_WIDTH = 440;
 
+// The puzzle (drag hint down to the cube's base) spans about `contentHeight`
+// world units, centred `contentOffset` units below the camera axis. Used to fit
+// it inside the hero's stage below the copy.
+export const FRAMING = { contentHeight: 720, contentOffset: 136 };
+
 export const BACKGROUND = "#000000";
 
 // Logo cube travels straight down along Y into the missing slot.

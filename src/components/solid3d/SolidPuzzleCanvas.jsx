@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import { Canvas } from "@react-three/fiber";
 import SolidPuzzleScene from "./SolidPuzzleScene";
 import { SOLID_SCENE } from "../../constants/solidPuzzleData";
+import { watchContextLoss } from "../../three/webgl";
 
 export default function SolidPuzzleCanvas({
   active,
@@ -17,6 +18,7 @@ export default function SolidPuzzleCanvas({
   onStageChange,
   placedIds,
   commandsRef,
+  onContextLost,
 }) {
   // "never" while off-screen or the tab is hidden. The idle float needs a steady
   // loop; with reduced motion nothing floats, so render on demand.
@@ -32,6 +34,9 @@ export default function SolidPuzzleCanvas({
       gl={{ antialias: true, alpha: true }}
       // Vertical swipes outside a piece still scroll the page
       style={{ touchAction: "pan-y" }}
+      onCreated={({ gl }) => {
+        if (onContextLost) watchContextLoss(gl.domElement, onContextLost);
+      }}
     >
       <Suspense fallback={null}>
         <SolidPuzzleScene

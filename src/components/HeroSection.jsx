@@ -1,150 +1,169 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useReducedMotion } from "framer-motion";
-const HeroPuzzleCanvas = lazy(() => import("./hero3d/HeroPuzzleCanvas"));
+import { ArrowRight } from "lucide-react";
 import { useHeroPuzzle } from "../hooks/useHeroPuzzle";
-import Reveal, { Stagger } from "../components/Reveal";
 import CubeLoader from "./CubeLoader";
+import SceneBoundary from "./SceneBoundary";
+import posterImg from "../assets/images/hero-puzzle-solved.webp";
+const HeroPuzzleCanvas = lazy(() => import("./hero3d/HeroPuzzleCanvas"));
+
+// Shown instead of the 3D puzzle when WebGL is unavailable or the scene fails
+function PuzzlePoster() {
+  return (
+    <img
+      src={posterImg}
+      alt="The completed Solid Code Solutions cube, with the logo piece fitted into place"
+      width="380"
+      height="300"
+      className="absolute inset-0 m-auto max-h-full w-auto object-contain [mask-image:radial-gradient(closest-side,#000_70%,transparent)]"
+    />
+  );
+}
+
+// Where the stage sits inside the hero, so the canvas (which spans the whole
+// hero) can frame the puzzle there
+function useStageGeometry(sectionRef, stageRef) {
+  const [stage, setStage] = useState(null);
+  useEffect(() => {
+    const section = sectionRef.current;
+    const el = stageRef.current;
+    if (!section || !el) return;
+    const measure = () => {
+      const s = section.getBoundingClientRect();
+      const r = el.getBoundingClientRect();
+      const next = {
+        height: Math.round(r.height),
+        offsetY: Math.round(r.top + r.height / 2 - (s.top + s.height / 2)),
+      };
+      setStage((prev) =>
+        prev && prev.height === next.height && prev.offsetY === next.offsetY ? prev : next
+      );
+    };
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(section);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [sectionRef, stageRef]);
+  return stage;
+}
 
 export default function HeroSection() {
   const {
     containerRef,
+    sceneAvailable,
     ready,
-    showUI,
+    solved,
     skipped,
     active,
     handleReady,
     handleSolved,
+    handleFailure,
     skipPuzzle,
   } = useHeroPuzzle();
   const reducedMotion = useReducedMotion();
+  const stageRef = useRef(null);
+  const stage = useStageGeometry(containerRef, stageRef);
 
   return (
-    <section className="relative h-[100svh] md:min-h-[800px] overflow-hidden flex flex-col items-center justify-start pt-[10svh] md:pt-[clamp(10vh,18vh,24vh)]">
-      {/* 3D puzzle background */}
-      <div className="absolute inset-0" aria-hidden="true">
-        <div
-          ref={containerRef}
-          className={`h-full w-full overscroll-contain select-none ${
-            showUI ? "touch-auto" : "touch-none"
-          }`}
-        >
-          <Suspense fallback={null}>
-            <HeroPuzzleCanvas
-              active={active}
-              continuous={!reducedMotion}
-              skipped={skipped}
-              reducedMotion={!!reducedMotion}
-              onSolved={handleSolved}
-              onReady={handleReady}
-            />
-          </Suspense>
-          <CubeLoader ready={ready} />
+    <section
+      ref={containerRef}
+      aria-labelledby="hero-heading"
+      className="relative isolate flex min-h-[100svh] flex-col items-center overflow-hidden px-4 pt-28 pb-10 md:pt-32"
+    >
+      {/* 3D puzzle: the canvas spans the hero so its lighting and bubbles fill the
+          background; the camera frames the puzzle inside the stage below the copy */}
+      {sceneAvailable && (
+        <div className="absolute inset-0 -z-10 select-none" aria-hidden="true">
+          <SceneBoundary fallback={null} onError={handleFailure}>
+            <Suspense fallback={null}>
+              <HeroPuzzleCanvas
+                active={active}
+                continuous={!reducedMotion}
+                skipped={skipped}
+                reducedMotion={!!reducedMotion}
+                stage={stage}
+                onSolved={handleSolved}
+                onReady={handleReady}
+                onContextLost={handleFailure}
+              />
+            </Suspense>
+          </SceneBoundary>
         </div>
-      </div>
-
-      {/* Skip puzzle button for accessibility */}
-      <button
-        onClick={skipPuzzle}
-        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-accent-fuchsia focus:text-white focus:rounded-lg focus:font-semibold"
-        aria-label="Skip interactive puzzle and view main content"
-      >
-        Skip to Main Content
-      </button>
-
-      {/* Copy block */}
-      <div className="relative text-center max-w-5xl p-4 z-10">
-        {/* Pre-solve headline */}
-        <div className={showUI ? "hidden" : "block"}>
-          <h2 className="font-logo text-2xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-violet-200 to-purple-300 bg-clip-text text-transparent">
-            Can't Seem to Find a Digital Solution That Really Fits?
-          </h2>
-        </div>
-
-        {/* Post-solve content (gated) */}
-        <div
-          aria-hidden={!showUI}
-          inert={!showUI}
-          className={`
-            transition-all duration-700 ease-out will-change-transform
-            ${
-              showUI
-                ? "opacity-100 translate-y-0"
-                : "opacity-0 translate-y-3 absolute inset-0 pointer-events-none"
-            }
-            motion-reduce:translate-x-0 motion-reduce:translate-y-0 motion-reduce:transition-none
-          `}
-        >
-          <Stagger gap={120}>
-            <Reveal
-              as="h1"
-              active={showUI}
-              className="font-logo text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-accent-fuchsia to-accent-purple bg-clip-text text-transparent"
-            >
-              The Missing Piece to Your Digital Solution
-            </Reveal>
-
-            <Reveal
-              as="p"
-              active={showUI}
-              className="font-sans text-lg md:text-xl text-gray-light mb-8 max-w-3xl mx-auto"
-            >
-              Solid Code Solutions builds tailored websites and web applications
-              that click into place for your brand, your users, and your goals.
-            </Reveal>
-
-            <Reveal
-              as="nav"
-              active={showUI}
-              className="flex flex-nowrap text-sm md:text-lg gap-4 md:gap-10 justify-center"
-              aria-label="Primary navigation"
-            >
-              <Link
-                to="/contact"
-                className="btn-primary"
-                tabIndex={showUI ? 0 : -1}
-                aria-disabled={!showUI}
-              >
-                Start Your Project
-              </Link>
-              <Link
-                to="/projects"
-                className="btn-secondary"
-                tabIndex={showUI ? 0 : -1}
-                aria-disabled={!showUI}
-              >
-                View Our Work
-              </Link>
-            </Reveal>
-          </Stagger>
-        </div>
-      </div>
-
-      {/* Scroll indicator */}
-      {showUI && (
-        <button
-          type="button"
-          onClick={() => {
-            const el = document.getElementById("services");
-            if (el) {
-              const y =
-                el.getBoundingClientRect().top + window.pageYOffset - 80;
-              window.scrollTo({ top: y, behavior: "smooth" });
-            }
-          }}
-          className="absolute bottom-8 animate-bounce cursor-pointer"
-          aria-label="Scroll to services"
-        >
-          <div className="w-6 h-10 border-2 border-accent-purple rounded-full flex justify-center">
-            <div className="w-1.5 h-3 bg-accent-purple rounded-full mt-2"></div>
-          </div>
-        </button>
       )}
+
+      {/* The offer is readable before, during and after the puzzle */}
+      <div className="relative z-10 mx-auto max-w-4xl text-center">
+        <p className="mb-4 font-display text-xs font-semibold uppercase tracking-[0.2em] text-accent-purple-light md:text-sm">
+          Custom software development
+        </p>
+        <h1
+          id="hero-heading"
+          className="mb-5 bg-gradient-to-r from-accent-fuchsia to-accent-purple bg-clip-text font-logo text-4xl font-bold leading-tight text-balance text-transparent md:text-[3.5rem]"
+        >
+          Custom Software. Built Around Your Business.
+        </h1>
+        <p className="mx-auto mb-8 max-w-2xl text-base text-gray-light md:text-xl">
+          We build reliable applications that streamline your workflows, connect
+          your tools, and solve the problems off-the-shelf products leave behind.
+        </p>
+        <div className="flex flex-wrap justify-center gap-3 text-sm md:gap-6 md:text-lg">
+          <Link to="/contact" className="btn-primary">
+            Discuss Your Project
+          </Link>
+          <Link to="/projects" className="btn-secondary">
+            Explore Our Work
+          </Link>
+        </div>
+      </div>
+
+      {/* Stage: the puzzle is framed here (or its poster when 3D is unavailable) */}
+      <div
+        ref={stageRef}
+        className="pointer-events-none relative z-0 mt-4 h-[clamp(300px,46svh,480px)] w-full max-w-3xl"
+      >
+        {!sceneAvailable && <PuzzlePoster />}
+        {sceneAvailable && <CubeLoader ready={ready} />}
+      </div>
+
+      {/* Hint and touch/keyboard alternative before; the story beat after */}
+      <div className="relative z-10 flex min-h-12 flex-wrap items-center justify-center gap-x-4 gap-y-2 text-center">
+        {sceneAvailable && !solved ? (
+          <>
+            <p className="text-sm text-gray-light md:text-base">
+              Can’t find software that fits? Drag the missing piece into place.
+            </p>
+            <button
+              type="button"
+              onClick={skipPuzzle}
+              disabled={skipped}
+              className="min-h-11 rounded-lg border border-accent-purple/40 bg-white/5 px-4 text-sm font-semibold text-white transition-colors hover:border-accent-fuchsia/70 hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-fuchsia disabled:opacity-60"
+            >
+              Place it for me
+            </button>
+          </>
+        ) : (
+          <p
+            className="flex flex-wrap items-center justify-center gap-x-3 text-sm text-gray-light md:text-base motion-safe:animate-panel-in"
+            aria-live="polite"
+          >
+            <span className="font-semibold text-white">
+              Every piece has a purpose. Every solution is built to fit.
+            </span>
+            <Link
+              to="/projects?case=street-cat-clinic#featured"
+              className="inline-flex items-center gap-1 text-accent-fuchsia-light underline-offset-4 hover:underline"
+            >
+              See one in practice <ArrowRight className="size-4" aria-hidden="true" />
+            </Link>
+          </p>
+        )}
+      </div>
 
       {/* Bottom gradient fade */}
       <div
-        className="pointer-events-none absolute inset-x-0 bottom-0 h-[10vh] z-10
-                  bg-gradient-to-t from-primary-dark-purple via-primary-dark-purple/50 to-transparent"
+        className="pointer-events-none absolute inset-x-0 bottom-0 h-[10vh] bg-gradient-to-t from-primary-dark-purple via-primary-dark-purple/50 to-transparent"
         aria-hidden="true"
       />
     </section>
