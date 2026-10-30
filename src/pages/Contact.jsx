@@ -318,9 +318,6 @@ export default function Contact() {
                         >
                           +1 (954) 559-2944
                         </a>
-                        <p className="text-xs text-white/60 mt-2">
-                          Mon—Fri, 9–6 ET
-                        </p>
                       </div>
                     </div>
                   </GlowCard>
