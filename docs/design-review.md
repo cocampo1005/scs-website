@@ -1,63 +1,91 @@
-# Precision × Cinematic: final design proposal
+# Precision × Cinematic: final design specification
+
+Status: **direction approved; final responsive review pending.** Do not start
+the production redesign until the canvas below is confirmed.
 
 Canvas: https://claude.ai/artifact/UbeffBeJC7nsPvUSPrjaga (private until shared)
 
-## What the canvas contains
-
 | Board | Covers |
 |---|---|
-| Homepage · desktop | Free-floating R3F cube on one continuous engineering grid (faded behind the copy). The software-first hero copy and CTAs are visible before solving. Then: client strip, featured-work bento (Street Cat Clinic, MeowMax), problem → fitted-solution rows, services bento (custom software dominant, websites as a slim secondary strip), process, inquiry bento, footer |
-| Hero prototype (press Play) | Pick up the piece → drop. Then: lock-in flare, a light wave from behind the mesh, grid lines lighting up, pulses travelling and branching along the grid, fade to ambient, then the Input → Process → Software beat. A tweak toggles reduced motion |
-| Hero states | Loading, idle, mid-drag, lock-in, wave, branching, settle, story beat, reduced motion, no-WebGL. Includes architecture notes |
-| Mobile | Hero (idle and solved with a simplified circuit), work bento, services and CTA, at 390 px |
-| Case study | Street Cat Clinic page: problem and built panels, key-screens bento, outcomes, a slot for verified results, CTA |
-| About | Story, SOLID exhibit framed in a bento with piece controls and the info panel, values |
-| Contact | Inquiry form as the feature tile, contact cards, "what happens next", FAQ accordion |
-| Design system | Color roles with contrast, gradients and lighting, type scale, spacing and grid, bento rules, components and states, responsive rules, motion tokens, circuit timeline, accessibility rules |
+| Homepage · desktop | Free-floating cube on a continuous grid, the approved headline, story strip at the bottom of the hero, bento sections |
+| Hero prototype (Play) | Drag/place → circuit sequence → story strip lights up; "Replay the puzzle"; reduced-motion toggle |
+| Hero states | Loading → idle → mid-drag → lock-in → wave → branching → settle, plus reduced motion and no-WebGL |
+| Mobile (390) | Hero, solved state, work and services bentos, CTA |
+| Tablet (820, 1024) | Stacked hero with 6-column bentos; split hero starting at 1024 |
+| Services (`/services`) | Custom software as the dominant service; automation and modernization secondary; websites supporting; anchors per service |
+| Work (`/work`) | Software case studies first; "Websites & web experiences" secondary (LMSYC and Bio-Coatings keep case-study pages) |
+| Case study, About, Contact | Bento page templates |
+| Design system | Tokens, type, spacing, bento rules, components, responsive and motion specifications |
 
-Screenshots are the original app captures (fictional demo data). 3D imagery is captured
-from the real scenes.
+Screenshots are the original app captures (fictional demo data). 3D imagery is
+captured from the real scenes.
 
-## How the reactive grid is built (for approval)
+## Decisions (approved 30 Oct 2026)
 
-- **R3F renders only the puzzle.** A separate layer behind the canvas draws the
-  grid and the circuit with one SVG and CSS keyframes (`clip-path`,
-  `stroke-dashoffset`, opacity). There is no second WebGL context.
-- **One event coordinates the two layers.** The scene emits `solved` with the
-  cube's screen position. The hero sets `data-hero="solved"` and CSS
-  variables, and CSS does the rest, so there are no per-frame React updates.
-- **Scaled by device.**
-  - Desktop: 6 paths and 4 branches, about 2.2 s, played once.
-  - Tablet: 5 paths.
-  - Phone: 3 paths and no branching.
-  - Reduced motion: opacity only.
-  - No WebGL: the circuit never plays.
+1. **Headline.** "Custom Software. Built Around Your Business." The
+   missing-piece idea carries through the supporting line, the puzzle hint and
+   the solved line "Every piece has a purpose."
+2. **Circuit sequence.**
+   - **Timing.** About 2.2 s target: lock-in flare (0–150 ms), wave and grid
+     light (150–600 ms), pulses and branches (600–1400 ms), settle (to about
+     2.2 s).
+   - **Focus.** The cube stays the brightest element. Pulses are 2 px with a
+     soft glow, and the grid lights up to 40% at most.
+   - **Plays on:** a deliberate solve (drag or "Place it for me") and on every
+     solve after a replay.
+   - **Never plays on:** a restored session state, or navigation.
+   - **Profiling.** If a mid-range phone drops below 50 fps during the
+     sequence, cut paths first, then branch count, then duration.
+3. **Session persistence.**
+   - **What is stored.** Solving stores `scs:hero-solved=1` in
+     `sessionStorage`. A new browser session starts unsolved.
+   - **Hydration.** The value is read **after mount**, so prerendered HTML
+     and the first client render always match (the unsolved layout). A
+     restored session then jumps straight to the assembled cube with no
+     animation and no circuit.
+   - **Replay.** "Replay the puzzle" (a small text button next to the solved
+     line) clears the flag and returns the pieces to the start.
+4. **Story strip.**
+   - **Placement.** "Input → Process → Software" sits in a thin band at the
+     bottom of the hero, muted at about 45% opacity before solving.
+   - **After solving.** It lights up 1.9 s after a solve (or at once with
+     reduced motion): the nodes brighten, and the wires take the
+     fuchsia gradient.
+   - It never overlaps the cube, copy, CTAs or navigation, and is not
+     interactive.
+5. **Typography.**
+   - **Families.** Space Grotesk (500/600/700) for display, Work Sans
+     (400/500/600) for body, JetBrains Mono (500) sparingly for labels, and
+     Rajdhani (700) for the wordmark and the 3D label.
+   - **Weights.** Four families with only these weights; Rajdhani is
+     self-hosted.
+6. **Dark only** for launch.
+7. **`/services` page.**
+   - **Hierarchy.** Custom software is the feature tile; automation and
+     modernization are secondary tiles; websites are a slim supporting
+     strip.
+   - **SEO.** Each service has an anchor (`#custom`, `#automation`,
+     `#modernization`, `#websites`) and its own H2, so the page can grow into
+     sub-pages later.
+   - **Homepage.** It keeps a short services bento linking to `/services`.
+8. **Portfolio.**
+   - **Featured.** Street Cat Clinic and MeowMax are the featured software
+     case studies.
+   - **Secondary.** Let Me Style Your Career and Bio-Coatings/Blast-It-Off keep
+     case-study pages under "Websites & web experiences". Icon Group,
+     A & A Recreations and ELC stay as cards.
+   - **Redirects.** All existing `/projects?case=…` links redirect (301) to
+     `/work/<slug>`.
+9. **Screenshots.** The originals (fictional demo data) are used as-is.
+10. **Tablet.** Explicit boards at 820 and 1024:
+    - **Below 1024.** The hero stacks (copy centred above a 440 px stage) and
+      bentos use 6 columns.
+    - **From 1024.** The hero splits, the cube is 0.68× its desktop size, the
+      circuit uses 5 paths, and feature tiles span 7 columns or fewer.
 
-## Decisions I need from you
+## Remaining open points (content, not design)
 
-1. **Hero copy.** "Custom software. Built around your business." (brief option
-   A). Approve, or pick B or C.
-2. **Circuit intensity.** Is the prototype's brightness and duration (about
-   2.2 s) right, or should it be subtler or shorter? Should it replay on every
-   solve, or only the first time per session?
-3. **Solved state on return visits.** Keep the hero solved for the rest of the
-   browser session (no re-solving after navigating back), or always reset?
-4. **Story beat placement.** Under the cube (as drawn), or as a strip at the
-   bottom of the hero?
-5. **Typefaces.** Keep Space Grotesk (display) and Work Sans (body) from the
-   current site, with JetBrains Mono for labels and Rajdhani only for the
-   wordmark and 3D text?
-6. **Dark only.** No light theme for launch?
-7. **Navigation.** Services · Work · About · Contact, plus a "Discuss your
-   project" button. Should Services be its own page (`/services`), or only a
-   homepage section with anchors? I recommend its own page; it helps SEO for
-   "custom software development".
-8. **Portfolio scope.** Street Cat Clinic and MeowMax get full case-study pages.
-   Should LMSYC and Bio-Coatings/Blast-It-Off get full pages under a
-   "Websites" group, or stay as cards?
-9. **Screenshots.** Resolved: the original screenshots show fictional demo data and are used as-is.
-10. **Tablet.** The canvas shows desktop and phone, with tablet covered by the
-    responsive rules. Do you want explicit tablet boards before approval?
-
-Once these are settled, I'll update the canvas and mark it final. I won't
-start the production redesign until you approve the result.
+- `/services`: answer "Who owns the code?" with your standard terms (shown as a
+  placeholder).
+- Case-study architecture details marked `[Confirm …]`.
+- Client logo permissions (`docs/content-review.md`).
