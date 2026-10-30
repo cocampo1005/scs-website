@@ -84,3 +84,36 @@ non-US targeting, check with a qualified advisor.
    load or update only after the visitor agrees.
 
 Until you decide, the development branch keeps the tag exactly as it is.
+
+## How to check your Google Ads account (about 5 minutes)
+
+Sign in at ads.google.com with the account that owns `AW-17675252735`. The
+customer ID is shown top-right; the tag ID's numbers identify the
+conversion account.
+
+1. **Active campaigns.** Go to **Campaigns** (left menu). Set the date range
+   to "Last 30 days" and the status filter to "All but removed". Note:
+   - any campaign with status **Eligible** or **Enabled**;
+   - whether it had any **Impressions** or **Cost** in the period;
+   - its end date, if it has one.
+2. **Is the contact conversion used?**
+   - Go to **Goals → Conversions → Summary** and find the conversion action
+     whose tag ends in `cPPICNvM37QbEP_nm-xB`.
+   - Note its **Status** ("Recording conversions", "No recent conversions" or
+     "Inactive"), its **Action optimization** ("Primary" or "Secondary"), and
+     whether any campaign uses it as a goal.
+3. **Remarketing.**
+   - Go to **Tools → Shared library → Audience manager → Your data segments**.
+     Website visitors segments mean remarketing lists are being built.
+   - Under **Your data sources → Google Ads tag**, see whether
+     "Personalized advertising" or remarketing is turned on.
+4. **Targeted countries.** For each active campaign, open **Settings →
+   Locations**. Note the countries or regions targeted, and whether the
+   location option is "Presence" or "Presence or interest".
+5. **Billing.** Under **Billing → Summary**, check whether there have been
+   charges recently. This confirms whether advertising is actually running.
+
+**Send me:** "active: yes/no; conversion primary/secondary/unused;
+remarketing on/off; countries: …". I'll recommend removing the tag or keeping
+it, along with the matching consent and privacy changes. Nothing changes
+until you decide.

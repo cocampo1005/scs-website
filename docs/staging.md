@@ -10,29 +10,53 @@ production.
 ## S0. Back up production and capture its server config first **(you)**
 
 Do this before anything else, so we compare against the real server rather
-than assumptions.
+than assumptions. **Never leave a backup archive inside `public_html`** (or
+any folder a domain serves). Anything there can be downloaded by URL.
 
-1. hPanel → Websites → solidcodesolutionsllc.com → **File Manager** → open
-   `public_html`.
-2. Enable **Show hidden files** (settings gear). Download `.htaccess` and keep
-   it as `production.htaccess`.
-3. Select everything in `public_html`, then **Compress → zip** as
-   `public_html-backup-2026-xx-xx.zip`, and download it. This is the rollback
-   copy of the live site.
-4. Note the full path shown at the top of File Manager (for example
-   `/home/u123456789/domains/solidcodesolutionsllc.com/public_html`).
+1. Preferred: hPanel → Websites → solidcodesolutionsllc.com → **Files →
+   Backups** → generate or select the latest **Files** backup → **Download**.
+   The archive is created by Hostinger outside the web root and downloaded
+   straight to your computer.
+2. If you can only use File Manager:
+   - **Compress.** Compress `public_html` into the folder **above** it (for
+     example `/home/u…/domains/solidcodesolutionsllc.com/backups/`), not
+     inside it.
+   - **Download.** Download the archive.
+   - **Delete.** Delete the server copy unless you deliberately keep backups
+     in that non-public folder.
+3. Store the downloaded backup privately, for example in an encrypted folder.
+   It contains the live site, including the unsanitized screenshots.
+4. File Manager → `public_html` → enable **Show hidden files** → download
+   `.htaccess` as `production.htaccess`.
+5. Note the full path shown at the top of File Manager.
 
-**Send me:** the contents of `production.htaccess` (it contains no secrets)
-and the full path from step 4. I'll merge any rules it has that our
-`public/.htaccess` lacks (HTTPS redirects, caching, security headers), and
-show you the diff before we use it.
+Before sending me `production.htaccess`, check it for secrets. Replace with
+`[REDACTED]` any line containing:
+
+- `password`, `passwd` or `AuthUserFile` paths you consider private;
+- `token`, `key`, `secret` or API URLs with query keys;
+- `SetEnv` values that look like credentials.
+
+Paths and normal rewrite or redirect rules are fine to share.
+
+**Send me:** the redacted `production.htaccess` and the full path from step 5.
+I'll merge any rules our `public/.htaccess` lacks (HTTPS redirects, caching,
+security headers) and show you the diff before anything is uploaded.
 
 ## S1. Create the staging subdomain **(you)**
 
 1. hPanel → Domains → **Subdomains** → create `staging`.
-2. If hPanel offers a **custom folder**, choose one outside the main site, so
-   staging files can't be reached through the production domain. If it insists
-   on `public_html/staging`, that works too; S4 handles it.
+2. If hPanel offers a **custom folder**, choose one outside the main site's
+   `public_html`, so staging files can't be reached through the production
+   domain. If it insists on `public_html/staging`, that works, but production
+   then needs one extra rule (part of the merged production `.htaccess` you'll
+   review). The rule makes `https://solidcodesolutionsllc.com/staging/...`
+   return 404, whatever the password protection:
+   ```
+   RewriteCond %{HTTP_HOST} ^(www\.)?solidcodesolutionsllc\.com$ [NC]
+   RewriteRule ^staging(/|$) - [R=404,L]
+   ```
+   Until that rule is live, the password protection from S2 still blocks access.
 3. Open `https://staging.solidcodesolutionsllc.com` once and confirm an SSL
    certificate is issued (hPanel → Security → SSL; activate it for the
    subdomain if needed).
@@ -144,7 +168,7 @@ share the staging password temporarily, or you can run them.
 
 These steps run only after you approve production.
 
-1. **Back up.** Take a fresh backup zip of production `public_html` (S0, step 3).
+1. **Back up.** Take a fresh production backup outside the web root (S0, steps 1–3).
 2. **Server folder.** Create `scs-server/` for production, the same way as S3
    step 4, with its own `config.php`.
 3. **Upload.** Upload `site-<commit>.zip` to production `public_html` and
@@ -156,8 +180,9 @@ These steps run only after you approve production.
    password checks. Send one real contact message.
 
 **Rollback (about 5 minutes):**
-1. Delete the contents of `public_html` except the backup zip.
-2. Extract the backup zip in place.
+1. Upload the backup archive to the folder above `public_html` (not inside
+   it), then delete the contents of `public_html`.
+2. Extract the backup into `public_html`, then delete the uploaded archive.
 3. Purge the CDN cache.
 
 `scs-server/` can stay, because nothing references it without the new

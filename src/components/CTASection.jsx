@@ -197,9 +197,8 @@ export default function CTASection() {
               <Link
                 to="/contact"
                 className="btn-primary"
-                aria-label="Go to contact page to start your project"
               >
-                Get A Free Quote
+                Discuss Your Project
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   className="ml-2 h-5 w-5"

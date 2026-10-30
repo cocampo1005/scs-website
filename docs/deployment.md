@@ -70,17 +70,15 @@ conversion event.
 
 ## Release
 
-1. **Back up first.** In hPanel → File Manager, compress the current
-   `public_html` to `public_html-backup-<date>.zip`, and download a copy. Save
-   the existing `.htaccess` separately.
-2. **Compare `.htaccess`.** Compare the saved server `.htaccess` with
-   `public/.htaccess`. If the server copy has rules ours lacks (an HTTPS
-   redirect or caching, for example), add them to `public/.htaccess`, rebuild
-   and re-zip.
-3. **Upload.** Upload the zip to `public_html`, extract it, and remove the old
-   files that are no longer in `dist/assets/` (the old `index-*.js` and CSS).
-   Leave `.htaccess` and `robots.txt` from the new build in place.
-4. **Purge cache.** Purge the Hostinger CDN cache (hPanel → Performance → CDN).
+Follow `docs/staging.md` S0 (backup outside the web root, `.htaccess`
+capture) and S6 (release). In short:
+
+1. **Back up.** Back up via hPanel → Files → Backups and download it. Never
+   leave an archive inside `public_html`.
+2. **Compare `.htaccess`.** Use the reviewed, merged configuration.
+3. **Upload.** Upload the site archive, extract it, and remove old hashed
+   assets.
+4. **Purge cache.** Purge the Hostinger CDN cache.
 
 ## Validation checklist (staging and production)
 
@@ -97,10 +95,10 @@ conversion event.
 
 ## Rollback
 
-1. In File Manager, delete the contents of `public_html` except the backup zip.
-2. Extract `public_html-backup-<date>.zip` in place. This restores the previous
-   build and its `.htaccess`.
-3. Purge the CDN cache, then check that `/` loads and shows the previous hero.
+1. Upload the backup archive to the folder **above** `public_html`. Empty
+   `public_html`, extract the backup into it, then delete the uploaded
+   archive.
+2. Purge the CDN cache, then check that `/` loads and shows the previous hero.
 
 The previous build is also reproducible from git: check out `f154762`, restore
 `.env.local`, and run `npm ci && npm run build`. This needs the Spline packages
