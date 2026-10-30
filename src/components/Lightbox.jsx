@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
 import { toImageItem } from "../utils/imageItem";
 import { useSwipe } from "../hooks/useSwipe";
@@ -23,29 +23,57 @@ export default function Lightbox({
   } = useSwipe({ onLeft: onNext, onRight: onPrev, threshold: 40 });
 
   const closeBtnRef = useRef(null);
+  const dialogRef = useRef(null);
 
-  // Focus the close button on open
+  // Modal behaviour: focus the close button, lock page scroll, and return
+  // focus to whatever opened the lightbox when it closes
   useEffect(() => {
+    const opener = document.activeElement;
+    const { overflow } = document.body.style;
+    document.body.style.overflow = "hidden";
     const t = setTimeout(() => closeBtnRef.current?.focus(), 0);
-    return () => clearTimeout(t);
+    return () => {
+      clearTimeout(t);
+      document.body.style.overflow = overflow;
+      opener?.focus?.();
+    };
   }, []);
 
-  // Keyboard navigation
+  // Keyboard: Escape closes, arrows navigate, Tab stays inside the dialog
   useEffect(() => {
     const handle = (e) => {
       if (e.key === "Escape") onClose?.();
       if (e.key === "ArrowRight") onNext?.();
       if (e.key === "ArrowLeft") onPrev?.();
+      if (e.key === "Tab" && dialogRef.current) {
+        const focusable = [
+          ...dialogRef.current.querySelectorAll("button:not([disabled]), [href]"),
+        ].filter((el) => el.offsetParent !== null);
+        if (!focusable.length) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        } else if (!dialogRef.current.contains(document.activeElement)) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
     };
     window.addEventListener("keydown", handle);
     return () => window.removeEventListener("keydown", handle);
   }, [onClose, onNext, onPrev]);
 
   return (
-    <AnimatePresence>
       <motion.div
+        ref={dialogRef}
         role="dialog"
         aria-modal="true"
+        aria-label={item.title ? undefined : "Screenshot viewer"}
         aria-labelledby={item.title ? "lb-title" : undefined}
         aria-describedby={item.caption ? "lb-caption" : undefined}
         initial={{ opacity: 0 }}
@@ -157,6 +185,5 @@ export default function Lightbox({
           )}
         </div>
       </motion.div>
-    </AnimatePresence>
   );
 }

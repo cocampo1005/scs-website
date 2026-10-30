@@ -2,6 +2,34 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { toImageItem } from "../utils/imageItem";
 import { useSwipe } from "../hooks/useSwipe";
 
+// The screenshot itself: a button (opens the lightbox) that also takes
+// horizontal swipes. Vertical touch still scrolls the page.
+function Screen({ item, swipe, onImageClick }) {
+  const { onPointerDown, onPointerMove, onPointerUp, isDragging } = swipe;
+  const label = item.alt || item.title || "Project screenshot";
+  return (
+    <button
+      type="button"
+      className="block h-full w-full cursor-zoom-in touch-pan-y select-none focus-visible:outline-2 focus-visible:-outline-offset-4 focus-visible:outline-accent-fuchsia"
+      onPointerDown={onPointerDown}
+      onPointerMove={onPointerMove}
+      onPointerUp={onPointerUp}
+      onClick={() => {
+        // A swipe ends with a click; only a tap opens the lightbox
+        if (!isDragging) onImageClick?.(item);
+      }}
+      aria-label={`Enlarge screenshot: ${label}`}
+    >
+      <img
+        src={item.src}
+        alt=""
+        className="h-full w-full object-cover"
+        draggable={false}
+      />
+    </button>
+  );
+}
+
 export default function DeviceMockup({
   type,
   images = [],
@@ -9,6 +37,7 @@ export default function DeviceMockup({
   onPrev,
   onNext,
   onImageClick,
+  label = "screenshots",
 }) {
   const item = toImageItem(images[currentIndex] || {});
   const swipe = useSwipe({ onLeft: onNext, onRight: onPrev });
@@ -26,19 +55,7 @@ export default function DeviceMockup({
 
           {/* Screen (swipe + hover controls) */}
           <div className="absolute inset-0 rounded-[1.6rem] overflow-hidden group/device">
-            <img
-              {...swipe}
-              src={item.src}
-              alt={item.alt || item.title || "Project image"}
-              className="w-full h-full object-cover cursor-pointer"
-              onClick={(e) => {
-                // Only trigger if not dragging
-                if (!swipe.isDragging) {
-                  onImageClick?.(item);
-                }
-              }}
-              draggable={false}
-            />
+            <Screen item={item} swipe={swipe} onImageClick={onImageClick} />
 
             {/* Chevron buttons (desktop hover only) */}
             <button
@@ -50,7 +67,7 @@ export default function DeviceMockup({
               onPointerDown={(e) => e.stopPropagation()}
               className="hidden md:flex cursor-pointer absolute left-2 top-1/2 -translate-y-1/2
                          bg-primary-dark-purple/60 hover:bg-primary-dark-purple/80 text-white p-2 rounded-full
-                         opacity-0 transition-opacity group-hover/device:opacity-100 z-10"
+                         opacity-0 transition-opacity group-hover/device:opacity-100 focus-visible:opacity-100 z-10"
               aria-label="Previous image"
             >
               <ChevronLeft className="w-5 h-5" />
@@ -64,7 +81,7 @@ export default function DeviceMockup({
               onPointerDown={(e) => e.stopPropagation()}
               className="hidden md:flex cursor-pointer absolute right-2 top-1/2 -translate-y-1/2
                          bg-primary-dark-purple/60 hover:bg-primary-dark-purple/80 text-white p-2 rounded-full
-                         opacity-0 transition-opacity group-hover/device:opacity-100 z-10"
+                         opacity-0 transition-opacity group-hover/device:opacity-100 focus-visible:opacity-100 z-10"
               aria-label="Next image"
             >
               <ChevronRight className="w-5 h-5" />
@@ -81,7 +98,8 @@ export default function DeviceMockup({
               className={`w-2 h-2 rounded-full transition-all ${
                 i === currentIndex ? "bg-fuchsia-400 w-6" : "bg-white/30"
               }`}
-              aria-label={`Go to image ${i + 1}`}
+              aria-label={`Show image ${i + 1} of ${images.length} (${label})`}
+            aria-current={i === currentIndex ? "true" : undefined}
             />
           ))}
         </div>
@@ -97,19 +115,7 @@ export default function DeviceMockup({
       <div className="bg-primary-dark-purple rounded-2xl shadow-2xl border-8 border-primary-dark-purple">
         {/* Screen (swipe + hover controls) */}
         <div className="aspect-video relative overflow-hidden rounded-xl group/monitor">
-          <img
-            {...swipe}
-            src={item.src}
-            alt={item.alt || item.title || "Project image"}
-            className="w-full h-full object-cover cursor-pointer"
-            onClick={(e) => {
-              // Only trigger if not dragging
-              if (!swipe.isDragging) {
-                onImageClick?.(item);
-              }
-            }}
-            draggable={false}
-          />
+          <Screen item={item} swipe={swipe} onImageClick={onImageClick} />
 
           {/* Chevron buttons (desktop hover only) */}
           <button
@@ -121,7 +127,7 @@ export default function DeviceMockup({
             onPointerDown={(e) => e.stopPropagation()}
             className="hidden md:flex cursor-pointer absolute left-4 top-1/2 -translate-y-1/2
                        bg-primary-dark-purple/60 hover:bg-primary-dark-purple/80 text-white p-2 rounded-full
-                       opacity-0 transition-opacity group-hover/monitor:opacity-100 z-10"
+                       opacity-0 transition-opacity group-hover/monitor:opacity-100 focus-visible:opacity-100 z-10"
             aria-label="Previous image"
           >
             <ChevronLeft className="w-6 h-6" />
@@ -135,7 +141,7 @@ export default function DeviceMockup({
             onPointerDown={(e) => e.stopPropagation()}
             className="hidden md:flex cursor-pointer absolute right-4 top-1/2 -translate-y-1/2
                        bg-primary-dark-purple/60 hover:bg-primary-dark-purple/80 text-white p-2 rounded-full
-                       opacity-0 transition-opacity group-hover/monitor:opacity-100 z-10"
+                       opacity-0 transition-opacity group-hover/monitor:opacity-100 focus-visible:opacity-100 z-10"
             aria-label="Next image"
           >
             <ChevronRight className="w-6 h-6" />
@@ -160,7 +166,8 @@ export default function DeviceMockup({
             className={`w-2 h-2 rounded-full transition-all ${
               i === currentIndex ? "bg-fuchsia-400 w-6" : "bg-white/30"
             }`}
-            aria-label={`Go to image ${i + 1}`}
+            aria-label={`Show image ${i + 1} of ${images.length} (${label})`}
+            aria-current={i === currentIndex ? "true" : undefined}
           />
         ))}
       </div>

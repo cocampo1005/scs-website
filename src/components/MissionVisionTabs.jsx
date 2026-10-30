@@ -4,33 +4,34 @@ import { AnimatePresence, motion } from "framer-motion";
 import GlowCard from "./GlowCard";
 import Reveal from "./Reveal";
 
+const TABS = [
+  {
+    key: "mission",
+    label: (
+      <span className="inline-flex items-center gap-2">
+        <Target className="size-4" />
+        Our Mission
+      </span>
+    ),
+    content:
+      "Help organizations move faster with reliable, maintainable, and thoughtful software and websites that deliver real results for real users.",
+  },
+  {
+    key: "vision",
+    label: (
+      <span className="inline-flex items-center gap-2">
+        <Eye className="size-4" />
+        Our Vision
+      </span>
+    ),
+    content:
+      "A world where custom software and web solutions fit perfectly, feel intuitive, and look beautiful while quietly scaling in the background.",
+  },
+];
+
 export default function MissionVisionTabs() {
   const [tab, setTab] = useState("mission");
 
-  const tabs = [
-    {
-      key: "mission",
-      label: (
-        <span className="inline-flex items-center gap-2">
-          <Target className="size-4" />
-          Our Mission
-        </span>
-      ),
-      content:
-        "Help organizations move faster with reliable, maintainable, and thoughtful software and websites that deliver real results for real users.",
-    },
-    {
-      key: "vision",
-      label: (
-        <span className="inline-flex items-center gap-2">
-          <Eye className="size-4" />
-          Our Vision
-        </span>
-      ),
-      content:
-        "A world where custom software and web solutions fit perfectly, feel intuitive, and look beautiful while quietly scaling in the background.",
-    },
-  ];
 
   const activeIndex = tab === "mission" ? 0 : 1;
 
@@ -40,9 +41,9 @@ export default function MissionVisionTabs() {
         e.preventDefault();
         const nextIndex =
           e.key === "ArrowRight"
-            ? (activeIndex + 1) % tabs.length
-            : (activeIndex - 1 + tabs.length) % tabs.length;
-        setTab(tabs[nextIndex].key);
+            ? (activeIndex + 1) % TABS.length
+            : (activeIndex - 1 + TABS.length) % TABS.length;
+        setTab(TABS[nextIndex].key);
       }
     },
     [activeIndex]
@@ -68,7 +69,7 @@ export default function MissionVisionTabs() {
               }}
             />
 
-            {tabs.map((t) => {
+            {TABS.map((t) => {
               const isActive = t.key === tab;
               return (
                 <button
@@ -106,7 +107,7 @@ export default function MissionVisionTabs() {
                 exit={{ opacity: 0, y: -6 }}
                 transition={{ duration: 0.22, ease: "easeOut" }}
               >
-                {tabs[activeIndex].content}
+                {TABS[activeIndex].content}
               </motion.p>
             </AnimatePresence>
           </div>
