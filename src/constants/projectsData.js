@@ -1,27 +1,27 @@
-import SCCHero from "../assets/projects/street-cat/street-cat-clinic-case-study-hero-sanitized.webp";
-import MMHero from "../assets/projects/meowmax/meowmax-case-study-hero-sanitized.webp";
+import SCCHero from "../assets/projects/street-cat/street-cat-clinic-case-study-hero.webp";
+import MMHero from "../assets/projects/meowmax/meowmax-case-study-hero.webp";
 import BIOHero from "../assets/projects/bio/bio-case-study-hero.webp";
 import LMSYCHero from "../assets/projects/lmsyc/lmsyc-case-study-hero.webp";
 
 // Street Cat Clinic Screenshots
-import sccScreenshot1 from "../assets/projects/street-cat/street-cat-clinic-new-entry-form-sanitized.webp";
-import sccScreenshot2 from "../assets/projects/street-cat/street-cat-clinic-edit-record-sanitized.webp";
+import sccScreenshot1 from "../assets/projects/street-cat/street-cat-clinic-new-entry-form.webp";
+import sccScreenshot2 from "../assets/projects/street-cat/street-cat-clinic-edit-record.webp";
 import sccScreenshot3 from "../assets/projects/street-cat/street-cat-clinic-settings-chart.webp";
 import sccScreenshot4 from "../assets/projects/street-cat/street-cat-clinic-settings-options.webp";
-import sccScreenshot5 from "../assets/projects/street-cat/street-cat-clinic-trappers-list-sanitized.webp";
-import sccScreenshot6 from "../assets/projects/street-cat/street-cat-clinic-add-new-trapper-sanitized.webp";
+import sccScreenshot5 from "../assets/projects/street-cat/street-cat-clinic-trappers-list.webp";
+import sccScreenshot6 from "../assets/projects/street-cat/street-cat-clinic-add-new-trapper.webp";
 import sccScreenshot7 from "../assets/projects/street-cat/street-cat-clinic-forms-filtered.webp";
 import sccScreenshot8 from "../assets/projects/street-cat/street-cat-clinic-forms-page.webp";
 import sccScreenshot9 from "../assets/projects/street-cat/street-cat-clinic-profile-page.webp";
-import sccScreenshot10 from "../assets/projects/street-cat/street-cat-clinic-records-details-sanitized.webp";
+import sccScreenshot10 from "../assets/projects/street-cat/street-cat-clinic-records-details.webp";
 import sccScreenshot11 from "../assets/projects/street-cat/street-cat-clinic-records-filtered.webp";
 
 // MeowMax Desktop Screenshots
-import mmScreenshot1 from "../assets/projects/meowmax/meowmax-accounts-manager-sanitized.webp";
-import mmScreenshot2 from "../assets/projects/meowmax/meowmax-appointments-manager-daily-sanitized.webp";
-import mmScreenshot3 from "../assets/projects/meowmax/meowmax-manage-appointments-sanitized.webp";
-import mmScreenshot4 from "../assets/projects/meowmax/meowmax-manager-appointment-sanitized.webp";
-import mmScreenshot5 from "../assets/projects/meowmax/meowmax-edit-capacity-modal-sanitized.webp";
+import mmScreenshot1 from "../assets/projects/meowmax/meowmax-accounts-manager.webp";
+import mmScreenshot2 from "../assets/projects/meowmax/meowmax-appointments-manager-daily.webp";
+import mmScreenshot3 from "../assets/projects/meowmax/meowmax-manage-appointments.webp";
+import mmScreenshot4 from "../assets/projects/meowmax/meowmax-manager-appointment.webp";
+import mmScreenshot5 from "../assets/projects/meowmax/meowmax-edit-capacity-modal.webp";
 
 // MeowMax Mobile Screenshots
 import mmMob1 from "../assets/projects/meowmax/meowmax-home-dashboard.webp";

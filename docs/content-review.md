@@ -3,39 +3,17 @@
 Items marked **Decision** need your confirmation before staging or production.
 Done items are recorded for traceability.
 
-## 1. Personal data in screenshots (highest priority)
+## 1. Application screenshots
 
-All screenshots were reviewed (contact sheets of every Street Cat Clinic and
-MeowMax image, plus the home feature images).
+Confirmed by the owner (30 Oct 2026): every name, record, account,
+appointment, address, phone number and veterinarian identifier shown in the
+Street Cat Clinic and MeowMax screenshots is **fictional demo data** created
+for showcasing the apps. The original, unblurred screenshots are used
+everywhere; no redaction is needed.
 
-| Asset | What was exposed | Status |
-|---|---|---|
-| `meowmax-accounts-manager` | Full names of 4 other users (admins and trappers) | **Done:** sanitized copy shipped |
-| `meowmax-appointments-manager-daily`, `-overview`, `meowmax-manage-appointments` | About 20 trapper full names with trapper numbers | **Done:** sanitized copies |
-| `meowmax-edit-capacity-modal`, `meowmax-manager-appointment` | The same names, behind a dimmed dialog | **Done:** background blurred |
-| `meowmax-case-study-hero`, `images/mm-feature-image` | Trapper chips and accounts table names in the composites | **Done:** sanitized copies |
-| `street-cat-clinic-records-details`, `-edit-record`, `-new-entry-form`, `-case-study-hero`, `images/scc-feature-image` | Veterinarian field "Toscano-17161": a person's name plus what may be a licence number | **Done:** blurred; stays redacted until confirmed |
-| `street-cat-clinic-trappers-list`, `-add-new-trapper`, trapper inset in `images/scc-feature-image` | Names, addresses, phones and codes; not confirmed as sample data | **Done:** sanitized (names, addresses, phones and codes blurred) |
-| Records, forms and profile screens | Developer's own name, email and phone; fictional "221B Baker St" address | OK (owner's data) |
-| `meowmax-appointment-confirmation` | Street Cat Clinic's business address | OK (public business address) |
-| LMSYC, Bio-Coatings, Blast-It-Off screenshots | Public marketing pages | OK |
-
-Unsanitized originals (15 files) are no longer in the repository. Copies are kept outside it; see `docs/repo-history-exposure.md` for history and live-site exposure.
-
-How it was done:
-- The site uses `*-sanitized.webp` copies.
-- A test (`src/__tests__/content.test.js`) fails if an original is present or
-  referenced.
-- Long term (approved), affected screens will be re-captured from demo
-  accounts with fictional data.
-  - **Dependency:** this needs a demo or test environment for each app (Street
-    Cat Clinic, MeowMax) that is separate from the clients' real databases.
-  - If no such environment exists, the client's cooperation is needed to set
-    one up.
-  - Until then the sanitized copies stay in use.
-
-**Decision:** do you have written permission from Street Cat Clinic and Cat
-Solutions 305 to publish these interfaces at all, even sanitized?
+**Decision:** do you have permission from Street Cat Clinic and Cat Solutions
+305 to show their applications (interfaces and branding) in the portfolio?
+This is the same branding question as the logos below.
 
 ## 2. Client logos (Projects page logo loop)
 

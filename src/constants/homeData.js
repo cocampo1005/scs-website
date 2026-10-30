@@ -2,8 +2,8 @@ import { Blocks, TrendingUp, Sparkles, Users } from "lucide-react";
 import customSoftwareImg from "../assets/images/custom-software-image.webp";
 import webDevImg from "../assets/images/web-dev-image.webp";
 import uiuxDesignImg from "../assets/images/ux-ui-design-image.webp";
-import sccFeatureImg from "../assets/images/scc-feature-image-sanitized.webp";
-import mmFeatureImg from "../assets/images/mm-feature-image-sanitized.webp";
+import sccFeatureImg from "../assets/images/scc-feature-image.webp";
+import mmFeatureImg from "../assets/images/mm-feature-image.webp";
 import lmsycFeatureImg from "../assets/images/lmsyc-feature-image.webp";
 import bbFeatureImg from "../assets/images/bio-feature-image.webp";
 

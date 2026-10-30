@@ -25,7 +25,7 @@ any folder a domain serves). Anything there can be downloaded by URL.
    - **Delete.** Delete the server copy unless you deliberately keep backups
      in that non-public folder.
 3. Store the downloaded backup privately, for example in an encrypted folder.
-   It contains the live site, including the unsanitized screenshots.
+   It contains the full live site.
 4. File Manager → `public_html` → enable **Show hidden files** → download
    `.htaccess` as `production.htaccess`.
 5. Note the full path shown at the top of File Manager.

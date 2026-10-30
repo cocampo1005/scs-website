@@ -28,7 +28,8 @@ test.describe("homepage hero", () => {
     const errors = watchErrors(page);
     await page.goto("/");
     await expect(heroHeading(page)).toBeVisible();
-    await expect(page.getByRole("link", { name: "Discuss Your Project" })).toBeVisible();
+    const hero = page.getByRole("region", { name: /Custom Software/ });
+    await expect(hero.getByRole("link", { name: "Discuss Your Project" })).toBeVisible();
     await expect(page.locator("canvas")).toHaveCount(1);
 
     await page.getByRole("button", { name: "Place it for me" }).click();

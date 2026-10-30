@@ -15,7 +15,7 @@ Canvas: https://claude.ai/artifact/UbeffBeJC7nsPvUSPrjaga (private until shared)
 | Contact | Inquiry form as the feature tile, contact cards, "what happens next", FAQ accordion |
 | Design system | Color roles with contrast, gradients and lighting, type scale, spacing and grid, bento rules, components and states, responsive rules, motion tokens, circuit timeline, accessibility rules |
 
-All screenshots on the canvas are the sanitized copies. 3D imagery is captured
+Screenshots are the original app captures (fictional demo data). 3D imagery is captured
 from the real scenes.
 
 ## How the reactive grid is built (for approval)
@@ -55,8 +55,7 @@ from the real scenes.
 8. **Portfolio scope.** Street Cat Clinic and MeowMax get full case-study pages.
    Should LMSYC and Bio-Coatings/Blast-It-Off get full pages under a
    "Websites" group, or stay as cards?
-9. **Screenshots.** Keep blurred names, or re-capture the affected screens from
-   a demo account with fictional data (cleaner look, more effort)?
+9. **Screenshots.** Resolved: the original screenshots show fictional demo data and are used as-is.
 10. **Tablet.** The canvas shows desktop and phone, with tablet covered by the
     responsive rules. Do you want explicit tablet boards before approval?
 
