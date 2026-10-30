@@ -34,3 +34,7 @@ dist-ssr
 playwright-report
 test-results
 coverage
+
+# React Router framework build output
+build
+.react-router
