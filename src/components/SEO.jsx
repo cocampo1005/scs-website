@@ -1,4 +1,4 @@
-const ORIGIN = "https://solidcodesolutionsllc.com";
+import { DEFAULT_OG_IMAGE, ORIGIN } from "../constants/seo";
 
 function toAbs(url) {
   if (!url) return undefined;
@@ -9,7 +9,7 @@ export default function SEO({
   title,
   description,
   path = "/",
-  image = "/assets/og/og-default.webp",
+  image = DEFAULT_OG_IMAGE,
   canonical,
   noindex = false,
   locale = "en_US",
@@ -18,13 +18,13 @@ export default function SEO({
 }) {
   const fullTitle = title ? `${title} | ${siteName}` : siteName;
   const url = canonical || toAbs(path);
-  const ogImage = toAbs(image);
+  const ogImage = toAbs(image.url);
 
   return (
     <>
       <title>{fullTitle}</title>
       {description && <meta name="description" content={description} />}
-      {url && <link rel="canonical" href={url} />}
+      {url && !noindex && <link rel="canonical" href={url} />}
 
       {/* Open Graph */}
       <meta property="og:title" content={fullTitle} />
@@ -33,16 +33,20 @@ export default function SEO({
       <meta property="og:type" content="website" />
       <meta property="og:site_name" content={siteName} />
       <meta property="og:locale" content={locale} />
-      {ogImage && <meta property="og:image" content={ogImage} />}
+      <meta property="og:image" content={ogImage} />
+      <meta property="og:image:width" content={String(image.width)} />
+      <meta property="og:image:height" content={String(image.height)} />
+      <meta property="og:image:alt" content={image.alt} />
 
       {/* Twitter */}
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={fullTitle} />
       {description && <meta name="twitter:description" content={description} />}
-      {ogImage && <meta name="twitter:image" content={ogImage} />}
+      <meta name="twitter:image" content={ogImage} />
+      <meta name="twitter:image:alt" content={image.alt} />
 
       {/* Robots */}
-      {noindex && <meta name="robots" content="noindex,nofollow" />}
+      {noindex && <meta name="robots" content="noindex,follow" />}
 
       {children}
     </>

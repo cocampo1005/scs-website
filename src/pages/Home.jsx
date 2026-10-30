@@ -12,10 +12,9 @@ export default function Home() {
   return (
     <>
       <SEO
-        title="The missing piece to your digital solution"
-        description="Tailored websites and web apps that click perfectly into place for your brand, your users, and your goals."
+        title="Custom Software Development"
+        description="Solid Code Solutions builds custom software for businesses: records platforms, scheduling systems, client portals, integrations and workflow automation."
         path="/"
-        image="/assets/og/og-default.webp"
       >
         <JsonLd
           data={{
@@ -30,11 +29,6 @@ export default function Home() {
                 "@type": "ImageObject",
                 url: "https://solidcodesolutionsllc.com/scs-logo-small.svg",
               },
-            },
-            potentialAction: {
-              "@type": "SearchAction",
-              target: "https://solidcodesolutionsllc.com/search?q={query}",
-              "query-input": "required name=query",
             },
           }}
         />
@@ -88,7 +82,7 @@ export default function Home() {
 
             <div className="grid md:grid-cols-3 gap-8">
               <Stagger gap={120} startAt={80}>
-                {SERVICES.map((service, index) => (
+                {SERVICES.map((service) => (
                   <Reveal key={service.title} y={8}>
                     <GlowCard className="p-8">
                       <img
@@ -152,7 +146,7 @@ export default function Home() {
 
             <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-8">
               <Stagger gap={140} startAt={80}>
-                {ADVANTAGES.map((item, index) => {
+                {ADVANTAGES.map((item) => {
                   const Icon = item.icon;
                   return (
                     <Reveal key={item.title} y={8}>
@@ -205,7 +199,7 @@ export default function Home() {
             <div className="flex flex-col gap-8">
               <Stagger gap={160} startAt={80}>
                 {PROJECTS.map((p, index) => (
-                  <Reveal key={p.slug ?? p.key ?? index} y={10}>
+                  <Reveal key={p.caseKey} y={10}>
                     <ProjectCard {...p} index={index} />
                   </Reveal>
                 ))}

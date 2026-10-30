@@ -45,14 +45,14 @@ export default function Footer() {
                 </span>
               </Link>
               <p className="mt-4 text-primary-white/40 max-w-md">
-                Tailor‑made web & software that fit like a glove—designed,
-                built, and iterated around your goals.
+                Custom software built around the way your business works,
+                plus the websites that support it.
               </p>
 
               {/* Socials */}
               <div
                 className="mt-6 flex items-center gap-4"
-                aria-label="Social links"
+                role="group" aria-label="Social links"
               >
                 <a
                   href="https://www.linkedin.com/company/solid-code-solutions-llc"
@@ -79,7 +79,7 @@ export default function Footer() {
                   className="inline-flex items-center gap-2 rounded-lg border border-purple-500/20 bg-white/5 px-3 py-2 hover:border-fuchsia-500/50 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-fuchsia-500/60"
                 >
                   <Facebook className="h-4 md:w-4" aria-hidden />
-                  <span className="sr-only">Instagram</span>
+                  <span className="sr-only">Facebook</span>
                 </a>
                 <a
                   href="https://x.com/SolidCodeSol"
@@ -88,7 +88,7 @@ export default function Footer() {
                   className="inline-flex items-center gap-2 rounded-lg border border-purple-500/20 bg-white/5 px-3 py-2 hover:border-fuchsia-500/50 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-fuchsia-500/60"
                 >
                   <XLogo className="h-4 md:w-4" aria-hidden />
-                  <span className="sr-only">Instagram</span>
+                  <span className="sr-only">X (Twitter)</span>
                 </a>
               </div>
             </div>

@@ -13,7 +13,7 @@ export default function Navbar() {
   const isActive = (path) => location.pathname === path;
 
   return (
-    <nav className="fixed top-0 left-0 w-full bg-gray-900/0 backdrop-blur-sm text-white p-4 shadow-md z-20">
+    <nav aria-label="Primary" className="fixed top-0 left-0 w-full bg-gray-900/0 backdrop-blur-sm text-white p-4 shadow-md z-20">
       <div className="flex items-center justify-between">
         {/* Logo */}
         <div className="text-2xl font-bold ml-2 md:ml-6">
@@ -77,9 +77,12 @@ export default function Navbar() {
 
         {/* Hamburger Menu Button */}
         <button
+          type="button"
           onClick={toggleMenu}
           className="md:hidden mr-2 p-2 hover:bg-gray-800/50 rounded-lg transition"
-          aria-label="Toggle menu"
+          aria-label={isOpen ? "Close menu" : "Open menu"}
+          aria-expanded={isOpen}
+          aria-controls="mobile-menu"
         >
           {isOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
@@ -87,6 +90,9 @@ export default function Navbar() {
 
       {/* Mobile Menu */}
       <div
+        id="mobile-menu"
+        // Collapsed links stay out of the tab order and the accessibility tree
+        inert={!isOpen}
         className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out ${
           isOpen ? "max-h-48 opacity-100 mt-4" : "max-h-0 opacity-0"
         }`}
