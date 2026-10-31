@@ -18,13 +18,13 @@ return [
         'host' => 'smtp.hostinger.com',
         'port' => 465,
         'encryption' => 'smtps', // 'smtps' (port 465) or 'starttls' (port 587)
-        'username' => 'website@solidcodesolutionsllc.com',
+        'username' => 'christian@solidcodesolutionsllc.com',
         'password' => '', // the mailbox password, set on the server only
         'timeout' => 10,
     ],
 
     // Must be the authenticated mailbox, so SPF and DKIM align
-    'from' => ['address' => 'website@solidcodesolutionsllc.com', 'name' => 'Solid Code Solutions website'],
+    'from' => ['address' => 'christian@solidcodesolutionsllc.com', 'name' => 'Solid Code Solutions website'],
     'to' => ['address' => 'christian@solidcodesolutionsllc.com', 'name' => 'Christian Ocampo'],
 
     // Exact scheme://host of the pages allowed to post. Staging:

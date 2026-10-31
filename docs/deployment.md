@@ -78,8 +78,9 @@ Needs Node, PHP 8.2+ and Composer locally. No `.env.local` values are needed.
 
 1. **PHP.** In hPanel → Advanced → PHP Configuration, select PHP 8.3 and enable
    `openssl`, `mbstring`, `pdo_sqlite` and `json`.
-2. **Mailbox.** Create `website@solidcodesolutionsllc.com` (the sending
-   mailbox). Keep its password only in a password manager.
+2. **Mailbox.** The form sends through the existing `christian@solidcodesolutionsllc.com`
+   mailbox (the plan has one mailbox), to itself; Reply-To is the visitor.
+   That mailbox forwards to Gmail. Its password lives only in `config.php`.
 3. **Probe.** Upload `server/tools/hostinger-probe.php` to `public_html`
    under an unguessable name, open it once, then delete it. It confirms the PHP
    version and extensions, access to the private folder, SMTP reachability, and
@@ -116,7 +117,7 @@ Needs Node, PHP 8.2+ and Composer locally. No `.env.local` values are needed.
 - [ ] Hero: drag on desktop; drag and swipe-scroll on a real phone; "Place it for me"
 - [ ] SOLID exhibit: drag, keyboard buttons, reset
 - [ ] A contact form test message arrives with the phone number formatted;
-      From is `website@`, Reply-To is the sender, SPF and DKIM pass
+      From is `christian@`, Reply-To is the sender, SPF and DKIM pass
 - [ ] `GET /api/contact` returns 405; `/api/other`, `/api/contact.php.bak`,
       `/scs-server/config.php` and `/rollback/` return 404; `/.htaccess` returns 403
 - [ ] A Google Ads conversion fires once after a successful send (Tag Assistant)
