@@ -99,6 +99,8 @@ if (!args["server-dir"]) {
   console.warn(`Warning: no --server-dir given; htaccess.${args.target} uses the placeholder ${placeholder}.`);
 }
 if (/(^|\/)public_html(\/|$)/.test(serverDir)) fail("--server-dir must be outside public_html");
+// Git Bash rewrites /home/… arguments to C:/Program Files/Git/home/…; set MSYS_NO_PATHCONV=1
+if (!/^\/home\/[^:\\]+$/.test(serverDir)) fail(`--server-dir must be an absolute /home/… server path, got ${serverDir}`);
 
 const header =
   args.target === "staging"

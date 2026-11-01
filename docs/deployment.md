@@ -68,6 +68,8 @@ Needs Node, PHP 8.2+ and Composer locally. No `.env.local` values are needed.
      Locally nothing is emailed.
 4. **Package.** From a clean commit, run
    `npm run package:release -- --server-dir=/home/u772950047/domains/solidcodesolutionsllc.com/scs-server`.
+   In Git Bash, prefix it with `MSYS_NO_PATHCONV=1`. Otherwise Git Bash rewrites `/home/…` to a
+   Windows path, and the script refuses to package.
    It produces the following in `release/`:
    - `site-<commit>-production.zip`: the contents of `public_html`, without `.htaccess`;
    - `server-<commit>.zip`: the contents of `scs-server/`, without `config.php` or `var/`;
