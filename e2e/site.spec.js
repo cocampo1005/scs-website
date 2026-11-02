@@ -247,6 +247,14 @@ test.describe("navigation", () => {
     await page.getByRole("button", { name: "Open menu" }).click();
     const menu = page.getByRole("navigation", { name: "Mobile" });
     await expect(menu).toBeVisible();
+    // Every link and the call to action fit on screen without scrolling the panel
+    for (const name of ["Services", "Work", "About", "Contact"]) {
+      await expect(menu.getByRole("link", { name })).toBeInViewport({ ratio: 1 });
+    }
+    await expect(page.locator("#mobile-nav").getByRole("link", { name: "Discuss your project" })).toBeInViewport({ ratio: 1 });
+    const panel = await page.locator("#mobile-nav").boundingBox();
+    const viewport = page.viewportSize();
+    expect(panel && viewport && panel.y + panel.height).toBeGreaterThanOrEqual((viewport?.height ?? 0) - 1);
     await menu.getByRole("link", { name: "Services" }).click();
     await expect(page).toHaveURL(/\/services$/);
     await expect(menu).toBeHidden();

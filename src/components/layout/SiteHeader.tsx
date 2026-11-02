@@ -116,37 +116,42 @@ export default function SiteHeader() {
   // Close the menu when the route changes
   useEffect(() => setMenuOpen(false), [pathname]);
 
+  // The panel is a sibling of the header, not a child: the open header has a
+  // backdrop-filter, which makes it the containing block for fixed
+  // descendants and would clip the panel to the header's 64px height.
   return (
-    <header
-      className={cn(
-        "fixed inset-x-0 top-0 z-50 border-b transition-[background-color,border-color] duration-250",
-        scrolled || menuOpen ? "border-line bg-bg/85 backdrop-blur-md" : "border-transparent bg-transparent",
-      )}
-    >
-      <div className="mx-auto flex h-16 max-w-[1440px] items-center justify-between px-4 sm:px-6 lg:h-[84px] lg:px-16">
-        <Wordmark />
-        <nav aria-label="Primary" className="hidden items-center gap-9 lg:flex">
-          {PRIMARY_NAV.map((item) => (
-            <NavLink key={item.to} to={item.to} className={navLinkClass}>
-              {item.label}
-            </NavLink>
-          ))}
-          <LinkButton to={PRIMARY_CTA.to} size="sm" className="min-h-[42px] px-[18px]">
-            {PRIMARY_CTA.label}
-          </LinkButton>
-        </nav>
-        <button
-          type="button"
-          className="flex size-11 items-center justify-center rounded-[10px] border border-line bg-white/[0.03] text-ink lg:hidden"
-          aria-expanded={menuOpen}
-          aria-controls="mobile-nav"
-          aria-label={menuOpen ? "Close menu" : "Open menu"}
-          onClick={() => setMenuOpen((o) => !o)}
-        >
-          <MenuIcon open={menuOpen} />
-        </button>
-      </div>
+    <>
+      <header
+        className={cn(
+          "fixed inset-x-0 top-0 z-50 border-b transition-[background-color,border-color] duration-250",
+          scrolled || menuOpen ? "border-line bg-bg/85 backdrop-blur-md" : "border-transparent bg-transparent",
+        )}
+      >
+        <div className="mx-auto flex h-16 max-w-[1440px] items-center justify-between px-4 sm:px-6 lg:h-[84px] lg:px-16">
+          <Wordmark />
+          <nav aria-label="Primary" className="hidden items-center gap-9 lg:flex">
+            {PRIMARY_NAV.map((item) => (
+              <NavLink key={item.to} to={item.to} className={navLinkClass}>
+                {item.label}
+              </NavLink>
+            ))}
+            <LinkButton to={PRIMARY_CTA.to} size="sm" className="min-h-[42px] px-[18px]">
+              {PRIMARY_CTA.label}
+            </LinkButton>
+          </nav>
+          <button
+            type="button"
+            className="flex size-11 items-center justify-center rounded-[10px] border border-line bg-white/[0.03] text-ink lg:hidden"
+            aria-expanded={menuOpen}
+            aria-controls="mobile-nav"
+            aria-label={menuOpen ? "Close menu" : "Open menu"}
+            onClick={() => setMenuOpen((o) => !o)}
+          >
+            <MenuIcon open={menuOpen} />
+          </button>
+        </div>
+      </header>
       <MobileNav open={menuOpen} onClose={() => setMenuOpen(false)} />
-    </header>
+    </>
   );
 }
