@@ -1,5 +1,20 @@
 import { expect, test } from "@playwright/test";
 
+// A stored cookie choice keeps the consent banner out of these tests (it has
+// its own spec). Rejected by default: nothing from Google loads.
+const consentRecord = (advertising) =>
+  JSON.stringify({
+    version: 1,
+    decidedAt: new Date().toISOString(),
+    expiresAt: new Date(Date.now() + 30 * 86_400_000).toISOString(),
+    advertising,
+    method: advertising ? "accept_all" : "reject_all",
+    gpc: false,
+  });
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript((record) => localStorage.setItem("scs:consent", record), consentRecord(false));
+});
+
 const NO_WEBGL = `
   const original = HTMLCanvasElement.prototype.getContext;
   HTMLCanvasElement.prototype.getContext = function (type, ...args) {
@@ -420,8 +435,9 @@ test.describe("contact form", () => {
       () => (window.dataLayer || []).filter((a) => a[0] === "event" && a[1] === "conversion").length
     );
 
-  async function fillForm(page) {
+  async function fillForm(page, { consent = true } = {}) {
     await page.route("**/googletagmanager.com/**", (route) => route.abort());
+    if (consent) await page.addInitScript((record) => localStorage.setItem("scs:consent", record), consentRecord(true));
     await page.goto("/contact");
     for (const [name, value] of [
       [/^Name/, "Jane Doe"],

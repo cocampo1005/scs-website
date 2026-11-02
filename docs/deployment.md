@@ -50,8 +50,9 @@ Range `f154762..scs-2.0` changes 60 files in `src/`, `public/` and
 | Performance | Routes are lazy-loaded (main JS 561 KB → 280 KB). Spline runtime removed. Six unused Google Font families dropped. |
 
 Unchanged: the URLs (`/`, `/about`, `/projects`, `/contact`, `/privacy`,
-`/terms`) and the Google Ads tag and
-conversion event.
+`/terms`). The Google Ads tag and conversion event are kept but, since the
+2.0 revision, load only after the visitor accepts advertising measurement
+(`docs/privacy-consent.md`).
 
 ## Build a release candidate
 
@@ -122,7 +123,9 @@ Needs Node, PHP 8.2+ and Composer locally. No `.env.local` values are needed.
       From is `christian@`, Reply-To is the sender, SPF and DKIM pass
 - [ ] `GET /api/contact` returns 405; `/api/other`, `/api/contact.php.bak`,
       `/scs-server/config.php` and `/rollback/` return 404; `/.htaccess` returns 403
-- [ ] A Google Ads conversion fires once after a successful send (Tag Assistant)
+- [ ] With no cookie choice, no request to googletagmanager.com is made (DevTools → Network); after "Accept all", the tag loads once
+- [ ] A Google Ads conversion fires once after a successful send, only after accepting advertising measurement (Tag Assistant shows `ad_storage`/`ad_user_data` granted, `ad_personalization`/`analytics_storage` denied)
+- [ ] `/.well-known/gpc.json` is served as JSON
 - [ ] LinkedIn Post Inspector and the Facebook Sharing Debugger show the new preview
 
 ## Rollback

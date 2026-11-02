@@ -2,6 +2,7 @@ import { lazy, Suspense, useEffect } from "react";
 import { BrowserRouter, Navigate, Route, Routes, useLocation, useSearchParams } from "react-router-dom";
 import SiteHeader from "./components/layout/SiteHeader";
 import SiteFooter from "./components/layout/SiteFooter";
+import { ConsentProvider } from "./consent/ConsentProvider";
 import Home from "./pages/Home";
 import { slugForLegacyKey, workPath } from "./content/work";
 
@@ -41,6 +42,7 @@ export default function App() {
         Skip to content
       </a>
       <ScrollToTop />
+      <ConsentProvider>
       <SiteHeader />
       <main id="main" tabIndex={-1} className="min-h-[70svh] outline-none">
         <Suspense fallback={<div className="min-h-screen" />}>
@@ -59,6 +61,7 @@ export default function App() {
         </Suspense>
       </main>
       <SiteFooter />
+      </ConsentProvider>
     </BrowserRouter>
   );
 }

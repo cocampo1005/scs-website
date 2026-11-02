@@ -15,10 +15,9 @@ import * as chromeLauncher from "chrome-launcher";
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const BASE = process.env.BASE_URL ?? "http://localhost:4173";
 const PAGES = ["/", "/services", "/work", "/work/meowmax", "/about", "/contact"];
-// Best practices tops out around 77 while the Google Ads tag is loaded as-is:
-// its doubleclick request sets a third-party cookie, which that category
-// penalises. The budget sits under that ceiling so a real regression still fails.
-const BUDGETS = { accessibility: 95, "best-practices": 75, seo: 95 };
+// Google's tag loads only after consent (src/consent), so an unattended audit
+// sees no third-party cookies and the real best-practices budget applies.
+const BUDGETS = { accessibility: 95, "best-practices": 90, seo: 95 };
 const OUT = path.join(root, "lighthouse-report");
 
 async function reachable(url) {

@@ -37,20 +37,8 @@
     <link rel="preload" href="/fonts/work-sans-latin.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="preload" href="/fonts/jetbrains-mono-latin.woff2" as="font" type="font/woff2" crossorigin />
 
-    <!-- Google Ads conversion tracking (gtag.js). Disclosed in /privacy. -->
-    <script
-      async
-      src="https://www.googletagmanager.com/gtag/js?id=AW-17675252735"
-    ></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag() {
-        dataLayer.push(arguments);
-      }
-      gtag("js", new Date());
-
-      gtag("config", "AW-17675252735");
-    </script>
+    <!-- Google Ads is loaded by src/consent/googleTag.ts only after the visitor
+         consents (Consent Mode v2, basic). Nothing from Google runs before that. -->
   </head>
 
   <body>

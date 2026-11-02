@@ -7,8 +7,18 @@ import SiteHeader from "../layout/SiteHeader";
 import SiteFooter from "../layout/SiteFooter";
 import Privacy from "../../pages/Privacy";
 import { Accordion } from "../ui/Accordion";
+import { ConsentProvider } from "../../consent/ConsentProvider";
+import { writeConsent } from "../../consent/consent";
 
-const inRouter = (ui: ReactElement, url = "/") => render(<MemoryRouter initialEntries={[url]}>{ui}</MemoryRouter>);
+const inRouter = (ui: ReactElement, url = "/") => {
+  // A stored choice keeps the cookie banner out of these layout tests
+  writeConsent({ advertising: false }, "reject_all");
+  return render(
+    <MemoryRouter initialEntries={[url]}>
+      <ConsentProvider>{ui}</ConsentProvider>
+    </MemoryRouter>,
+  );
+};
 
 describe("SiteHeader", () => {
   it("marks the current section and links the primary CTA to contact", () => {
@@ -50,6 +60,7 @@ describe("SiteFooter", () => {
     expect(document.querySelector('a[href="/services#automation"]')).toBeNull();
     expect(screen.getByRole("link", { name: /Privacy Policy/ })).toHaveAttribute("href", "/privacy");
     expect(screen.getByRole("link", { name: /Terms/ })).toHaveAttribute("href", "/terms");
+    expect(screen.getByRole("button", { name: "Cookie settings" })).toBeInTheDocument();
   });
 
   it("gives the email and a plain phone number, not WhatsApp", () => {
@@ -94,12 +105,16 @@ describe("Accordion", () => {
 });
 
 describe("Privacy page", () => {
-  it("discloses the contact form processor and Google Ads, with a fixed date", () => {
+  it("discloses the contact form processor, every stored item, consent and Google Ads, with a fixed date", () => {
     inRouter(<Privacy />);
     expect(screen.getByText(/Last updated/)).toHaveTextContent("November 2, 2026");
     expect(screen.getByText(/processed on our own web server/)).toHaveTextContent("Hostinger");
-    expect(screen.queryByText(/EmailJS/)).toBeNull();
+    expect(screen.queryByText(/EmailJS|does not store information in your browser/)).toBeNull();
     expect(screen.getByText(/deletes these records within 24/)).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: /Google Ads/ })).toBeInTheDocument();
+    for (const name of [/^scs:consent/, /^scs:hero-solved/, /^_gcl_au/]) expect(screen.getByRole("cell", { name })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Your consent choices" })).toBeInTheDocument();
+    expect(screen.getByText(/signal, we treat it as a request not to sell or share/)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Cookie settings" })).toBeInTheDocument();
   });
 });

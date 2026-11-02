@@ -5,6 +5,7 @@ import { XLogoIcon } from "@phosphor-icons/react";
 import { COMPANY_DESCRIPTION, CONTACT, PRIMARY_NAV, SOCIAL_LINKS } from "../../content/site";
 import { SERVICES } from "../../content/services";
 import logo from "../../assets/logos/scs-logo-cube.svg";
+import { useConsent } from "../../consent/useConsent";
 
 const SOCIAL_ICONS: Record<(typeof SOCIAL_LINKS)[number]["label"], ComponentType<{ className?: string; "aria-hidden"?: boolean }>> = {
   LinkedIn: Linkedin,
@@ -27,6 +28,7 @@ function Column({ label, children }: { label: string; children: ReactNode }) {
 export default function SiteFooter() {
   const year = new Date().getFullYear();
   const scrollToTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
+  const { openSettings } = useConsent();
 
   return (
     <footer className="relative isolate overflow-hidden">
@@ -149,6 +151,13 @@ export default function SiteFooter() {
             <Link to="/terms" className="inline-flex min-h-9 items-center gap-1 text-ink-soft no-underline hover:text-white">
               Terms <ArrowUpRight className="size-3.5" aria-hidden />
             </Link>
+            <button
+              type="button"
+              onClick={openSettings}
+              className="inline-flex min-h-9 cursor-pointer items-center gap-1 border-0 bg-transparent p-0 font-sans text-sm text-ink-soft hover:text-white"
+            >
+              Cookie settings
+            </button>
             <button
               type="button"
               onClick={scrollToTop}

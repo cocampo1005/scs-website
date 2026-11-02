@@ -3,10 +3,13 @@ import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router-dom";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { sendContactMessage } from "../../utils/contactApi";
+import { recordConversion } from "../../consent/googleTag";
 import Contact from "../Contact";
 
 vi.mock("../../utils/contactApi", () => ({ sendContactMessage: vi.fn() }));
+vi.mock("../../consent/googleTag", () => ({ recordConversion: vi.fn(() => true) }));
 const send = vi.mocked(sendContactMessage);
+const conversion = vi.mocked(recordConversion);
 
 const renderContact = (url = "/contact") =>
   render(
@@ -25,7 +28,6 @@ async function fillValidForm() {
 
 afterEach(() => {
   vi.clearAllMocks();
-  delete window.gtag;
 });
 
 describe("Contact page", () => {
@@ -46,7 +48,6 @@ describe("Contact page", () => {
   });
 
   it("sends to the contact endpoint and records the Ads conversion on success", async () => {
-    window.gtag = vi.fn();
     send.mockResolvedValue({ ok: true });
     renderContact();
     await fillValidForm();
@@ -62,7 +63,7 @@ describe("Contact page", () => {
       website: "",
     });
     expect(payload.elapsedMs).toBeGreaterThanOrEqual(0);
-    expect(window.gtag).toHaveBeenCalledWith("event", "conversion", expect.any(Object));
+    expect(conversion).toHaveBeenCalledTimes(1);
   });
 
   it("adds the tools field to the message", async () => {
@@ -76,7 +77,6 @@ describe("Contact page", () => {
   });
 
   it("shows server field errors and does not record a conversion", async () => {
-    window.gtag = vi.fn();
     send.mockResolvedValue({ ok: false, error: "validation", fields: { message: "Please include no more than 3 links." } });
     renderContact();
     await fillValidForm();
@@ -84,7 +84,7 @@ describe("Contact page", () => {
 
     expect(await screen.findByText("Please include no more than 3 links.")).toBeInTheDocument();
     expect(screen.getByText("Please fix the highlighted fields.")).toBeInTheDocument();
-    expect(window.gtag).not.toHaveBeenCalled();
+    expect(conversion).not.toHaveBeenCalled();
   });
 
   it("explains the rate limit", async () => {

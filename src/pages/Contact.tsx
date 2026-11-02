@@ -19,6 +19,9 @@ import { useScrollToHash } from "../hooks/useScrollToHash";
 import { MESSAGE_MAX, validateContact } from "../utils/contactValidation";
 import { sendContactMessage } from "../utils/contactApi";
 import { similarProjectMessage } from "../utils/similarProjectLinks";
+// Google Ads conversion (see /privacy): only after the server accepted the
+// message, and only with advertising consent
+import { recordConversion } from "../consent/googleTag";
 
 type FormState = {
   name: string;
@@ -44,12 +47,6 @@ const EMPTY_FORM: FormState = {
   phoneDisplay: "",
 };
 
-// Google Ads conversion (see /privacy). Fires only after the server accepted
-// the message.
-const ADS_SEND_TO = "AW-17675252735/cPPICNvM37QbEP_nm-xB";
-function fireAdsLead() {
-  window.gtag?.("event", "conversion", { send_to: ADS_SEND_TO });
-}
 
 function sendErrorMessage(error: string) {
   switch (error) {
@@ -203,7 +200,7 @@ export default function Contact() {
     setStatus({ sending: false, ok: true, err: "" });
     setLastSentAt(Date.now());
     startedAtRef.current = Date.now();
-    fireAdsLead();
+    recordConversion();
     formRef.current?.reset();
     setForm(EMPTY_FORM);
   }
