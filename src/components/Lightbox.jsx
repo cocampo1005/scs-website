@@ -4,6 +4,15 @@ import { X, ChevronLeft, ChevronRight } from "lucide-react";
 import { toImageItem } from "../utils/imageItem";
 import { useSwipe } from "../hooks/useSwipe";
 
+/**
+ * @param {{
+ *   images?: ReadonlyArray<{ src: string; alt?: string; title?: string; caption?: string }>;
+ *   index?: number;
+ *   onClose?: () => void;
+ *   onPrev?: () => void;
+ *   onNext?: () => void;
+ * }} props
+ */
 export default function Lightbox({
   images = [],
   index = 0,
@@ -79,14 +88,14 @@ export default function Lightbox({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4"
+        className="fixed inset-0 z-50 bg-black/90 backdrop-blur-sm flex items-center justify-center p-4"
         onClick={onClose}
       >
         {/* Close button */}
         <button
           ref={closeBtnRef}
           onClick={onClose}
-          className="absolute top-4 right-4 text-white hover:bg-accent-fuchsia cursor-pointer focus:outline-none focus:ring-2 focus:ring-fuchsia-400 transition-colors duration-200 ease-in-out rounded"
+          className="absolute top-4 right-4 text-white hover:bg-fuchsia-strong cursor-pointer transition-colors duration-200 ease-in-out rounded"
           aria-label="Close lightbox"
         >
           <X className="w-8 h-8" />
@@ -117,7 +126,7 @@ export default function Lightbox({
                   }}
                   onPointerDown={(e) => e.stopPropagation()}
                   className="hidden md:flex absolute left-2 top-1/2 -translate-y-1/2
-                             bg-primary-dark-purple/40 hover:bg-primary-dark-purple/60 text-white p-2 rounded-full z-20 cursor-pointer"
+                             bg-bg/60 hover:bg-bg/80 border border-line text-white p-2 rounded-full z-20 cursor-pointer"
                   aria-label="Previous image"
                 >
                   <ChevronLeft className="w-7 h-7" />
@@ -130,7 +139,7 @@ export default function Lightbox({
                   }}
                   onPointerDown={(e) => e.stopPropagation()}
                   className="hidden md:flex absolute right-2 top-1/2 -translate-y-1/2
-                             bg-primary-dark-purple/40 hover:bg-primary-dark-purple/60 text-white p-2 rounded-full z-20 cursor-pointer"
+                             bg-bg/60 hover:bg-bg/80 border border-line text-white p-2 rounded-full z-20 cursor-pointer"
                   aria-label="Next image"
                 >
                   <ChevronRight className="w-7 h-7" />
@@ -158,12 +167,12 @@ export default function Lightbox({
           {(item.title || item.caption || total > 1) && (
             <div
               className="mt-3 mx-auto w-full md:w-[min(900px,95vw)]
-                         rounded-xl border border-white/15 bg-white/8 backdrop-blur-md p-4"
+                         rounded-[var(--radius-tile-sm)] border border-line bg-surface-deep/90 backdrop-blur-md p-4"
             >
               {item.title && (
                 <h3
                   id="lb-title"
-                  className="text-white font-semibold text-base md:text-lg"
+                  className="display text-white text-base md:text-lg"
                 >
                   {item.title}
                 </h3>

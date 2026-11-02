@@ -23,8 +23,6 @@ export const ZOOM_REFERENCE_WIDTH = 440;
 // it inside the hero's stage below the copy.
 export const FRAMING = { contentHeight: 720, contentOffset: 136 };
 
-export const BACKGROUND = "#000000";
-
 // Logo cube travels straight down along Y into the missing slot.
 // Its x/z already line up with the slot in the export.
 export const LOGO_START_Y = 210;

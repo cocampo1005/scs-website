@@ -1,7 +1,6 @@
 import { useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { ChevronDown, ChevronUp, X } from "lucide-react";
-import GlowCard from "./GlowCard";
 
 // Letter tile for a principle; the brand mark for the logo piece (its 3D Logo
 // Cube pops out on the board itself while this piece's info is open).
@@ -30,24 +29,24 @@ function PieceBadge({ piece, className = "" }) {
 export default function SolidInfoPanel({ piece, hasPlaced, onClose }) {
   return (
     <section aria-label="Piece information">
-      <GlowCard className="p-5 min-h-[17rem]">
+      <div className="tile tile-feature p-5 min-h-[17rem]">
         <div aria-live="polite" aria-atomic="true">
           {piece ? (
             <article key={piece.id} className="animate-panel-in">
               <div className="flex items-center gap-4 pr-8">
                 <PieceBadge piece={piece} className="h-14 w-14 shrink-0 text-3xl" />
                 <div className="min-w-0">
-                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-accent-purple-light">
+                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-accent">
                     {piece.kicker}
                   </p>
-                  <h3 className="mt-0.5 font-display text-xl xl:text-2xl font-bold leading-tight text-accent-fuchsia-light">
+                  <h3 className="mt-0.5 font-display text-xl xl:text-2xl font-bold leading-tight text-fuchsia">
                     {piece.title}
                   </h3>
                 </div>
               </div>
-              <p className="mt-4 text-gray-200 leading-relaxed">{piece.description}</p>
+              <p className="mt-4 text-ink-soft leading-relaxed">{piece.description}</p>
               {piece.detail && (
-                <p className="mt-3 border-l-2 border-accent-fuchsia/50 pl-3 text-sm text-gray-400 leading-relaxed">
+                <p className="mt-3 border-l-2 border-focus/50 pl-3 text-sm text-ink-subtle leading-relaxed">
                   {piece.detail}
                 </p>
               )}
@@ -55,21 +54,21 @@ export default function SolidInfoPanel({ piece, hasPlaced, onClose }) {
               <button
                 type="button"
                 onClick={onClose}
-                className="absolute right-0 top-0 rounded-full p-1.5 text-gray-400 hover:bg-white/10 hover:text-white focus-visible:outline-2 focus-visible:outline-accent-fuchsia transition-colors"
+                className="absolute right-0 top-0 rounded-full p-1.5 text-ink-subtle hover:bg-white/10 hover:text-white focus-visible:outline-2 focus-visible:outline-focus transition-colors"
                 aria-label={`Hide ${piece.title} information`}
               >
                 <X className="h-5 w-5" aria-hidden="true" />
               </button>
             </article>
           ) : (
-            <p className="animate-panel-in flex min-h-[14rem] items-center justify-center px-4 text-center text-gray-400">
+            <p className="animate-panel-in flex min-h-[14rem] items-center justify-center px-4 text-center text-ink-subtle">
               {hasPlaced
                 ? "Click a placed piece on the board to see what it stands for."
                 : "Place a piece to reveal what it stands for."}
             </p>
           )}
         </div>
-      </GlowCard>
+      </div>
     </section>
   );
 }
@@ -81,7 +80,7 @@ function SheetDetail({ detail }) {
   return (
     <>
       {open && (
-        <p className="mt-2 border-l-2 border-accent-fuchsia/50 pl-3 text-[0.8125rem] leading-relaxed text-gray-400">
+        <p className="mt-2 border-l-2 border-focus/50 pl-3 text-[0.8125rem] leading-relaxed text-ink-subtle">
           {detail}
         </p>
       )}
@@ -89,7 +88,7 @@ function SheetDetail({ detail }) {
         type="button"
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
-        className="mt-1.5 text-xs font-semibold text-accent-fuchsia-light hover:text-white focus-visible:outline-2 focus-visible:outline-accent-fuchsia rounded"
+        className="mt-1.5 text-xs font-semibold text-fuchsia hover:text-white focus-visible:outline-2 focus-visible:outline-focus rounded"
       >
         {open ? "Less" : "More about this principle"}
       </button>
@@ -136,7 +135,7 @@ export function SolidInfoSheet({ piece, show, minimized, onMinimize, onExpand, o
         {piece && (
           <section
             aria-label="Piece information"
-            className="mx-auto max-w-md overflow-hidden rounded-2xl border border-accent-fuchsia-dark/40 bg-[#1b0b2e]/95 shadow-[0_-12px_40px_-12px_rgba(217,70,239,0.45)] backdrop-blur-md"
+            className="mx-auto max-w-md overflow-hidden rounded-2xl border border-focus/40 bg-surface-deep/95 shadow-[0_-12px_40px_-12px_rgba(217,70,239,0.45)] backdrop-blur-md"
           >
             {/* Handle + header: swipe target */}
             <div
@@ -152,19 +151,19 @@ export function SolidInfoSheet({ piece, show, minimized, onMinimize, onExpand, o
                   type="button"
                   onClick={minimized ? onExpand : onMinimize}
                   aria-expanded={!minimized}
-                  className="min-w-0 flex-1 text-left focus-visible:outline-2 focus-visible:outline-accent-fuchsia rounded"
+                  className="min-w-0 flex-1 text-left focus-visible:outline-2 focus-visible:outline-focus rounded"
                 >
-                  <span className="block truncate text-[0.6875rem] font-semibold uppercase tracking-[0.16em] text-accent-purple-light">
+                  <span className="block truncate text-[0.6875rem] font-semibold uppercase tracking-[0.16em] text-accent">
                     {piece.kicker}
                   </span>
-                  <span className="block truncate font-display text-lg font-bold leading-tight text-accent-fuchsia-light">
+                  <span className="block truncate font-display text-lg font-bold leading-tight text-fuchsia">
                     {piece.title}
                   </span>
                 </button>
                 <button
                   type="button"
                   onClick={minimized ? onExpand : onMinimize}
-                  className="rounded-full p-1.5 text-gray-400 hover:bg-white/10 hover:text-white focus-visible:outline-2 focus-visible:outline-accent-fuchsia"
+                  className="rounded-full p-1.5 text-ink-subtle hover:bg-white/10 hover:text-white focus-visible:outline-2 focus-visible:outline-focus"
                   aria-label={minimized ? "Show description" : "Minimize description"}
                 >
                   {minimized ? (
@@ -176,7 +175,7 @@ export function SolidInfoSheet({ piece, show, minimized, onMinimize, onExpand, o
                 <button
                   type="button"
                   onClick={onClose}
-                  className="rounded-full p-1.5 text-gray-400 hover:bg-white/10 hover:text-white focus-visible:outline-2 focus-visible:outline-accent-fuchsia"
+                  className="rounded-full p-1.5 text-ink-subtle hover:bg-white/10 hover:text-white focus-visible:outline-2 focus-visible:outline-focus"
                   aria-label={`Hide ${piece.title} information`}
                 >
                   <X className="h-5 w-5" aria-hidden="true" />
@@ -186,7 +185,7 @@ export function SolidInfoSheet({ piece, show, minimized, onMinimize, onExpand, o
 
             {!minimized && (
               <div key={piece.id} className="max-h-[40svh] overflow-y-auto px-3.5 pb-3.5">
-                <p className="text-sm leading-relaxed text-gray-200">{piece.description}</p>
+                <p className="text-sm leading-relaxed text-ink-soft">{piece.description}</p>
                 <SheetDetail detail={piece.detail} />
               </div>
             )}

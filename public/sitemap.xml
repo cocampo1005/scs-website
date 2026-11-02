@@ -1,8 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Keep in sync with the routes in src/App.jsx (checked by src/__tests__/seo.test.js) -->
+<!-- Keep in sync with src/routes.ts (checked by src/__tests__/seo.test.js) -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://solidcodesolutionsllc.com/</loc></url>
-  <url><loc>https://solidcodesolutionsllc.com/projects</loc></url>
+  <url><loc>https://solidcodesolutionsllc.com/services</loc></url>
+  <url><loc>https://solidcodesolutionsllc.com/work</loc></url>
+  <url><loc>https://solidcodesolutionsllc.com/work/street-cat-clinic</loc></url>
+  <url><loc>https://solidcodesolutionsllc.com/work/meowmax</loc></url>
+  <url><loc>https://solidcodesolutionsllc.com/work/let-me-style-your-career</loc></url>
+  <url><loc>https://solidcodesolutionsllc.com/work/bio-coatings-blast-it-off</loc></url>
   <url><loc>https://solidcodesolutionsllc.com/about</loc></url>
   <url><loc>https://solidcodesolutionsllc.com/contact</loc></url>
   <url><loc>https://solidcodesolutionsllc.com/privacy</loc></url>

@@ -29,12 +29,34 @@ test.describe("homepage hero", () => {
     await page.goto("/");
     await expect(heroHeading(page)).toBeVisible();
     const hero = page.getByRole("region", { name: /Custom Software/ });
-    await expect(hero.getByRole("link", { name: "Discuss Your Project" })).toBeVisible();
+    await expect(hero.getByRole("link", { name: "Discuss your project" })).toBeVisible();
     await expect(page.locator("canvas")).toHaveCount(1);
 
     await page.getByRole("button", { name: "Place it for me" }).click();
     await expect(page.getByText("Every piece has a purpose. Every solution is built to fit.")).toBeVisible();
     await expect(heroHeading(page)).toBeVisible();
+    expect(errors).toEqual([]);
+  });
+
+  test("remembers the solve for the session and replays on request", async ({ page }) => {
+    const errors = watchErrors(page);
+    await page.goto("/");
+    await page.getByRole("button", { name: "Place it for me" }).click();
+    await expect(page.getByRole("button", { name: "Replay the puzzle" })).toBeVisible();
+    const strip = page.getByRole("group", { name: "How a fitted solution comes together" });
+    await expect(strip).toHaveAttribute("data-lit", "true");
+
+    // A restored solve shows the finished state at once, with no sequence
+    await page.reload();
+    await expect(page.getByRole("button", { name: "Replay the puzzle" })).toBeVisible();
+    await expect(strip).toHaveAttribute("data-lit", "true");
+    await expect(page.locator(".circuit")).toHaveAttribute("data-state", "off");
+
+    await page.getByRole("button", { name: "Replay the puzzle" }).click();
+    await expect(page.getByRole("button", { name: "Place it for me" })).toBeVisible();
+    await expect(strip).toHaveAttribute("data-lit", "false");
+    expect(await page.evaluate(() => sessionStorage.getItem("scs:hero-solved"))).toBeNull();
+    await expect(page.locator("canvas")).toHaveCount(1);
     expect(errors).toEqual([]);
   });
 
@@ -91,6 +113,30 @@ test.describe("about page SOLID exhibit", () => {
   });
 });
 
+test.describe("navigation", () => {
+  test("the mobile menu opens, navigates and closes", async ({ page, isMobile }) => {
+    test.skip(!isMobile, "phone layout only");
+    await page.goto("/");
+    await page.getByRole("button", { name: "Open menu" }).click();
+    const menu = page.getByRole("navigation", { name: "Mobile" });
+    await expect(menu).toBeVisible();
+    await menu.getByRole("link", { name: "Services" }).click();
+    await expect(page).toHaveURL(/\/services$/);
+    await expect(menu).toBeHidden();
+    await expect(page.getByRole("heading", { level: 2, name: "Custom software development" })).toBeVisible();
+  });
+
+  test("every page renders without errors", async ({ page }) => {
+    const errors = watchErrors(page);
+    for (const path of ["/services", "/work", "/work/let-me-style-your-career", "/work/bio-coatings-blast-it-off", "/privacy", "/terms"]) {
+      await page.goto(path);
+      await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+      await expect(page.locator("head title")).toHaveCount(1);
+    }
+    expect(errors).toEqual([]);
+  });
+});
+
 test.describe("routing and SEO", () => {
   test("unknown paths render the Not Found page with noindex", async ({ page }) => {
     await page.goto("/no-such-page");
@@ -121,9 +167,32 @@ test.describe("routing and SEO", () => {
   });
 });
 
-test.describe("projects page", () => {
+test.describe("work and case studies", () => {
+  test("old /projects links land on the new pages", async ({ page }) => {
+    await page.goto("/projects?case=cat-solutions-305#featured");
+    await expect(page).toHaveURL(/\/work\/meowmax$/);
+    await expect(page.getByRole("heading", { level: 1 })).toContainText("self-service clinic booking");
+    await page.goto("/projects");
+    await expect(page).toHaveURL(/\/work$/);
+  });
+
+  test("lists software case studies before websites", async ({ page }) => {
+    await page.goto("/work");
+    await expect(page.getByRole("heading", { level: 3, name: "Street Cat Clinic" })).toBeVisible();
+    const headings = await page.getByRole("heading", { level: 3 }).allTextContents();
+    expect(headings.indexOf("Street Cat Clinic")).toBeLessThan(headings.indexOf("Let Me Style Your Career"));
+    await page.getByRole("link", { name: /Street Cat Clinic/ }).first().click();
+    await expect(page).toHaveURL(/\/work\/street-cat-clinic$/);
+    await expect(page).toHaveTitle(/Street Cat Clinic/);
+  });
+
+  test("unknown case studies are Not Found", async ({ page }) => {
+    await page.goto("/work/no-such-case");
+    await expect(page.getByRole("heading", { level: 1, name: /doesn’t fit anywhere/ })).toBeVisible();
+  });
+
   test("lightbox opens from the keyboard and returns focus when closed", async ({ page }) => {
-    await page.goto("/projects?case=street-cat-clinic#featured");
+    await page.goto("/work/street-cat-clinic");
     const shot = page.getByRole("button", { name: /^Enlarge screenshot/ }).first();
     await shot.focus();
     await page.keyboard.press("Enter");
@@ -136,7 +205,7 @@ test.describe("projects page", () => {
   });
 
   test("shows outcomes, not unverified percentages", async ({ page }) => {
-    await page.goto("/projects?case=cat-solutions-305#featured");
+    await page.goto("/work/meowmax");
     await expect(page.getByRole("heading", { name: "Outcomes" })).toBeVisible();
     await expect(page.locator("main")).not.toContainText(/[+-]\d+(\.\d+)?(%|×)/);
   });
@@ -152,9 +221,9 @@ test.describe("contact form", () => {
     await page.route("**/googletagmanager.com/**", (route) => route.abort());
     await page.goto("/contact");
     for (const [name, value] of [
-      [/Your Name/, "Jane Doe"],
-      [/Email/, "jane@example.com"],
-      [/Tell us about your project/, "We need a booking site."],
+      [/^Name/, "Jane Doe"],
+      [/Work email/, "jane@example.com"],
+      [/What should the software help with/, "We need a booking site."],
     ]) {
       const field = page.getByRole("textbox", { name });
       // Focus first: under mobile emulation fill() on an unfocused field is dropped
@@ -171,7 +240,7 @@ test.describe("contact form", () => {
       await route.fulfill({ status: 200, contentType: "application/json", body: '{"ok":true}' });
     });
     await fillForm(page);
-    await page.getByRole("button", { name: "Send Message" }).click();
+    await page.getByRole("button", { name: "Send message" }).click();
 
     await expect(page.getByText("Thanks — we'll be in touch shortly.")).toBeVisible();
     expect(sent.method()).toBe("POST");
@@ -190,14 +259,14 @@ test.describe("contact form", () => {
       })
     );
     await fillForm(page);
-    await page.getByRole("button", { name: "Send Message" }).click();
+    await page.getByRole("button", { name: "Send message" }).click();
     await expect(page.getByText(/Too many attempts/)).toBeVisible();
 
     await page.unroute("**/api/contact");
     await page.route("**/api/contact", (route) =>
       route.fulfill({ status: 503, contentType: "application/json", body: '{"ok":false,"error":"unavailable"}' })
     );
-    await page.getByRole("button", { name: "Send Message" }).click();
+    await page.getByRole("button", { name: "Send message" }).click();
     await expect(page.getByText(/Couldn't send the message right now/)).toBeVisible();
     expect(await conversions(page)).toBe(0);
   });

@@ -1,7 +1,8 @@
 # Precision × Cinematic: final design specification
 
-Status: **direction approved; final responsive review pending.** Do not start
-the production redesign until the canvas below is confirmed.
+Status: **approved and built** on branch `feat/redesign-2.0` (1 Nov 2026):
+every board below exists as a page. Not deployed yet; see "Remaining open
+points".
 
 Canvas: https://claude.ai/artifact/UbeffBeJC7nsPvUSPrjaga (private until shared)
 

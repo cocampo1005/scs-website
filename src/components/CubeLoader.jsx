@@ -4,7 +4,7 @@ import React from "react";
 export default function CubeLoader({
   ready = false,
   size = 80,
-  label = "Loading 3D Scene...",
+  label = "Loading the 3D scene…",
 }) {
   return (
     <div
@@ -35,7 +35,7 @@ export default function CubeLoader({
       </div>
 
       {/* Label */}
-      <span className="mt-20 text-sm md:text-base text-gray-300">{label}</span>
+      <span className="mt-20 label text-ink-subtle">{label}</span>
 
       {/* Scoped Styles */}
       <style>{`

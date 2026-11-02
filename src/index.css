@@ -1,108 +1,68 @@
 @import "tailwindcss";
 
+/* SCS 2.0 "Precision × Cinematic" design tokens (docs/design-review.md).
+   Components use these roles, never raw hex values. The 3D scenes keep their
+   own palettes in hero3d/puzzleConfig.js and constants/solidPuzzleData.js. */
 @theme {
-  /* Primary brand colors */
-  --color-primary-dark-purple: #0c0216; /* Deep background purple */
-  --color-primary-white: #ffffff; /* Light text & backgrounds */
+  --color-*: initial;
+  --color-transparent: transparent;
+  --color-current: currentColor;
+  --color-white: #ffffff;
+  --color-black: #000000;
 
-  /* Gradient / accent purples & fuchsias */
-  --color-accent-fuchsia: oklch(
-    74% 0.238 322.16
-  ); /* fuchsia-400 base for gradients */
-  --color-accent-fuchsia-light: #f0abfc; /* fuchsia-300 for headings */
-  --color-accent-fuchsia-dark: oklch(
-    59.1% 0.293 322.896
-  ); /* fuchsia-600 for stronger accents */
-  --color-accent-purple: oklch(
-    71.4% 0.203 305.504
-  ); /* purple-600 for buttons/gradients */
-  --color-accent-purple-light: #c4b5fd; /* purple-300 for lighter elements */
-  --color-accent-purple-dark: oklch(
-    55.8% 0.288 302.321
-  ); /* purple-600 for depth */
+  /* Surfaces */
+  --color-bg: #08060d; /* page */
+  --color-bg-raised: #0e0a16; /* stages behind 3D */
+  --color-surface: #1b1529; /* tile gradient top */
+  --color-surface-deep: #110d1b; /* tile gradient bottom */
+  --color-line: rgb(196 181 253 / 0.12); /* default borders */
+  --color-line-strong: rgb(196 181 253 / 0.28); /* controls, hover */
 
-  /* Secondary UI grays */
-  --color-gray-light: #d1d5db; /* gray-300 for text */
-  --color-gray-mid: #9ca3af; /* gray-400 for subtle text/borders */
-  --color-gray-dark: #374151; /* gray-700 for stronger contrast */
+  /* Text */
+  --color-ink: #f5f1fb; /* 18:1 */
+  --color-ink-soft: #d9d0ea; /* navigation, tags */
+  --color-ink-muted: #c9c0d9; /* body copy, 11.6:1 */
+  --color-ink-subtle: #9a90ad; /* labels, 6.4:1 */
+  --color-link: #d8ccff;
 
-  /* Status colors */
-  --color-error-red: #f54c70; /* Default error */
-  --color-error-red-hov: #e11d48; /* Hover state (red-600) */
-  --color-error-red-act: #be123c; /* Active state (red-700) */
-  --color-success-green: #95cf8a; /* Success green (custom) */
+  /* Accents */
+  --color-accent: #c4b5fd; /* eyebrows, links */
+  --color-violet: #8b5cf6; /* ambient light */
+  --color-violet-strong: #7c3aed; /* button gradient end */
+  --color-fuchsia-strong: #c026d3; /* button gradient start */
+  --color-fuchsia: #f0abfc; /* highlights */
+  --color-signal: #ff2bf4; /* cube and circuit only, never UI text */
+  --color-focus: #e879f9;
+
+  /* Status */
+  --color-danger: #f97066;
+  --color-success: #6ce9a6;
 
   --font-logo: "Rajdhani", system-ui, sans-serif;
   --font-display: "Space Grotesk", system-ui, sans-serif;
-  --font-sans: "Work Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
-    Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+  --font-sans: "Work Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --radius-tag: 6px;
+  --radius-control: 12px;
+  --radius-tile-sm: 16px;
+  --radius-tile: 20px;
+  --radius-device: 28px;
+
+  --ease-out: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --ease-signal: cubic-bezier(0.35, 0.1, 0.25, 1);
+
+  --animate-panel-in: panel-in 300ms var(--ease-out) both;
+  --animate-reveal: reveal 500ms var(--ease-out) both;
 }
 
-body {
-  background-color: var(--color-primary-dark-purple);
-  color: var(--color-primary-white);
-  font-family: var(--font-sans);
+@font-face {
+  font-family: "Rajdhani";
+  font-weight: 700;
+  font-display: swap;
+  src: url("/fonts/rajdhani-bold.woff") format("woff");
 }
 
-#particles-js {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-}
-
-#particles-js canvas {
-  display: block;
-  position: absolute;
-  top: 0;
-  left: 0;
-}
-
-.btn-primary {
-  @apply inline-flex items-center justify-center px-5 py-3 md:px-8 md:py-4 
-    rounded-lg font-semibold whitespace-nowrap 
-    transition-all duration-300 transform;
-  background-image: linear-gradient(
-    to right,
-    var(--color-accent-fuchsia-dark),
-    var(--color-accent-purple-dark)
-  );
-}
-
-.btn-primary:hover {
-  @apply shadow-lg scale-105;
-  box-shadow: 0 8px 16px -4px rgba(217, 70, 239, 0.5); /* fuchsia hover glow */
-}
-
-.btn-secondary {
-  @apply inline-flex items-center justify-center px-5 py-3 md:px-8 md:py-4 
-    rounded-lg font-semibold whitespace-nowrap 
-    transition-all duration-300;
-  background-color: rgba(255, 255, 255, 0.1); /* bg-white/10 */
-  backdrop-filter: blur(4px); /* backdrop-blur-sm */
-  border: 1px solid rgba(147, 51, 234, 0.3); /* border-purple-400/30 */
-}
-
-.btn-secondary:hover {
-  @apply scale-105;
-  background-color: rgba(255, 255, 255, 0.2); /* bg-white/20 */
-}
-
-@keyframes float {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-6px);
-  }
-}
-
-.animate-float {
-  animation: float 3s ease-in-out infinite;
-}
-
-/* SOLID puzzle info panel swap */
 @keyframes panel-in {
   from {
     opacity: 0;
@@ -110,198 +70,207 @@ body {
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: none;
   }
 }
 
-.animate-panel-in {
-  animation: panel-in 300ms ease-out both;
+@keyframes reveal {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@layer base {
+  html {
+    color-scheme: dark;
+    scroll-padding-top: 88px;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--color-bg);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  a {
+    color: inherit;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 2px;
+  }
+
+  ::selection {
+    background: rgb(192 38 211 / 0.45);
+    color: #fff;
+  }
+}
+
+@layer components {
+  /* Display headings: Space Grotesk 600, tight tracking */
+  .display {
+    font-family: var(--font-display);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+
+  /* Mono caps for eyebrows, labels and data */
+  .label {
+    font-family: var(--font-mono);
+    font-weight: 500;
+    font-size: 0.6875rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  @media (min-width: 768px) {
+    .label {
+      font-size: 0.75rem;
+    }
+  }
+
+  /* The one gradient text per page (the H1 accent) */
+  .text-gradient {
+    background: linear-gradient(90deg, var(--color-fuchsia), #a78bfa);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* Tiles: surface gradient, 1px lavender border at 12% */
+  .tile {
+    position: relative;
+    overflow: hidden;
+    border-radius: var(--radius-tile-sm);
+    border: 1px solid var(--color-line);
+    background: linear-gradient(180deg, rgb(27 21 41 / 0.92), rgb(17 13 27 / 0.92));
+    transition: border-color 250ms var(--ease-out);
+  }
+
+  @media (min-width: 640px) {
+    .tile {
+      border-radius: var(--radius-tile);
+    }
+  }
+
+  /* Interactive tiles: border brightens, a soft spotlight follows the pointer
+     (--x/--y are set by the Tile component, no React state) */
+  .tile-interactive:hover,
+  .tile-interactive:focus-within {
+    border-color: rgb(196 181 253 / 0.32);
+  }
+
+  .tile-interactive::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0;
+    background: radial-gradient(
+      240px 140px at var(--x, 70%) var(--y, 30%),
+      rgb(196 181 253 / 0.12),
+      transparent 70%
+    );
+    transition: opacity 250ms var(--ease-out);
+  }
+
+  .tile-interactive:hover::before,
+  .tile-interactive:focus-within::before {
+    opacity: 1;
+  }
+
+  /* One feature tile per section: fuchsia border and soft halo */
+  .tile-feature {
+    border-color: rgb(232 121 249 / 0.35);
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.04),
+      0 0 0 1px rgb(232 121 249 / 0.08),
+      0 30px 80px -40px rgb(192 38 211 / 0.55);
+  }
+
+  .tile-feature.tile-interactive:hover,
+  .tile-feature.tile-interactive:focus-within {
+    border-color: rgb(232 121 249 / 0.55);
+  }
+
+  /* Open strip: secondary content */
+  .tile-open {
+    background: rgb(255 255 255 / 0.02);
+  }
+
+  /* Engineering grid: 40px cells on phones, 56px from tablets up */
+  .grid-motif {
+    --cell: 40px;
+    background-image:
+      linear-gradient(rgb(196 181 253 / 0.085) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(196 181 253 / 0.085) 1px, transparent 1px);
+    background-size: var(--cell) var(--cell);
+  }
+
+  @media (min-width: 640px) {
+    .grid-motif {
+      --cell: 56px;
+    }
+  }
+
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    border: 1px solid rgb(196 181 253 / 0.2);
+    border-radius: var(--radius-tag);
+    padding: 4px 8px;
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.04em;
+    color: var(--color-ink-soft);
+  }
+
+  .screenshot {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+    border: 1px solid rgb(255 255 255 / 0.08);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .animate-panel-in {
-    animation: none;
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+  }
+
+  .tile,
+  .tile-interactive::before {
+    transition: none;
   }
 }
 
-/* Custom Scroll Bar for various Browsers */
-
-:root {
-  --scs-bg: #0c0216; /* primary background */
-  --scs-track: rgba(255, 255, 255, 0.04);
-
-  /* Gradient colors - matching button (light fuchsia to dark purple) */
-  --scs-grad-start: #d946ef; /* fuchsia-500 - top */
-  --scs-grad-end: #7c3aed; /* violet-600 - bottom */
-
-  /* Hover - brighter gradient */
-  --scs-grad-hover-start: #e879f9; /* fuchsia-400 */
-  --scs-grad-hover-end: #8b5cf6; /* violet-500 */
-
-  /* Active - deeper gradient */
-  --scs-grad-active-start: #c026d3; /* fuchsia-600 */
-  --scs-grad-active-end: #6d28d9; /* violet-700 */
-
-  /* Firefox fallback */
-  --scs-firefox-thumb: #a855f7;
-
-  --scs-track-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.03);
-  --scs-thumb-shadow: 0 20px 20px rgba(217, 70, 239, 0.5);
+/* Scrollbars */
+html {
+  scrollbar-color: #7c3aed var(--color-bg);
 }
 
-/* WebKit browsers - gradient works here! */
 html::-webkit-scrollbar {
   width: 10px;
 }
 
 html::-webkit-scrollbar-track {
-  background: var(--scs-track);
-  border-radius: 3px;
-  box-shadow: var(--scs-track-shadow);
+  background: rgb(255 255 255 / 0.03);
 }
 
 html::-webkit-scrollbar-thumb {
-  border-radius: 3px;
-  background: linear-gradient(
-    to bottom,
-    var(--scs-grad-start) 0%,
-    var(--scs-grad-end) 100%
-  );
-  box-shadow: var(--scs-thumb-shadow);
-  transition: all 0.2s ease;
+  border-radius: 4px;
+  background: linear-gradient(to bottom, var(--color-fuchsia-strong), var(--color-violet-strong));
 }
-
-html::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(
-    to bottom,
-    var(--scs-grad-hover-start) 0%,
-    var(--scs-grad-hover-end) 100%
-  );
-  box-shadow: 0 20px 20px rgba(217, 70, 239, 0.8);
-  border-color: transparent;
-}
-
-html::-webkit-scrollbar-thumb:active {
-  background: linear-gradient(
-    to bottom,
-    var(--scs-grad-active-start) 0%,
-    var(--scs-grad-active-end) 100%
-  );
-  box-shadow: 0 20px 20px rgba(217, 70, 239, 0.8);
-}
-
-/* Scrollbar corner (when both scrollbars are present) */
-html::-webkit-scrollbar-corner {
-  background: var(--scs-track);
-}
-
-/* Optional: For internal scrollable elements */
-.nice-scrollbar {
-  scrollbar-width: thin;
-  scrollbar-color: var(--scs-firefox-thumb) var(--scs-track);
-}
-
-.nice-scrollbar::-webkit-scrollbar {
-  width: 12px;
-  height: 12px;
-}
-
-.nice-scrollbar::-webkit-scrollbar-track {
-  background: var(--scs-track);
-  border-radius: 8px;
-  box-shadow: var(--scs-track-shadow);
-}
-
-.nice-scrollbar::-webkit-scrollbar-thumb {
-  border-radius: 8px;
-  background: linear-gradient(
-    to bottom,
-    var(--scs-grad-start) 0%,
-    var(--scs-grad-end) 100%
-  );
-  background-clip: padding-box;
-  box-shadow: var(--scs-thumb-shadow);
-  transition: all 0.2s ease;
-}
-
-.nice-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(
-    to bottom,
-    var(--scs-grad-hover-start) 0%,
-    var(--scs-grad-hover-end) 100%
-  );
-  box-shadow: 0 2px 12px rgba(232, 121, 249, 0.4);
-}
-
-.nice-scrollbar::-webkit-scrollbar-thumb:active {
-  background: linear-gradient(
-    to bottom,
-    var(--scs-grad-active-start) 0%,
-    var(--scs-grad-active-end) 100%
-  );
-}
-
-.nice-scrollbar::-webkit-scrollbar-corner {
-  background: var(--scs-track);
-}
-
-/* Respect reduced motion */
-@media (prefers-reduced-motion: reduce) {
-  html::-webkit-scrollbar-thumb,
-  .nice-scrollbar::-webkit-scrollbar-thumb {
-    transition: none;
-  }
-}
-
-/* Horizontal case study scrollbar */
-.horizontal-scrollbar {
-  overflow-x: auto;
-  overflow-y: hidden;
-
-  /* Firefox */
-  scrollbar-width: thin;
-  scrollbar-color: var(--scs-firefox-thumb) var(--scs-track);
-}
-
-/* WebKit */
-.horizontal-scrollbar::-webkit-scrollbar {
-  height: 10px; /* horizontal height */
-}
-
-.horizontal-scrollbar::-webkit-scrollbar-track {
-  background: var(--scs-track);
-  border-radius: 8px;
-  box-shadow: var(--scs-track-shadow);
-}
-
-.horizontal-scrollbar::-webkit-scrollbar-thumb {
-  border-radius: 8px;
-  background: linear-gradient(
-    to right,
-    var(--scs-grad-start) 0%,
-    var(--scs-grad-end) 100%
-  );
-  box-shadow: var(--scs-thumb-shadow);
-  transition: all 0.2s ease;
-}
-
-.horizontal-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(
-    to right,
-    var(--scs-grad-hover-start) 0%,
-    var(--scs-grad-hover-end) 100%
-  );
-}
-
-.horizontal-scrollbar::-webkit-scrollbar-thumb:active {
-  background: linear-gradient(
-    to right,
-    var(--scs-grad-active-start) 0%,
-    var(--scs-grad-active-end) 100%
-  );
-}
-
-.horizontal-scrollbar::-webkit-scrollbar-corner {
-  background: var(--scs-track);
-}
-

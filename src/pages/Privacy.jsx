@@ -6,8 +6,8 @@ import {
   formatLegalDate,
 } from "../constants/legal";
 
-const H2 = "text-xl font-semibold mt-10 mb-3 text-fuchsia-300";
-const LINK = "text-fuchsia-300 underline hover:text-fuchsia-200";
+const H2 = "display text-xl sm:text-2xl mt-12 mb-3 text-ink";
+const LINK = "text-link underline underline-offset-2 hover:text-white";
 
 function Email() {
   return (
@@ -65,11 +65,11 @@ export default function Privacy() {
       </SEO>
 
       <div className="min-h-screen">
-        <article className="max-w-3xl mx-auto px-6 pb-20 pt-28 md:pt-36 text-gray-200 leading-relaxed">
-          <h1 className="text-3xl md:text-4xl font-bold mb-3 bg-gradient-to-r from-fuchsia-300 to-purple-300 bg-clip-text text-transparent">
+        <article className="max-w-3xl mx-auto px-4 sm:px-6 pb-20 pt-28 lg:pt-40 text-ink-muted leading-relaxed">
+          <h1 className="display text-[34px] sm:text-5xl leading-tight mb-3 text-ink">
             Privacy Policy
           </h1>
-          <p className="text-sm text-gray-400">
+          <p className="label text-ink-subtle">
             Last updated:{" "}
             <time dateTime={PRIVACY_LAST_UPDATED}>
               {formatLegalDate(PRIVACY_LAST_UPDATED)}

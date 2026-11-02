@@ -45,7 +45,9 @@ const fragmentShader = /* glsl */ `
     // at d = 0, so there is no hard line where the halo meets the cube.
     float x = d / uWidth;
     float a = 0.6 * exp(-x * x) + 0.4 * exp(-x * x / 9.0);
-    gl_FragColor = vec4(uColor * a * uOpacity, 1.0);
+    // Premultiplied: the glow adds its own alpha, so it also shows on a
+    // transparent canvas without darkening what is behind it
+    gl_FragColor = vec4(uColor * a * uOpacity, a * uOpacity);
   }
 `;
 
@@ -97,10 +99,13 @@ const SilhouetteGlow = forwardRef(function SilhouetteGlow(
           uEdges: { value: Array.from({ length: MAX_EDGES }, () => new THREE.Vector4()) },
         },
         // Kept in the opaque queue so render order can slot it between the
-        // floor and the cube; additive blending still applies.
+        // floor and the cube; colour and alpha are added (one, one).
         depthWrite: false,
         depthTest: false,
-        blending: THREE.AdditiveBlending,
+        blending: THREE.CustomBlending,
+        blendEquation: THREE.AddEquation,
+        blendSrc: THREE.OneFactor,
+        blendDst: THREE.OneFactor,
       }),
     [color, width, radius]
   );

@@ -4,15 +4,16 @@ import { OrthographicCamera } from "@react-three/drei";
 import * as THREE from "three";
 import PuzzleScene from "./PuzzleScene";
 import { watchContextLoss } from "../../three/webgl";
-import { BACKGROUND, CAMERA, FRAMING, ZOOM_REFERENCE_WIDTH } from "./puzzleConfig";
+import { CAMERA, FRAMING, ZOOM_REFERENCE_WIDTH } from "./puzzleConfig";
 
-const baseUp = new THREE.Vector3(0, 1, 0).applyQuaternion(
-  new THREE.Quaternion(...CAMERA.quaternion),
-);
+const cameraQuaternion = new THREE.Quaternion(...CAMERA.quaternion);
+const baseUp = new THREE.Vector3(0, 1, 0).applyQuaternion(cameraQuaternion);
+const baseRight = new THREE.Vector3(1, 0, 0).applyQuaternion(cameraQuaternion);
 
 // Fits the puzzle into the hero's stage: the canvas covers the whole hero, so
-// the camera is zoomed to the stage height and slid along its up axis until the
-// puzzle sits at the stage centre (`stage.offsetY` px below the canvas centre).
+// the camera is zoomed to the stage height and slid along its up and right axes
+// until the puzzle sits at the stage centre (`stage.offsetX`/`offsetY` px from
+// the canvas centre).
 function StageFraming({ stage }) {
   const camera = useThree((s) => s.camera);
   const width = useThree((s) => s.size.width);
@@ -27,7 +28,11 @@ function StageFraming({ stage }) {
     const shift = stage
       ? stage.offsetY / zoom - FRAMING.contentOffset
       : 0;
-    camera.position.set(...CAMERA.position).addScaledVector(baseUp, shift);
+    const shiftX = stage ? -(stage.offsetX ?? 0) / zoom : 0;
+    camera.position
+      .set(...CAMERA.position)
+      .addScaledVector(baseUp, shift)
+      .addScaledVector(baseRight, shiftX);
     camera.updateProjectionMatrix();
     invalidate();
   }, [camera, width, stage, invalidate]);
@@ -44,6 +49,11 @@ export default function HeroPuzzleCanvas({
   onSolved,
   onReady,
   onContextLost,
+  // Start assembled without animating (a solve restored from this session)
+  restored = false,
+  // Changing it remounts the scene with the pieces back at the start, inside
+  // the same WebGL context
+  replayKey = 0,
 }) {
   // "never" while off-screen or the tab is hidden. The idle and solved floats
   // need a steady loop; with reduced motion nothing floats, so render on demand.
@@ -55,7 +65,8 @@ export default function HeroPuzzleCanvas({
       dpr={[1, 2]}
       shadows
       flat
-      gl={{ antialias: true, powerPreference: "high-performance" }}
+      // Transparent: the page's grid and circuit layer show through
+      gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
       // Vertical swipes scroll the page; only touches on the cube are captured
       style={{ touchAction: "pan-y" }}
       onCreated={({ gl }) => {
@@ -63,7 +74,6 @@ export default function HeroPuzzleCanvas({
         if (onContextLost) watchContextLoss(gl.domElement, onContextLost);
       }}
     >
-      <color attach="background" args={[BACKGROUND]} />
       <OrthographicCamera
         makeDefault
         position={CAMERA.position}
@@ -75,6 +85,10 @@ export default function HeroPuzzleCanvas({
       <StageFraming stage={stage} />
       <Suspense fallback={null}>
         <PuzzleScene
+          key={replayKey}
+          restored={restored}
+          showBubbles={false}
+          shadowFloor
           skipped={skipped}
           reducedMotion={reducedMotion}
           onSolved={onSolved}

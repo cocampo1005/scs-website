@@ -149,6 +149,12 @@ export default function PuzzleScene({
   reducedMotion,
   onSolved,
   onReady,
+  // Start assembled, with no animation (a solve restored from this session)
+  restored = false,
+  // Hexagon bubbles drifting up after the solve
+  showBubbles = true,
+  // Transparent floor that only receives shadows, so the page shows through
+  shadowFloor = false,
 }) {
   const parts = useModelParts();
   const { camera, gl, invalidate } = useThree();
@@ -160,8 +166,10 @@ export default function PuzzleScene({
   const logoRef = useRef(null); // drag position (relative to the assembly)
   const logoFloatRef = useRef(null); // idle bob offset, kept separate from dragging
 
-  const phase = useRef("idle"); // idle | dragging | snapping | completed
-  const targetY = useRef(LOGO_START_Y);
+  const phase = useRef(restored ? "completed" : "idle"); // idle | dragging | snapping | completed
+  const targetY = useRef(restored ? LOGO_END_Y : LOGO_START_Y);
+  // Restored solves skip the snap, spin and colour transition
+  const instant = useRef(restored);
   const grabOffset = useRef(0);
   const solvedT = useRef(0);
   const solvedNotified = useRef(false);
@@ -419,11 +427,12 @@ export default function PuzzleScene({
     const assembly = assemblyRef.current;
     if (phase.current === "completed" && assembly) {
       if (spinT.current < 1) {
-        spinT.current = reducedMotion
+        const still = reducedMotion || instant.current;
+        spinT.current = still
           ? 1
           : Math.min(1, spinT.current + dt / SPIN_SECONDS);
         const t = spinT.current;
-        assembly.rotation.y = reducedMotion
+        assembly.rotation.y = still
           ? 0
           : easeInOutBack(t, SPIN_BACK) * Math.PI * 2 * SPIN_TURNS;
         // sin² hop: rises while spinning up, lands softly (zero velocity) as the spin winds down
@@ -451,7 +460,7 @@ export default function PuzzleScene({
 
     // Solved transition: pieces light up, hint fades, floor glows
     if (phase.current === "completed" && solvedT.current < 1) {
-      solvedT.current = reducedMotion
+      solvedT.current = reducedMotion || instant.current
         ? 1
         : Math.min(1, solvedT.current + dt / SOLVE_TRANSITION_SECONDS);
       animating = true;
@@ -479,7 +488,7 @@ export default function PuzzleScene({
     }
 
     // Bubbles drifting up after the solve (static when reduced motion is on)
-    if (solvedT.current > 0) {
+    if (showBubbles && solvedT.current > 0) {
       const { right, up, forward, origin } = bubbleScratch;
       right.setFromMatrixColumn(camera.matrixWorld, 0).normalize();
       up.setFromMatrixColumn(camera.matrixWorld, 1).normalize();
@@ -579,10 +588,14 @@ export default function PuzzleScene({
         quaternion={floor.quaternion}
         scale={floor.scale}
       >
-        <meshStandardMaterial
-          color={floor.color.clone().multiplyScalar(0.55)}
-          roughness={0.95}
-        />
+        {shadowFloor ? (
+          <shadowMaterial transparent opacity={0.35} color="#12001f" />
+        ) : (
+          <meshStandardMaterial
+            color={floor.color.clone().multiplyScalar(0.55)}
+            roughness={0.95}
+          />
+        )}
       </mesh>
 
       <group ref={assemblyRef} position={center} renderOrder={ORDER.cube}>
@@ -604,7 +617,7 @@ export default function PuzzleScene({
           ref={logoRef}
           position={[
             parts.logoGroupPosition.x - center.x,
-            LOGO_START_Y - center.y,
+            (restored ? LOGO_END_Y : LOGO_START_Y) - center.y,
             parts.logoGroupPosition.z - center.z,
           ]}
           onPointerDown={onPointerDown}
@@ -693,7 +706,7 @@ export default function PuzzleScene({
       </group>
 
       {/* Ambient bubbles that drift up once solved */}
-      {bubbles.map((b, i) => (
+      {showBubbles && bubbles.map((b, i) => (
         <mesh
           key={i}
           ref={(el) => (bubbleRefs.current[i] = el)}

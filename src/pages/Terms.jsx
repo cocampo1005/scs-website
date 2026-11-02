@@ -42,8 +42,8 @@ export default function Terms() {
       </SEO>
 
       <div className="min-h-screen">
-        <section className="max-w-4xl mx-auto px-6 pb-20 pt-20 md:pt-30 text-gray-200">
-          <h1 className="text-3xl md:text-4xl font-bold mb-6 bg-gradient-to-r from-fuchsia-300 to-purple-300 bg-clip-text text-transparent">
+        <section className="max-w-3xl mx-auto px-4 sm:px-6 pb-20 pt-28 lg:pt-40 text-ink-muted leading-relaxed">
+          <h1 className="display text-[34px] sm:text-5xl leading-tight mb-6 text-ink">
             Terms of Service
           </h1>
           <p className="mb-4">
@@ -51,7 +51,7 @@ export default function Terms() {
             to the following terms and conditions.
           </p>
 
-          <h2 className="text-xl font-semibold mt-8 mb-3 text-fuchsia-300">
+          <h2 className="display text-xl sm:text-2xl mt-12 mb-3 text-ink">
             Use of Content
           </h2>
           <p className="mb-4">
@@ -60,7 +60,7 @@ export default function Terms() {
             copy, reproduce, or distribute it without written permission.
           </p>
 
-          <h2 className="text-xl font-semibold mt-8 mb-3 text-fuchsia-300">
+          <h2 className="display text-xl sm:text-2xl mt-12 mb-3 text-ink">
             No Warranties
           </h2>
           <p className="mb-4">
@@ -69,7 +69,7 @@ export default function Terms() {
             is complete, current, or free of errors.
           </p>
 
-          <h2 className="text-xl font-semibold mt-8 mb-3 text-fuchsia-300">
+          <h2 className="display text-xl sm:text-2xl mt-12 mb-3 text-ink">
             Third-Party Links
           </h2>
           <p className="mb-4">
@@ -78,7 +78,7 @@ export default function Terms() {
             those sites.
           </p>
 
-          <h2 className="text-xl font-semibold mt-8 mb-3 text-fuchsia-300">
+          <h2 className="display text-xl sm:text-2xl mt-12 mb-3 text-ink">
             Limitation of Liability
           </h2>
           <p className="mb-4">
@@ -86,21 +86,21 @@ export default function Terms() {
             losses arising from the use or inability to use this site.
           </p>
 
-          <h2 className="text-xl font-semibold mt-8 mb-3 text-fuchsia-300">
+          <h2 className="display text-xl sm:text-2xl mt-12 mb-3 text-ink">
             Contact
           </h2>
           <p className="mb-4">
             If you have questions about these terms, please contact us at{" "}
             <a
               href="mailto:christian@solidcodesolutionsllc.com"
-              className="text-fuchsia-300 underline hover:text-fuchsia-200"
+              className="text-link underline underline-offset-2 hover:text-white"
             >
               christian@solidcodesolutionsllc.com
             </a>
             .
           </p>
 
-          <p className="mt-12 text-sm text-gray-400">
+          <p className="mt-12 label text-ink-subtle">
             Last updated:{" "}
             <time dateTime={TERMS_LAST_UPDATED}>
               {formatLegalDate(TERMS_LAST_UPDATED)}

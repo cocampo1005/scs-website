@@ -1,5 +1,22 @@
 # Next phase: increments and gates
 
+**Progress (1 Nov 2026).** Increment 1 is live in production (`eee16c6`), and
+`main` and `scs-2.0` are both at that release. Branch `feat/redesign-2.0`
+carries increments 3-8 in one pass:
+- 3: the TypeScript foundation, with a typed content model;
+- 4: tokens and primitives (without the `/styleguide` route);
+- 5: the shell;
+- 6: the homepage, hero, circuit and story strip;
+- 7: `/work`, `/work/:slug` and the 301s;
+- 8: About and Contact.
+
+Still open:
+- 2: prerendering. The spike in `spike/prerender` is not yet re-applied; hero
+  state is already read after mount, so it is hydration-safe.
+- 9: the TypeScript migration of the scenes, SOLID exhibit, legal pages and
+  lightbox (still `.jsx`).
+- 10: GLB compression, Lighthouse and axe budgets, and the release.
+
 Every increment:
 - is one branch off `scs-2.0`, merged by PR into `scs-2.0` (never `main`);
 - keeps `npm run check` green;

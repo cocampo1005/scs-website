@@ -1,0 +1,201 @@
+/* Circuit completion sequence (docs/design-review.md, decision 2), about 2.2 s:
+   lock-in flare 0-150 ms, wave and grid light 150-600 ms, pulses and branches
+   600-1400 ms, settle to 2.2 s. --ox/--oy is the cube's centre in the hero. */
+
+.circuit {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: -10;
+}
+
+/* Lit copy of the grid, revealed by a circle growing from the cube */
+.circuit-hot {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgb(240 171 252 / 0.4) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(240 171 252 / 0.4) 1px, transparent 1px);
+  background-size: var(--cell) var(--cell);
+  background-position: var(--ox) var(--oy);
+  clip-path: circle(0 at var(--ox) var(--oy));
+  opacity: 0;
+}
+
+.circuit-wave {
+  position: absolute;
+  left: var(--ox);
+  top: var(--oy);
+  width: 180px;
+  height: 180px;
+  margin: -90px 0 0 -90px;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgb(255 43 244 / 0.55), rgb(192 38 211 / 0.18) 60%, transparent);
+  opacity: 0;
+  transform: scale(0.2);
+}
+
+.circuit-paths {
+  position: absolute;
+  left: var(--ox);
+  top: var(--oy);
+  overflow: visible;
+}
+
+.circuit-paths path {
+  fill: none;
+  stroke: #f5c6ff;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-dasharray: 110 2400;
+  stroke-dashoffset: 110;
+  opacity: 0;
+  filter: drop-shadow(0 0 6px var(--color-focus)) drop-shadow(0 0 14px var(--color-fuchsia-strong));
+}
+
+.circuit-paths circle {
+  fill: #ffe4ff;
+  opacity: 0;
+}
+
+/* Playing */
+.circuit[data-state="playing"] .circuit-hot {
+  animation: circuit-grid 2.05s var(--ease-out) 0.15s forwards;
+}
+
+.circuit[data-state="playing"] .circuit-wave {
+  animation: circuit-wave 1.3s cubic-bezier(0.15, 0.75, 0.25, 1) forwards;
+}
+
+.circuit[data-state="playing"] .circuit-paths path {
+  animation: circuit-travel 1.6s var(--ease-signal) calc(0.45s + var(--d, 0s)) forwards;
+}
+
+.circuit[data-state="playing"] .circuit-paths path.branch {
+  animation-duration: 1.2s;
+}
+
+.circuit[data-state="playing"] .circuit-paths circle {
+  animation: circuit-node 1.4s ease-out calc(0.45s + var(--d, 0s)) forwards;
+}
+
+@keyframes circuit-grid {
+  0% {
+    clip-path: circle(0 at var(--ox) var(--oy));
+    opacity: 1;
+  }
+  55% {
+    opacity: 0.9;
+  }
+  100% {
+    clip-path: circle(1100px at var(--ox) var(--oy));
+    opacity: 0;
+  }
+}
+
+@keyframes circuit-wave {
+  0% {
+    opacity: 0.95;
+    transform: scale(0.2);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(7);
+  }
+}
+
+@keyframes circuit-travel {
+  0% {
+    opacity: 1;
+    stroke-dashoffset: 110;
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    stroke-dashoffset: -1300;
+  }
+}
+
+@keyframes circuit-node {
+  0%,
+  30% {
+    opacity: 0;
+  }
+  45% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* Reduced motion: the finished circuit, shown still */
+.circuit[data-state="static"] .circuit-hot {
+  clip-path: circle(420px at var(--ox) var(--oy));
+  opacity: 0.4;
+  transition: opacity 200ms linear;
+}
+
+.circuit[data-state="static"] .circuit-paths path {
+  stroke-dasharray: none;
+  stroke-dashoffset: 0;
+  opacity: 0.45;
+  filter: none;
+  stroke: #e9b6ff;
+}
+
+/* Story strip: muted before the solve, lit 1.9 s after it */
+.story-step,
+.story-wire {
+  opacity: 0.45;
+  transition: opacity 600ms ease;
+}
+
+.story-dot {
+  background: rgb(196 181 253 / 0.35);
+  transition:
+    background 400ms ease,
+    box-shadow 400ms ease;
+}
+
+.story-wire {
+  background: rgb(196 181 253 / 0.4);
+}
+
+.story[data-lit="true"] .story-step,
+.story[data-lit="true"] .story-wire {
+  opacity: 1;
+}
+
+.story[data-lit="true"] .story-dot {
+  background: var(--color-accent);
+}
+
+.story[data-lit="true"] .story-dot.hot {
+  background: var(--color-signal);
+  box-shadow: 0 0 10px var(--color-focus);
+}
+
+.story[data-lit="true"] .story-wire {
+  background: linear-gradient(90deg, var(--color-accent), var(--color-focus));
+  box-shadow: 0 0 6px rgb(232 121 249 / 0.6);
+}
+
+.story[data-lit="true"] .s2 {
+  transition-delay: 250ms;
+}
+
+.story[data-lit="true"] .s3 {
+  transition-delay: 500ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .story-step,
+  .story-wire,
+  .story-dot {
+    transition-duration: 200ms;
+    transition-delay: 0ms !important;
+  }
+}

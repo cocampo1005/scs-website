@@ -15,7 +15,8 @@
     "test:watch": "vitest",
     "test:php": "composer --working-dir=server test",
     "e2e": "playwright test",
-    "check": "npm run lint && npm run test && npm run test:php && npm run build && npm run e2e"
+    "check": "npm run lint && npm run typecheck && npm run test && npm run test:php && npm run build && npm run e2e",
+    "typecheck": "tsc -p tsconfig.json"
   },
   "dependencies": {
     "@phosphor-icons/react": "^2.1.10",
@@ -38,6 +39,7 @@
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.3",
     "@testing-library/user-event": "^14.6.8",
+    "@types/node": "^22.15.29",
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",
     "@vitejs/plugin-react": "^4.3.4",
@@ -48,6 +50,8 @@
     "eslint-plugin-react-refresh": "^0.4.19",
     "globals": "^15.15.0",
     "jsdom": "^26.1.0",
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.32.1",
     "vite": "^6.2.0",
     "vitest": "^3.2.7"
   }

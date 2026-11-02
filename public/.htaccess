@@ -14,13 +14,27 @@ DirectoryIndex index.html
   RewriteRule ^api/contact/?$ api/contact.php [L]
   RewriteRule ^api(/|$) - [R=404,L]
 
+  # Old portfolio links: /projects?case=<key> moved to /work/<slug> (keep in
+  # sync with legacyKeys in src/content/work.ts). The trailing "?" drops the
+  # old query string.
+  RewriteCond %{QUERY_STRING} (^|&)case=street-cat-clinic(&|$)
+  RewriteRule ^projects/?$ /work/street-cat-clinic? [R=301,L]
+  RewriteCond %{QUERY_STRING} (^|&)case=(cat-solutions-305|meowmax)(&|$)
+  RewriteRule ^projects/?$ /work/meowmax? [R=301,L]
+  RewriteCond %{QUERY_STRING} (^|&)case=let-me-style-your-career(&|$)
+  RewriteRule ^projects/?$ /work/let-me-style-your-career? [R=301,L]
+  RewriteCond %{QUERY_STRING} (^|&)case=bio-coatings-blast-it-off(&|$)
+  RewriteRule ^projects/?$ /work/bio-coatings-blast-it-off? [R=301,L]
+  RewriteRule ^projects/?$ /work? [R=301,L]
+
   # Real files (assets, models, robots.txt, sitemap.xml) and folders as-is
   RewriteCond %{REQUEST_FILENAME} -f [OR]
   RewriteCond %{REQUEST_FILENAME} -d
   RewriteRule ^ - [L]
 
-  # Known app routes are served by the app (keep in sync with src/App.jsx)
-  RewriteRule ^(about|projects|contact|privacy|terms)/?$ /index.html [L]
+  # Known app routes are served by the app (keep in sync with src/routes.ts)
+  RewriteRule ^(services|work|about|contact|privacy|terms)/?$ /index.html [L]
+  RewriteRule ^work/(street-cat-clinic|meowmax|let-me-style-your-career|bio-coatings-blast-it-off)/?$ /index.html [L]
 </IfModule>
 
 # Anything else is a real 404; the app renders its Not Found page for it
