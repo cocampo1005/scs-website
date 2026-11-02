@@ -3,7 +3,7 @@ import { useReducedMotion } from "framer-motion";
 import { RotateCcw } from "lucide-react";
 import CubeLoader from "./CubeLoader";
 import SceneBoundary from "./SceneBoundary";
-import { SolidVictoryBanner, SolidVictoryCta } from "./SolidVictory";
+import { SolidVictoryBanner, SolidVictoryBar, SolidVictoryCard } from "./SolidVictory";
 import { hasWebGL } from "../three/webgl";
 import SolidInfoPanel, { SolidInfoSheet } from "./SolidInfoPanel";
 import { LAYOUTS, SOLID_PIECES, SOLID_PIECE_BY_ID } from "../constants/solidPuzzleData";
@@ -119,6 +119,21 @@ export default function SolidPuzzle() {
   // minimize it themselves. It is tied to the piece it was
   // minimized for, so newly placed or selected pieces always open expanded.
   const [minimizedFor, setMinimizedFor] = useState(null);
+
+  // The win card sits over the board; "Show the finished wall" dismisses it
+  // (a slim bar under the board keeps the invitation). A reset clears both.
+  // On phones the info sheet gets out of the way of the card.
+  const [victoryDismissed, setVictoryDismissed] = useState(false);
+  useEffect(() => {
+    if (!solved) {
+      setVictoryDismissed(false);
+      return;
+    }
+    if (activeInfoId) setMinimizedFor(activeInfoId);
+    // Only when the wall completes; later info changes shouldn't re-minimize
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [solved]);
+  const banner = solved && webgl && !reducedMotion;
   const handleDragChange = useCallback(
     (dragging) => {
       if (dragging && activeInfoId) setMinimizedFor(activeInfoId);
@@ -198,7 +213,10 @@ export default function SolidPuzzle() {
           FALLBACK_NOTE
         )}
       </div>
-      <SolidVictoryBanner show={solved && webgl && !reducedMotion} />
+      <SolidVictoryBanner show={banner} />
+      {solved && !victoryDismissed && (
+        <SolidVictoryCard animated={banner} inline={!isWide} onReset={puzzle.reset} onDismiss={() => setVictoryDismissed(true)} />
+      )}
       </div>
 
       {/* Progress, reset, keyboard-operable piece buttons and (desktop) the
@@ -293,8 +311,7 @@ export default function SolidPuzzle() {
         />
       )}
 
-      {/* The payoff: the win message and the invitation it sets up */}
-      {solved && <SolidVictoryCta onReset={puzzle.reset} />}
+      {solved && victoryDismissed && <SolidVictoryBar onReset={puzzle.reset} />}
 
       {/* Accessible text alternative (works without WebGL or JavaScript-driven 3D) */}
       <details

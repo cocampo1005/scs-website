@@ -201,13 +201,18 @@ test.describe("about page SOLID exhibit", () => {
       await page.getByRole("button", { name: /^Place the .* piece (.*) in its outline$/ }).first().click();
     }
     await expect(page.getByRole("progressbar", { name: "Pieces placed" })).toHaveAttribute("aria-valuenow", "7");
-    // The win: an accessible status with the invitation, and a working "Play again"
+    // The win: the card over the board (an accessible status with the
+    // invitation), dismissable to a slim bar under the board, and "Play again"
     const win = page.getByRole("status", { name: /That’s SOLID/ });
     await expect(win).toBeVisible();
     await expect(win.getByRole("link", { name: /Press start on your project/ })).toHaveAttribute("href", "/contact");
-    await win.getByRole("button", { name: "Play again" }).click();
-    await expect(page.getByRole("progressbar", { name: "Pieces placed" })).toHaveAttribute("aria-valuenow", "0");
+    await win.getByRole("button", { name: "Show the finished wall" }).click();
     await expect(win).toHaveCount(0);
+    const bar = page.getByRole("status").filter({ hasText: "Stage clear" });
+    await expect(bar.getByRole("link", { name: /Press start on your project/ })).toBeVisible();
+    await bar.getByRole("button", { name: "Play again" }).click();
+    await expect(page.getByRole("progressbar", { name: "Pieces placed" })).toHaveAttribute("aria-valuenow", "0");
+    await expect(bar).toHaveCount(0);
     for (let i = 0; i < 7; i++) {
       await page.getByRole("button", { name: /^Place the .* piece (.*) in its outline$/ }).first().click();
     }
