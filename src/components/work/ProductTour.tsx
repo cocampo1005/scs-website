@@ -138,7 +138,7 @@ export function ProductTour({ name, groups }: { name: string; groups: readonly T
             <button
               type="button"
               onClick={() => setEnlarged(true)}
-              aria-label={`Enlarge screenshot: ${title}`}
+              aria-label={`Full screen: ${title}`}
               className="inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-[10px] border border-line bg-white/[0.03] px-4 font-sans text-sm font-medium text-ink transition-colors hover:border-focus/60 hover:bg-white/[0.08]"
             >
               <Maximize2 className="size-4" aria-hidden /> Full screen

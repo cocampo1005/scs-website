@@ -7,10 +7,13 @@ import { cn } from "../ui/cn";
 
 /** A screenshot in a light device frame: browser chrome for desktop, a phone for mobile */
 export function DeviceFrame({ image, device, className, priority }: { image: Screenshot; device: Device; className?: string; priority?: boolean }) {
+  // The frames reserve the screenshots' aspect ratio (phones ≈ 0.46, desktop
+  // ≈ 16:9) so lazy images never shift the layout; object-contain keeps every
+  // pixel, with the frame colour filling any hairline difference.
   if (device === "mobile") {
     return (
       <div className={cn("mx-auto w-[58%] max-w-[230px] overflow-hidden rounded-[26px] border-[6px] border-[#1f1830] bg-[#1f1830] shadow-[0_30px_60px_-30px_rgb(0_0_0/0.8)]", className)}>
-        <img src={image.src} alt={image.alt} loading={priority ? "eager" : "lazy"} className="block w-full rounded-[20px]" />
+        <img src={image.src} alt={image.alt} loading={priority ? "eager" : "lazy"} className="block aspect-[0.46] w-full rounded-[20px] object-contain object-top" />
       </div>
     );
   }
@@ -21,7 +24,7 @@ export function DeviceFrame({ image, device, className, priority }: { image: Scr
         <span className="size-2 rounded-full bg-[rgb(196_181_253/0.25)]" />
         <span className="size-2 rounded-full bg-[rgb(196_181_253/0.25)]" />
       </div>
-      <img src={image.src} alt={image.alt} loading={priority ? "eager" : "lazy"} className="block w-full" />
+      <img src={image.src} alt={image.alt} loading={priority ? "eager" : "lazy"} className="block aspect-[1.81] w-full object-contain object-top" />
     </div>
   );
 }

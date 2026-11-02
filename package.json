@@ -16,7 +16,9 @@
     "test:php": "composer --working-dir=server test",
     "e2e": "playwright test",
     "check": "npm run lint && npm run typecheck && npm run test && npm run test:php && npm run build && npm run e2e",
-    "typecheck": "tsc -p tsconfig.json"
+    "typecheck": "tsc -p tsconfig.json",
+    "lighthouse": "node scripts/lighthouse.mjs",
+    "models:optimize": "node scripts/optimize-models.mjs"
   },
   "dependencies": {
     "@phosphor-icons/react": "^2.1.10",
@@ -33,7 +35,9 @@
     "three": "^0.180.0"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.14.0",
     "@eslint/js": "^9.21.0",
+    "@gltf-transform/cli": "^4.5.1",
     "@playwright/test": "^1.64.1",
     "@testing-library/dom": "^10.4.2",
     "@testing-library/jest-dom": "^6.9.1",
@@ -50,6 +54,7 @@
     "eslint-plugin-react-refresh": "^0.4.19",
     "globals": "^15.15.0",
     "jsdom": "^26.1.0",
+    "lighthouse": "^13.6.0",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.32.1",
     "vite": "^6.2.0",

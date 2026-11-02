@@ -44,7 +44,7 @@ Range `f154762..scs-2.0` changes 60 files in `src/`, `public/` and
 | About page | Spline SOLID wall replaced by the native R3F exhibit, with keyboard buttons, an info panel or bottom sheet, and a text version. "At a Glance" statistics are replaced with qualitative cards. |
 | Projects | Percentages and multipliers are replaced with factual outcomes. Slideshows are pausable. Screenshots open from the keyboard. |
 | Contact | The form posts to our own PHP endpoint (`/api/contact`), which sends through the Hostinger mailbox over authenticated SMTP; EmailJS is removed. Server-side validation, spam traps and rate limits. International phone numbers are accepted. The FAQ is now an accessible accordion. The "Avg response ~24 hrs" claim is removed. |
-| Privacy / Terms | Accurate privacy policy (own server + Hostinger email, rate-limit records, Google Ads, Google Fonts, hosting logs). Fixed revision dates. |
+| Privacy / Terms | Accurate privacy policy (own server + Hostinger email, rate-limit records, Google Ads, self-hosted fonts, hosting logs). Fixed revision dates. |
 | SEO | Static fallback title, description and OG tags in `index.html`. New OG image. Real `robots.txt` and `sitemap.xml`. Not Found page. |
 | Server | New private server folder (`scs-server/`, outside `public_html`) with `config.php`. New `.htaccess`: `/api/contact` reaches the PHP endpoint, other `/api` paths 404, app routes are served by the app, unknown paths return a real 404, and real files (robots, sitemap, models) are served as-is. |
 | Performance | Routes are lazy-loaded (main JS 561 KB → 280 KB). Spline runtime removed. Six unused Google Font families dropped. |

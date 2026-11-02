@@ -37,3 +37,4 @@ coverage
 
 # Release archives (scripts/package-release.mjs)
 release
+lighthouse-report

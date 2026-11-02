@@ -1,0 +1,92 @@
+/* Pointer spotlight on the hero grid. --mx/--my are set on the hero section by
+   HeroSpotlight; data-pointer on the section shows and hides it. Before the
+   solve the lit patch is faint; after it the patch is wider and brighter and
+   the pointer leaves short circuit runs (.hero-spark) along the grid lines. */
+
+.hero-spot {
+  --r: 150px;
+  --strength: 0.3;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 400ms var(--ease-out);
+}
+
+.hero-spot[data-solved="true"] {
+  --r: 230px;
+  --strength: 0.62;
+}
+
+[data-pointer="true"] > .hero-spot {
+  opacity: 1;
+}
+
+.hero-spot-grid {
+  background-image:
+    linear-gradient(rgb(240 171 252 / var(--strength)) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(240 171 252 / var(--strength)) 1px, transparent 1px);
+  background-size: var(--cell) var(--cell);
+  mask-image: radial-gradient(circle var(--r) at var(--mx, -999px) var(--my, -999px), #000 0%, rgb(0 0 0 / 0.5) 45%, transparent 100%);
+}
+
+.hero-spot-glow {
+  background: radial-gradient(circle calc(var(--r) * 1.3) at var(--mx, -999px) var(--my, -999px), rgb(192 38 211 / 0.12), transparent 70%);
+  opacity: 0;
+  transition: opacity 400ms var(--ease-out);
+}
+
+.hero-spot[data-solved="true"] .hero-spot-glow {
+  opacity: 1;
+}
+
+/* A spark is a short bright run drawn from its intersection, then fading */
+.hero-spark {
+  transform: translate(var(--sx), var(--sy));
+}
+
+.hero-spark path {
+  fill: none;
+  stroke: #ffe4ff;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-dasharray: 60 400;
+  stroke-dashoffset: 60;
+  filter: drop-shadow(0 0 5px var(--color-focus));
+  animation: hero-spark-run 1s var(--ease-signal) forwards;
+}
+
+.hero-spark circle {
+  fill: #ffe4ff;
+  animation: hero-spark-node 1s ease-out forwards;
+}
+
+@keyframes hero-spark-run {
+  0% {
+    opacity: 0.9;
+    stroke-dashoffset: 60;
+  }
+  65% {
+    opacity: 0.8;
+  }
+  100% {
+    opacity: 0;
+    stroke-dashoffset: -340;
+  }
+}
+
+@keyframes hero-spark-node {
+  0% {
+    opacity: 1;
+    r: 3;
+  }
+  100% {
+    opacity: 0;
+    r: 6;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-spot,
+  .hero-spot-glow {
+    transition: none;
+  }
+}

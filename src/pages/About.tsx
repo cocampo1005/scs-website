@@ -1,7 +1,8 @@
+import { useRef } from "react";
 import SEO from "../components/SEO";
 import JsonLd from "../components/JsonLd";
 import SolidPuzzle from "../components/SolidPuzzle";
-import { ArchitectureVisual } from "../components/about/ArchitectureVisual";
+import { AboutHeroVisual } from "../components/about/AboutHeroVisual";
 import { ClosingCta } from "../components/ClosingCta";
 import { ArrowIcon, LinkButton } from "../components/ui/Button";
 import { Container, Eyebrow, Section } from "../components/ui/Section";
@@ -10,6 +11,7 @@ import { ABOUT_DIFFERENTIATORS, MISSION, VISION } from "../content/services";
 import { ORIGIN } from "../constants/seo";
 
 export default function About() {
+  const heroRef = useRef<HTMLElement>(null);
   return (
     <>
       <SEO
@@ -38,7 +40,7 @@ export default function About() {
       </SEO>
 
       {/* Hero: the statement, and a system built in layers around people */}
-      <section aria-labelledby="page-title" className="relative isolate overflow-hidden pt-[104px] pb-12 lg:pt-[140px] lg:pb-20">
+      <section ref={heroRef} aria-labelledby="page-title" className="relative isolate overflow-hidden pt-[104px] pb-12 lg:pt-[140px] lg:pb-20">
         <GridBackdrop mask="hero" glow="hero" />
         <Container className="grid gap-10 lg:grid-cols-12 lg:items-center lg:gap-8">
           <div className="flex flex-col gap-5 lg:col-span-6">
@@ -61,7 +63,7 @@ export default function About() {
             </div>
           </div>
           <div className="lg:col-span-6">
-            <ArchitectureVisual />
+            <AboutHeroVisual hostRef={heroRef} />
           </div>
         </Container>
       </section>

@@ -94,6 +94,27 @@ test.describe("homepage hero", () => {
     expect(errors).toEqual([]);
   });
 
+  test("the pointer lights the grid, and leaves a trail of sparks once solved", async ({ page, isMobile }) => {
+    test.skip(isMobile, "pointer hover");
+    await page.goto("/");
+    await sceneReady(page);
+    const hero = page.locator("section[aria-labelledby='hero-heading']");
+    const box = await page.getByTestId("hero-stage").boundingBox();
+    await page.mouse.move(box.x + 40, box.y + 40);
+    await expect(hero).toHaveAttribute("data-pointer", "true");
+    await expect(page.locator(".hero-spot")).toHaveAttribute("data-solved", "false");
+    // Unsolved: a quiet highlight, no sparks however far the pointer travels
+    for (let i = 0; i < 10; i++) await page.mouse.move(box.x + 40 + i * 50, box.y + 300);
+    await expect(page.locator(".hero-spark")).toHaveCount(0);
+
+    await page.getByRole("button", { name: "Place it for me" }).click();
+    await expect(page.locator(".hero-spot")).toHaveAttribute("data-solved", "true");
+    for (let i = 0; i < 10; i++) await page.mouse.move(box.x + 40 + i * 50, box.y + 320);
+    await expect.poll(() => page.locator(".hero-spark").count()).toBeGreaterThan(2);
+    await page.mouse.move(5, 5);
+    await expect(hero).toHaveAttribute("data-pointer", "false");
+  });
+
   test("remembers the solve for the session, stays alive, and replays on request", async ({ page }) => {
     const errors = watchErrors(page);
     await page.goto("/");
@@ -177,13 +198,24 @@ test.describe("about page SOLID exhibit", () => {
     const pieces = page.getByRole("list", { name: "Puzzle pieces" }).getByRole("button");
     await expect(pieces).toHaveCount(7);
     for (let i = 0; i < 7; i++) {
-      await page.getByRole("button", { name: /^Place the .* piece in its outline$/ }).first().click();
+      await page.getByRole("button", { name: /^Place the .* piece (.*) in its outline$/ }).first().click();
     }
     await expect(page.getByRole("progressbar", { name: "Pieces placed" })).toHaveAttribute("aria-valuenow", "7");
-    await expect(page.getByText(/That’s SOLID/)).toBeVisible();
+    // The win: an accessible status with the invitation, and a working "Play again"
+    const win = page.getByRole("status", { name: /That’s SOLID/ });
+    await expect(win).toBeVisible();
+    await expect(win.getByRole("link", { name: /Press start on your project/ })).toHaveAttribute("href", "/contact");
+    await win.getByRole("button", { name: "Play again" }).click();
+    await expect(page.getByRole("progressbar", { name: "Pieces placed" })).toHaveAttribute("aria-valuenow", "0");
+    await expect(win).toHaveCount(0);
+    for (let i = 0; i < 7; i++) {
+      await page.getByRole("button", { name: /^Place the .* piece (.*) in its outline$/ }).first().click();
+    }
+    await expect(page.getByRole("status", { name: /That’s SOLID/ })).toBeVisible();
     // The board loads lazily; placements made before it loaded carry over
+    // (two canvases: the hero's 3D stack and the board)
     await page.getByRole("progressbar", { name: "Pieces placed" }).scrollIntoViewIfNeeded();
-    await expect(page.locator("canvas")).toHaveCount(1);
+    await expect(page.locator("canvas")).toHaveCount(2);
     expect(errors).toEqual([]);
   });
 });
@@ -350,7 +382,7 @@ test.describe("work and case studies", () => {
 
   test("lightbox opens from the keyboard and returns focus when closed", async ({ page }) => {
     await page.goto("/work/street-cat-clinic");
-    const shot = page.getByRole("button", { name: /^Enlarge screenshot/ }).first();
+    const shot = page.getByRole("button", { name: /^Full screen:/ }).first();
     await shot.focus();
     await page.keyboard.press("Enter");
     const dialog = page.getByRole("dialog");

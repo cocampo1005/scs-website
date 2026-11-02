@@ -129,8 +129,8 @@ export default function Privacy() {
           <h2 className={H2}>Other services the site relies on</h2>
           <ul className="list-disc pl-6 space-y-2">
             <li>
-              <strong>Google Fonts</strong>: typefaces load from Google’s
-              servers, which receive your IP address and browser details.
+              <strong>Fonts</strong>: the site’s typefaces are served from our
+              own web server; no font provider receives your details.
             </li>
             <li>
               <strong>Hosting</strong>: the site is hosted by Hostinger, whose

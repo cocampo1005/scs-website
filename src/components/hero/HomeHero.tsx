@@ -8,6 +8,8 @@ import { ArrowIcon, LinkButton } from "../ui/Button";
 import { Container, Eyebrow } from "../ui/Section";
 import { cn } from "../ui/cn";
 import { CircuitLayer } from "./CircuitLayer";
+import { HeroSpotlight } from "./HeroSpotlight";
+import { useMediaQuery } from "../../hooks/useSolidPuzzle";
 import { workPath } from "../../content/work";
 import posterImg from "../../assets/images/hero-puzzle-solved.webp";
 
@@ -80,6 +82,8 @@ export default function HomeHero() {
   const stage = useStageGeometry(hero.containerRef, stageRef);
   // Without the 3D scene the poster shows the finished cube
   const solved = state.solved || !sceneAvailable;
+  // Grid cell size (.grid-motif): 56px from 640px up, 40px on phones
+  const cell = useMediaQuery("(min-width: 640px)") ? 56 : 40;
 
   return (
     <section
@@ -98,6 +102,13 @@ export default function HomeHero() {
         style={stage ? { backgroundPosition: `${stage.originX}px ${stage.originY}px` } : undefined}
       />
       <CircuitLayer state={state.circuit} active={hero.active} origin={stage ? { x: stage.originX, y: stage.originY } : null} />
+      <HeroSpotlight
+        hostRef={hero.containerRef}
+        solved={solved}
+        reducedMotion={reducedMotion}
+        origin={stage ? { x: stage.originX, y: stage.originY } : null}
+        cell={cell}
+      />
 
       {/* The canvas spans the hero at z-0: it must be the top-most layer under
           the pointer wherever there is no copy or control, or the cube can't be

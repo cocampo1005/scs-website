@@ -96,7 +96,7 @@ describe("Accordion", () => {
 describe("Privacy page", () => {
   it("discloses the contact form processor and Google Ads, with a fixed date", () => {
     inRouter(<Privacy />);
-    expect(screen.getByText(/Last updated/)).toHaveTextContent("October 30, 2026");
+    expect(screen.getByText(/Last updated/)).toHaveTextContent("November 2, 2026");
     expect(screen.getByText(/processed on our own web server/)).toHaveTextContent("Hostinger");
     expect(screen.queryByText(/EmailJS/)).toBeNull();
     expect(screen.getByText(/deletes these records within 24/)).toBeInTheDocument();

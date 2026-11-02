@@ -3,6 +3,7 @@ import { useFrame, useThree } from "@react-three/fiber";
 import { Line, useGLTF } from "@react-three/drei";
 import * as THREE from "three";
 import { buildSilhouette } from "./solidSilhouette";
+import WinBurst from "./WinBurst";
 import {
   LAYOUTS,
   PUZZLE,
@@ -16,6 +17,7 @@ const OUTLINE_IDLE = new THREE.Color("#c4b5fd");
 const OUTLINE_NEAR = new THREE.Color("#f5d0fe");
 const FILL_IDLE = new THREE.Color("#a855f7");
 const FILL_NEAR = new THREE.Color("#e879f9");
+const FLASH_WHITE = new THREE.Color("#ffe4ff"); // completion strobe
 const OUTLINE_DEPTH = 40; // outlines sit this far behind the pieces' centre plane
 const GLOW_DEPTH = 70;
 const LOGO_SCALE = 1.15; // logo cube (60.5 units) sized to sit inside its 95-unit slot
@@ -718,13 +720,21 @@ export default function SolidPuzzleScene({
       const glowTarget = (active === p.id ? 0.16 : 0) + (rt.hover && placedLike ? 0.1 : 0);
       rt.glow = damp(rt.glow, glowTarget, 10, dt);
       rt.flash = Math.max(0, rt.flash - dt / 0.7);
+      // Completion: a wave across the wall, then an arcade strobe where each
+      // piece flashes in turn for a couple of seconds before settling
       let wave = 0;
+      let strobe = 0;
       if (allPlaced && !rm) {
         const delay = ((p.target.x - (wall.cx - wall.w / 2)) / wall.w) * 0.7;
         wave = Math.max(0, 1 - Math.abs(solveT - delay - 0.35) / 0.35) * 0.55;
+        const index = parts.indexOf(p);
+        if (solveT > 0.9 && solveT < 3.4) {
+          const fadeOut = 1 - (solveT - 0.9) / 2.5;
+          strobe = Math.pow(0.5 + 0.5 * Math.sin(solveT * 16 - index * 0.9), 6) * 0.9 * fadeOut;
+        }
       }
-      const lightUp = rt.glow + rt.flash * 0.75 + wave;
-      materials[p.id].emissive.copy(p.baseColor).multiplyScalar(lightUp);
+      const lightUp = rt.glow + rt.flash * 0.75 + wave + strobe;
+      materials[p.id].emissive.copy(strobe > 0.2 ? FLASH_WHITE : p.baseColor).multiplyScalar(lightUp);
 
       // Outline: brightens as the matching piece approaches, fades once filled
       const o = outlineRefs.current[p.id];
@@ -749,10 +759,10 @@ export default function SolidPuzzleScene({
       if (rt.floatAmt > 0.001 && !rm) busy = true;
     });
 
-    // Completion: unified pulse and a soft light behind the wall
+    // Completion: a bounce (two decaying hops) and a soft light behind the wall
     const stage = stageRef.current;
     if (stage) {
-      const pulse = allPlaced && !rm ? Math.sin(Math.PI * Math.min(1, solveT / 1.2)) * 0.018 : 0;
+      const pulse = allPlaced && !rm && solveT < 1.6 ? Math.abs(Math.sin(Math.PI * solveT / 0.8)) * 0.045 * (1 - solveT / 1.6) : 0;
       const s = 1 + pulse;
       stage.scale.set(s, s, 1);
       stage.position.set(wall.cx * (1 - s), wall.cy * (1 - s), 0);
@@ -782,6 +792,7 @@ export default function SolidPuzzleScene({
 
       <group ref={stageRef}>
         <WallGlow wall={wall} glowRef={glowRef} />
+        <WinBurst wall={wall} solved={placedIds.length === parts.length} reducedMotion={reducedMotion} />
 
         <LogoReveal
           slot={parts.find((p) => p.id === "logo").target}

@@ -33,10 +33,14 @@ function WhatWeBuild() {
           title="If your business has a process, we can build a better way to run it."
           lead="Every business works differently. Whether you need to organize information, manage appointments, coordinate your team, serve customers or simplify day-to-day operations, we create applications designed around the way you actually work."
         />
+        {/* Phones get a compact list; the UI vignettes appear from 640px up */}
         <ul className="m-0 grid list-none grid-cols-1 gap-2.5 p-0 sm:grid-cols-2 md:gap-4 lg:grid-cols-3">
           {APPLICATION_TYPES.map((t, i) => (
-            <li key={t.id} className={cn("group tile flex flex-col gap-4 p-4 sm:p-5", i === 0 && "tile-feature")}>
-              <AppVignette kind={t.vignette} />
+            <li key={t.id} className={cn("group tile flex gap-3.5 p-4 sm:flex-col sm:gap-4 sm:p-5", i === 0 && "tile-feature")}>
+              <span aria-hidden="true" className="label mt-1 shrink-0 text-fuchsia sm:hidden">
+                {String(i + 1).padStart(2, "0")}
+              </span>
+              <AppVignette kind={t.vignette} className="max-sm:hidden" />
               <div className="flex flex-col gap-1.5">
                 <h3 className="display m-0 text-lg sm:text-xl">{t.title}</h3>
                 <p className="m-0 text-sm leading-relaxed text-ink-muted">{t.text}</p>

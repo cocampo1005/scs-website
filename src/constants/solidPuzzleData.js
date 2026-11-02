@@ -148,7 +148,8 @@ export const PUZZLE = {
 // fitted and anchored to the top of the stage.
 export const LAYOUTS = {
   wide: {
-    box: { w: 1120, h: 900, ox: 0, oy: 0 },
+    // Wider than the arrangements need, so floating pieces keep clear of the edges
+    box: { w: 1280, h: 1030, ox: 0, oy: 0 },
     arrangements: [
       {
         s: [-445, 150],
@@ -180,16 +181,16 @@ export const LAYOUTS = {
     ],
   },
   tall: {
-    box: { w: 700 },
+    box: { w: 760 },
     // Approximate full height before the model loads (units)
-    initialH: 1160,
+    initialH: 1200,
     tray: {
-      width: 640, // usable row width
-      topPad: 44, // stage edge above the wall
+      width: 600, // usable row width
+      topPad: 60, // stage edge above the wall
       wallGap: 64, // wall bottom to first tray row
       gap: 30, // between pieces in a row
       rowGap: 34, // between rows
-      bottomPad: 36, // last row to stage edge
+      bottomPad: 56, // last row to stage edge
     },
   },
 };

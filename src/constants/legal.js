@@ -1,6 +1,6 @@
 // Revision dates for the legal pages. Update these by hand whenever the text
 // of the matching page changes; never derive them from the current date.
-export const PRIVACY_LAST_UPDATED = "2026-10-30";
+export const PRIVACY_LAST_UPDATED = "2026-11-02"; // fonts self-hosted, WhatsApp removed
 export const TERMS_LAST_UPDATED = "2026-02-20"; // last change to the Terms text (git history)
 
 export const CONTACT_EMAIL = "christian@solidcodesolutionsllc.com";

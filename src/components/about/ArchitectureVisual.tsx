@@ -2,14 +2,14 @@ import { useRef, type PointerEvent } from "react";
 import { useReducedMotion } from "framer-motion";
 import "./architecture-visual.css";
 
-// Three isometric layers of a system, people at the top, the process in the
-// middle, the data underneath, joined by a vertical signal. The layers drift
+// Three isometric layers, people at the top, their problems in the middle and
+// the solutions underneath, joined by a vertical signal. The layers drift
 // at different depths as the pointer moves over the hero.
 
 const LAYERS = [
   { label: "People", depth: 1.0, y: 0, blocks: [[86, 52], [126, 32], [146, 62]] },
-  { label: "Process", depth: 0.6, y: 92, blocks: [[70, 60], [110, 40], [150, 60], [110, 80]] },
-  { label: "Data", depth: 0.3, y: 184, blocks: [[90, 56], [130, 56]] },
+  { label: "Problems", depth: 0.6, y: 92, blocks: [[70, 60], [110, 40], [150, 60], [110, 80]] },
+  { label: "Solutions", depth: 0.3, y: 184, blocks: [[90, 56], [130, 56]] },
 ] as const;
 
 // An isometric rhombus plate, 240 wide, with a short rim underneath

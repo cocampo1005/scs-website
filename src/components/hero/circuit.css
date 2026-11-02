@@ -36,10 +36,13 @@
   transform: scale(0.2);
 }
 
+/* Placed with a transform, not left/top: moving when the stage is measured
+   must not count as a layout shift */
 .circuit-paths {
   position: absolute;
-  left: var(--ox);
-  top: var(--oy);
+  left: 0;
+  top: 0;
+  transform: translate(var(--ox), var(--oy));
   overflow: visible;
 }
 

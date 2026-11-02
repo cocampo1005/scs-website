@@ -1,8 +1,9 @@
 import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { useReducedMotion } from "framer-motion";
-import { RotateCcw, Sparkles } from "lucide-react";
+import { RotateCcw } from "lucide-react";
 import CubeLoader from "./CubeLoader";
 import SceneBoundary from "./SceneBoundary";
+import { SolidVictoryBanner, SolidVictoryCta } from "./SolidVictory";
 import { hasWebGL } from "../three/webgl";
 import SolidInfoPanel, { SolidInfoSheet } from "./SolidInfoPanel";
 import { LAYOUTS, SOLID_PIECES, SOLID_PIECE_BY_ID } from "../constants/solidPuzzleData";
@@ -149,7 +150,8 @@ export default function SolidPuzzle() {
           isDesktop ? "grid grid-cols-[minmax(0,1fr)_22rem] items-start gap-6" : undefined
         }
       >
-      {/* Board */}
+      {/* Board, with the "stage clear" banner over it once the wall is complete */}
+      <div className="relative">
       <div
         ref={stageRef}
         onPointerDownCapture={() => {
@@ -157,8 +159,8 @@ export default function SolidPuzzle() {
         }}
         className={`relative mx-auto w-full overflow-hidden rounded-[var(--radius-tile)] border border-focus/35 shadow-[0_30px_80px_-40px_rgb(192_38_211/0.5)] select-none ${
           isWide
-            ? "aspect-[1120/900]"
-            : `transition-[height] duration-500 ease-out motion-reduce:transition-none ${tallHeight ? "" : "aspect-[700/1160]"}`
+            ? "aspect-[1280/1030]"
+            : `transition-[height] duration-500 ease-out motion-reduce:transition-none ${tallHeight ? "" : "aspect-[760/1200]"}`
         }`}
         style={{
           height: isWide ? undefined : tallHeight,
@@ -196,6 +198,8 @@ export default function SolidPuzzle() {
           FALLBACK_NOTE
         )}
       </div>
+      <SolidVictoryBanner show={solved && webgl && !reducedMotion} />
+      </div>
 
       {/* Progress, reset, keyboard-operable piece buttons and (desktop) the
           info panel, beside the board so the info is always in view */}
@@ -231,8 +235,8 @@ export default function SolidPuzzle() {
                   aria-pressed={placed ? open : undefined}
                   aria-label={
                     placed
-                      ? `${piece.title}, placed. ${open ? "Hide" : "Show"} description`
-                      : `Place the ${piece.title} piece in its outline`
+                      ? `${piece.chip} piece, ${piece.title}, placed. ${open ? "Hide" : "Show"} description`
+                      : `Place the ${piece.chip} piece (${piece.title}) in its outline`
                   }
                   className={`inline-flex items-center gap-2 rounded-full border px-3.5 py-1.5 text-sm font-semibold transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus ${
                     placed
@@ -255,15 +259,6 @@ export default function SolidPuzzle() {
         </ul>
 
         <div className="flex min-h-[2.5rem] flex-wrap items-center justify-center gap-3">
-          {solved && (
-            <p
-              role="status"
-              className="animate-panel-in inline-flex items-center gap-2 text-ink font-semibold"
-            >
-              <Sparkles className="h-5 w-5 text-fuchsia" aria-hidden="true" />
-              That’s SOLID. All seven pieces fit together.
-            </p>
-          )}
           <button
             type="button"
             onClick={puzzle.reset}
@@ -297,6 +292,9 @@ export default function SolidPuzzle() {
           onClose={() => puzzle.toggleInfo(activeInfoId)}
         />
       )}
+
+      {/* The payoff: the win message and the invitation it sets up */}
+      {solved && <SolidVictoryCta onReset={puzzle.reset} />}
 
       {/* Accessible text alternative (works without WebGL or JavaScript-driven 3D) */}
       <details
