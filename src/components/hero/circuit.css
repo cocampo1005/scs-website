@@ -1,6 +1,7 @@
 /* Circuit completion sequence (docs/design-review.md, decision 2), about 2.2 s:
    lock-in flare 0-150 ms, wave and grid light 150-600 ms, pulses and branches
-   600-1400 ms, settle to 2.2 s. --ox/--oy is the cube's centre in the hero. */
+   600-1400 ms, settle to 2.2 s. Afterwards the ambient state keeps faint pulses
+   travelling along the same wires. --ox/--oy is the cube's centre in the hero. */
 
 .circuit {
   position: absolute;
@@ -131,6 +132,100 @@
   }
 }
 
+/* Ambient: the powered system. A faint patch of lit grid breathes around the
+   cube, short pulses travel out along the wires at low opacity on their own
+   periods (--ap/--ao), and nodes brighten now and then. Far quieter than the
+   solve so it never competes with the headline. */
+.circuit[data-state="ambient"] .circuit-hot {
+  clip-path: circle(380px at var(--ox) var(--oy));
+  opacity: 0.08;
+  animation: circuit-breathe 9s ease-in-out infinite;
+}
+
+.circuit[data-state="ambient"] .circuit-wave {
+  opacity: 0.12;
+  transform: scale(2.4);
+  animation: circuit-glow 8s ease-in-out infinite;
+}
+
+.circuit[data-state="ambient"] .circuit-paths path {
+  stroke: #e9b6ff;
+  stroke-dasharray: 34 1500;
+  stroke-dashoffset: 34;
+  filter: drop-shadow(0 0 5px var(--color-focus));
+  animation: circuit-pulse var(--ap, 7s) linear calc(var(--ao, 0s) + 0.6s) infinite;
+}
+
+.circuit[data-state="ambient"] .circuit-paths path.branch {
+  animation-duration: calc(var(--ap, 7s) * 1.3);
+}
+
+.circuit[data-state="ambient"] .circuit-paths circle {
+  animation: circuit-node-blink calc(var(--ap, 7s) * 1.6) ease-in-out var(--ao, 0s) infinite;
+}
+
+/* Off-screen or hidden tab: freeze the loop */
+.circuit[data-active="false"] .circuit-hot,
+.circuit[data-active="false"] .circuit-wave,
+.circuit[data-active="false"] .circuit-paths path,
+.circuit[data-active="false"] .circuit-paths circle {
+  animation-play-state: paused;
+}
+
+@keyframes circuit-breathe {
+  0%,
+  100% {
+    opacity: 0.06;
+  }
+  50% {
+    opacity: 0.14;
+  }
+}
+
+@keyframes circuit-glow {
+  0%,
+  100% {
+    opacity: 0.1;
+    transform: scale(2.2);
+  }
+  50% {
+    opacity: 0.18;
+    transform: scale(2.6);
+  }
+}
+
+@keyframes circuit-pulse {
+  0% {
+    opacity: 0;
+    stroke-dashoffset: 34;
+  }
+  6% {
+    opacity: 0.42;
+  }
+  70% {
+    opacity: 0.42;
+  }
+  82%,
+  100% {
+    opacity: 0;
+    stroke-dashoffset: -1500;
+  }
+}
+
+@keyframes circuit-node-blink {
+  0%,
+  72%,
+  100% {
+    opacity: 0;
+  }
+  78% {
+    opacity: 0.9;
+  }
+  88% {
+    opacity: 0.15;
+  }
+}
+
 /* Reduced motion: the finished circuit, shown still */
 .circuit[data-state="static"] .circuit-hot {
   clip-path: circle(420px at var(--ox) var(--oy));
@@ -146,56 +241,11 @@
   stroke: #e9b6ff;
 }
 
-/* Story strip: muted before the solve, lit 1.9 s after it */
-.story-step,
-.story-wire {
-  opacity: 0.45;
-  transition: opacity 600ms ease;
-}
-
-.story-dot {
-  background: rgb(196 181 253 / 0.35);
-  transition:
-    background 400ms ease,
-    box-shadow 400ms ease;
-}
-
-.story-wire {
-  background: rgb(196 181 253 / 0.4);
-}
-
-.story[data-lit="true"] .story-step,
-.story[data-lit="true"] .story-wire {
-  opacity: 1;
-}
-
-.story[data-lit="true"] .story-dot {
-  background: var(--color-accent);
-}
-
-.story[data-lit="true"] .story-dot.hot {
-  background: var(--color-signal);
-  box-shadow: 0 0 10px var(--color-focus);
-}
-
-.story[data-lit="true"] .story-wire {
-  background: linear-gradient(90deg, var(--color-accent), var(--color-focus));
-  box-shadow: 0 0 6px rgb(232 121 249 / 0.6);
-}
-
-.story[data-lit="true"] .s2 {
-  transition-delay: 250ms;
-}
-
-.story[data-lit="true"] .s3 {
-  transition-delay: 500ms;
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .story-step,
-  .story-wire,
-  .story-dot {
-    transition-duration: 200ms;
-    transition-delay: 0ms !important;
+  .circuit .circuit-hot,
+  .circuit .circuit-wave,
+  .circuit .circuit-paths path,
+  .circuit .circuit-paths circle {
+    animation: none;
   }
 }

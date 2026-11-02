@@ -242,6 +242,28 @@
     border-radius: 10px;
     border: 1px solid rgb(255 255 255 / 0.08);
   }
+
+  /* FAQ rail: a node per question, lit with the connector below it while open */
+  .faq-node {
+    background: rgb(196 181 253 / 0.25);
+    transition:
+      background-color 300ms var(--ease-out),
+      box-shadow 300ms var(--ease-out);
+  }
+
+  .faq-rail {
+    background: rgb(196 181 253 / 0.14);
+    transition: background 300ms var(--ease-out);
+  }
+
+  .faq li[data-open="true"] .faq-node {
+    background: var(--color-focus);
+    box-shadow: 0 0 12px var(--color-focus);
+  }
+
+  .faq li[data-open="true"] .faq-rail {
+    background: linear-gradient(180deg, var(--color-focus), rgb(196 181 253 / 0.1));
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

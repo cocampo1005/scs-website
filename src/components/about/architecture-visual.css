@@ -1,0 +1,147 @@
+/* About hero: isometric layers that drift with the pointer (--px/--py in
+   [-1, 1], --depth per layer) and a signal that climbs through the stack. */
+
+.arch {
+  --px: 0;
+  --py: 0;
+}
+
+.arch-glow {
+  background: radial-gradient(60% 55% at 50% 60%, rgb(139 92 246 / 0.32), transparent 70%);
+  filter: blur(10px);
+}
+
+.arch-layer {
+  transition: transform 600ms var(--ease-out);
+  transform: translate(calc(var(--px) * var(--depth) * 14px), calc(var(--py) * var(--depth) * 10px));
+}
+
+.arch[data-motion="true"] .arch-layer {
+  animation: arch-float calc(6s + var(--i) * 1.2s) ease-in-out calc(var(--i) * -2s) infinite;
+}
+
+/* The float is a separate keyframe on the inner plate so it stacks with the parallax transform */
+@keyframes arch-float {
+  0%,
+  100% {
+    margin-top: 0;
+  }
+  50% {
+    margin-top: -6px;
+  }
+}
+
+.arch-plate-top {
+  fill: rgb(27 21 41 / 0.92);
+  stroke: rgb(232 121 249 / 0.4);
+  stroke-width: 1;
+}
+
+.arch-plate-left {
+  fill: rgb(17 13 27 / 0.95);
+  stroke: rgb(196 181 253 / 0.18);
+  stroke-width: 1;
+}
+
+.arch-plate-right {
+  fill: rgb(22 16 34 / 0.95);
+  stroke: rgb(196 181 253 / 0.18);
+  stroke-width: 1;
+}
+
+/* A faint grid on each plate, drawn as a dashed outline inset */
+.arch-plate-grid {
+  fill: none;
+  stroke: rgb(196 181 253 / 0.12);
+  stroke-width: 1;
+  stroke-dasharray: 3 9;
+}
+
+.arch-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  fill: var(--color-accent);
+}
+
+.arch-block-top {
+  fill: rgb(139 92 246 / 0.75);
+}
+
+.arch-block-left {
+  fill: rgb(124 58 237 / 0.5);
+}
+
+.arch-block-right {
+  fill: rgb(88 28 200 / 0.55);
+}
+
+.arch-block.hot .arch-block-top {
+  fill: var(--color-signal);
+}
+
+.arch-block.hot .arch-block-left {
+  fill: rgb(192 38 211 / 0.8);
+}
+
+.arch-block.hot .arch-block-right {
+  fill: rgb(140 20 170 / 0.85);
+}
+
+.arch-block.hot {
+  filter: drop-shadow(0 0 10px rgb(255 43 244 / 0.6));
+}
+
+.arch-signal-line {
+  stroke: rgb(196 181 253 / 0.2);
+  stroke-width: 1.5;
+}
+
+.arch-signal-pulse {
+  stroke: #ffe4ff;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-dasharray: 26 400;
+  stroke-dashoffset: -400;
+  filter: drop-shadow(0 0 6px var(--color-focus));
+  opacity: 0;
+}
+
+.arch[data-motion="true"] .arch-signal-pulse {
+  animation: arch-pulse 5s linear infinite;
+}
+
+.arch-signal-node {
+  fill: var(--color-fuchsia);
+  opacity: 0.6;
+}
+
+@keyframes arch-pulse {
+  0% {
+    stroke-dashoffset: -400;
+    opacity: 0;
+  }
+  8% {
+    opacity: 1;
+  }
+  55% {
+    opacity: 1;
+  }
+  65%,
+  100% {
+    stroke-dashoffset: 26;
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .arch-layer {
+    transition: none;
+    animation: none !important;
+    transform: none;
+  }
+  .arch-signal-pulse {
+    animation: none !important;
+  }
+}

@@ -2,8 +2,8 @@
 
 export const CONTACT = {
   email: "christian@solidcodesolutionsllc.com",
-  whatsappDisplay: "+1 (954) 559-2944",
-  whatsappUrl: "https://wa.me/19545592944",
+  phoneDisplay: "+1 (954) 559-2944",
+  phoneTel: "tel:+19545592944",
   phoneE164: "+1-954-559-2944",
 } as const;
 
@@ -23,12 +23,7 @@ export const PRIMARY_NAV = [
 
 export const PRIMARY_CTA = { label: "Discuss your project", to: "/contact" } as const;
 
-export const CLIENT_NAMES = [
-  "Street Cat Clinic",
-  "Cat Solutions 305",
-  "Bio-Coatings",
-  "Blast-It-Off",
-  "Icon Group",
-  "A & A Playgrounds",
-  "ELC Real Estate",
-] as const;
+export const TAGLINE = "Custom software built around the way your business works.";
+
+export const COMPANY_DESCRIPTION =
+  "We design and build custom web applications for businesses whose work doesn't fit a generic product, and professional websites for businesses that want to be found.";

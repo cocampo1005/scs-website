@@ -15,11 +15,11 @@ const renderContact = (url = "/contact") =>
     </MemoryRouter>,
   );
 
-const messageBox = () => screen.getByRole("textbox", { name: /What should the software help with/ });
+const messageBox = () => screen.getByRole("textbox", { name: /What would you like to build or improve/ });
 
 async function fillValidForm() {
   await userEvent.type(screen.getByRole("textbox", { name: /^Name/ }), "Jane Doe");
-  await userEvent.type(screen.getByRole("textbox", { name: /Work email/ }), "jane@example.com");
+  await userEvent.type(screen.getByRole("textbox", { name: /^Email/ }), "jane@example.com");
   await userEvent.type(messageBox(), "We need a booking site.");
 }
 
@@ -29,6 +29,13 @@ afterEach(() => {
 });
 
 describe("Contact page", () => {
+  it("shows the email and phone details above the form", () => {
+    renderContact();
+    expect(screen.getByRole("link", { name: /christian@solidcodesolutionsllc.com/ })).toHaveAttribute("href", "mailto:christian@solidcodesolutionsllc.com");
+    expect(screen.getByRole("link", { name: /\+1 \(954\) 559-2944/ })).toHaveAttribute("href", "tel:+19545592944");
+    expect(screen.queryByText(/WhatsApp/)).toBeNull();
+  });
+
   it("shows field errors and does not send an incomplete form", async () => {
     renderContact();
     await userEvent.click(screen.getByRole("button", { name: "Send message" }));
@@ -88,14 +95,24 @@ describe("Contact page", () => {
     expect(await screen.findByText(/Too many attempts/)).toBeInTheDocument();
   });
 
-  it("prefills the message for a similar-project link", () => {
-    renderContact("/contact?intent=start-similar&project=street-cat-clinic");
-    expect((messageBox() as HTMLTextAreaElement).value).toMatch(/similar to Street Cat Clinic/);
+  it("prefills an editable, project-specific message for a similar-project link", async () => {
+    renderContact("/contact?intent=start-similar&project=street-cat-clinic&title=Street%20Cat%20Clinic#form");
+    const box = messageBox() as HTMLTextAreaElement;
+    expect(box.value).toBe(
+      "Hello, I'm interested in discussing a custom software project similar to the Street Cat Clinic records management platform. I'd like to learn more about what you could build for our business.",
+    );
+    await userEvent.type(box, " We run a clinic too.");
+    expect(box.value).toMatch(/We run a clinic too\.$/);
+  });
+
+  it("falls back to the title for an unknown project", () => {
+    renderContact("/contact?intent=start-similar&project=unknown&title=Some%20Project");
+    expect((messageBox() as HTMLTextAreaElement).value).toMatch(/similar to Some Project/);
   });
 
   it("uses a real accordion for the FAQ", async () => {
     renderContact();
-    const question = screen.getByRole("button", { name: /What should I budget/ });
+    const question = screen.getByRole("button", { name: /Do I need technical specifications/ });
     expect(question).toHaveAttribute("aria-expanded", "false");
     const answer = document.getElementById(question.getAttribute("aria-controls")!);
     expect(answer).toHaveAttribute("inert");

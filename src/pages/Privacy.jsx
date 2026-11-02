@@ -86,11 +86,11 @@ export default function Privacy() {
           <h2 className={H2}>Information you send us</h2>
           <p>
             When you use the contact form, we collect the name, email address
-            and message you enter, and a phone or WhatsApp number if you choose
-            to give one. The form is processed on our own web server and
-            delivered to our inbox through our email provider, Hostinger; no
-            other service receives it. If you email us or message us on
-            WhatsApp directly, we receive the details you include there.
+            and message you enter, and a phone number if you choose to give
+            one. The form is processed on our own web server and delivered to
+            our inbox through our email provider, Hostinger; no other service
+            receives it. If you email or call us directly, we receive the
+            details you include there.
           </p>
           <p className="mt-3">
             To protect the form from spam and abuse, the server limits how many
@@ -138,9 +138,9 @@ export default function Privacy() {
               page requested) for security and operation.
             </li>
             <li>
-              <strong>External links</strong>: links to WhatsApp, LinkedIn,
-              Instagram, Facebook, X and client websites take you to services
-              with their own privacy policies.
+              <strong>External links</strong>: links to LinkedIn, Instagram,
+              Facebook, X and client websites take you to services with their
+              own privacy policies.
             </li>
           </ul>
           <p className="mt-3">

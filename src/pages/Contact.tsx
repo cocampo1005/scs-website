@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type ChangeEvent, type FormEvent, type ReactNode } from "react";
 import { Link, useSearchParams } from "react-router-dom";
+import { Mail, Phone } from "lucide-react";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import "../styles/phone-input.css";
@@ -7,9 +8,8 @@ import SEO from "../components/SEO";
 import JsonLd from "../components/JsonLd";
 import { PageHeader } from "../components/layout/PageHeader";
 import { Accordion } from "../components/ui/Accordion";
-import { Bento, Tile } from "../components/ui/Bento";
 import { Button } from "../components/ui/Button";
-import { Container, Eyebrow, SectionHeading } from "../components/ui/Section";
+import { Container, Eyebrow } from "../components/ui/Section";
 import { cn } from "../components/ui/cn";
 import { CONTACT } from "../content/site";
 import { CONTACT_FAQ } from "../content/services";
@@ -18,6 +18,7 @@ import { ORIGIN } from "../constants/seo";
 import { useScrollToHash } from "../hooks/useScrollToHash";
 import { MESSAGE_MAX, validateContact } from "../utils/contactValidation";
 import { sendContactMessage } from "../utils/contactApi";
+import { similarProjectMessage } from "../utils/similarProjectLinks";
 
 type FormState = {
   name: string;
@@ -75,6 +76,7 @@ const INPUT =
 function Field({
   label,
   optional,
+  hint,
   error,
   errorId,
   className,
@@ -82,6 +84,7 @@ function Field({
 }: {
   label: string;
   optional?: boolean;
+  hint?: string;
   error?: string;
   errorId: string;
   className?: string;
@@ -96,12 +99,31 @@ function Field({
         </span>
         {children}
       </label>
+      {hint && !error && <p className="m-0 text-[13px] text-ink-subtle">{hint}</p>}
       {error && (
         <p id={errorId} className="m-0 text-[13px] text-danger">
           {error}
         </p>
       )}
     </div>
+  );
+}
+
+function ContactDetail({ icon, label, href, value, external }: { icon: ReactNode; label: string; href: string; value: string; external?: boolean }) {
+  return (
+    <a
+      href={href}
+      {...(external ? { target: "_blank", rel: "noreferrer" } : {})}
+      className="tile tile-interactive flex items-center gap-4 p-4 text-ink no-underline sm:p-5"
+    >
+      <span className="inline-flex size-11 shrink-0 items-center justify-center rounded-xl bg-[linear-gradient(135deg,var(--color-fuchsia-strong),var(--color-violet-strong))] text-white shadow-[0_10px_24px_-12px_rgb(192_38_211/0.8)]">
+        {icon}
+      </span>
+      <span className="flex min-w-0 flex-col">
+        <span className="label text-ink-subtle">{label}</span>
+        <span className="mt-1 break-all text-[15px] font-medium sm:text-base">{value}</span>
+      </span>
+    </a>
   );
 }
 
@@ -121,11 +143,11 @@ export default function Contact() {
 
   useScrollToHash();
 
-  // "Discuss a similar project" links prefill the message
+  // "Start a similar project" links prefill the message with the project's context
   useEffect(() => {
     if (searchParams.get("intent") !== "start-similar") return;
-    const title = searchParams.get("title") || findCaseStudy(searchParams.get("project") ?? undefined)?.name || "your featured project";
-    const seed = `Hello, I'd like to discuss a project similar to ${title}. Here's what we need:`;
+    const study = findCaseStudy(searchParams.get("project") ?? undefined);
+    const seed = similarProjectMessage(study, searchParams.get("title"));
     setForm((s) => ({ ...s, message: s.message.trim() ? s.message : seed }));
   }, [searchParams]);
 
@@ -196,7 +218,7 @@ export default function Contact() {
     <>
       <SEO
         title="Contact"
-        description="Tell us about the process you want to improve. Reach Solid Code Solutions through the form, by email or on WhatsApp."
+        description="Tell Solid Code Solutions about the project, problem or idea you have in mind. Reach us through the form, by email or by phone."
         path="/contact"
       >
         <JsonLd
@@ -232,109 +254,102 @@ export default function Contact() {
 
       <PageHeader
         eyebrow="Contact"
-        title="Tell us about the process you want to improve."
-        lead="A few sentences is enough. We'll reply by email with questions or practical next steps."
+        title="Let's talk about what you want to build."
+        lead="Have a project in mind, a recurring business challenge, or an idea you're not sure how to approach? Tell us a little about it, and we'll explore the possibilities together."
         className="lg:pb-10"
-      />
+      >
+        <div className="mt-8 grid gap-2.5 sm:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)] sm:gap-4 lg:max-w-[820px]" aria-label="Contact details">
+          <ContactDetail icon={<Mail className="size-5" aria-hidden />} label="Email" href={`mailto:${CONTACT.email}`} value={CONTACT.email} />
+          <ContactDetail icon={<Phone className="size-5" aria-hidden />} label="Phone" href={CONTACT.phoneTel} value={CONTACT.phoneDisplay} />
+        </div>
+      </PageHeader>
 
-      <section aria-label="Contact form and details" className="pb-16 lg:pb-[72px]">
-        <Container>
-          <Bento>
-            <Tile variant="feature" span={{ md: 6, lg: 8 }} rows={{ lg: 3 }} className="p-5 sm:p-9">
-              <form id="form" ref={formRef} onSubmit={onSubmit} noValidate className="grid scroll-mt-28 grid-cols-1 gap-5 sm:grid-cols-2">
-                {/* Honeypot: hidden from people, filled in by bots */}
-                <input type="text" name="website" value={form.website} onChange={onChange} className="hidden" tabIndex={-1} autoComplete="off" aria-hidden="true" />
+      <section aria-label="Contact form and questions" className="pb-16 lg:pb-[100px]">
+        <Container className="grid gap-10 lg:grid-cols-12 lg:gap-10">
+          {/* Form */}
+          <div className="tile tile-feature p-5 sm:p-8 lg:col-span-7 lg:p-9">
+            <form id="form" ref={formRef} onSubmit={onSubmit} noValidate className="grid scroll-mt-28 grid-cols-1 gap-5 sm:grid-cols-2">
+              {/* Honeypot: hidden from people, filled in by bots */}
+              <input type="text" name="website" value={form.website} onChange={onChange} className="hidden" tabIndex={-1} autoComplete="off" aria-hidden="true" />
 
-                <Field label="Name" error={errors.name} errorId="err-name">
-                  <input type="text" name="name" required value={form.name} onChange={onChange} autoComplete="name" placeholder="Jane Rivera" className={cn(INPUT, border("name"))} {...invalid("name")} />
-                </Field>
-                <Field label="Work email" error={errors.email} errorId="err-email">
-                  <input type="email" name="email" required value={form.email} onChange={onChange} autoComplete="email" placeholder="jane@company.com" className={cn(INPUT, border("email"))} {...invalid("email")} />
-                </Field>
-                <Field label="What should the software help with?" error={errors.message} errorId="err-message" className="sm:col-span-2">
-                  <textarea
-                    name="message"
-                    required
-                    rows={6}
-                    value={form.message}
-                    onChange={onChange}
-                    placeholder="How the work runs today, who's involved, and what keeps going wrong…"
-                    className={cn(INPUT, "min-h-[150px] resize-y py-3", border("message"))}
-                    {...invalid("message")}
-                  />
-                </Field>
-                <Field label="Tools you use today" optional errorId="err-tools">
-                  <input type="text" name="tools" value={form.tools} onChange={onChange} placeholder="Google Sheets, Jotform…" className={cn(INPUT, "border-[rgb(196_181_253/0.22)]")} />
-                </Field>
-                <Field label="Phone or WhatsApp" optional error={errors.phone} errorId="err-phone">
-                  <PhoneInput
-                    country="us"
-                    value={form.phoneDigits}
-                    onChange={(value, country, _event, formatted) => {
-                      const dial = country && "dialCode" in country ? country.dialCode : "";
-                      setForm((s) => ({ ...s, phoneDigits: value, phoneDial: dial, phoneDisplay: formatted }));
-                    }}
-                    enableSearch
-                    inputProps={{ name: "phone", autoComplete: "tel", ...invalid("phone") }}
-                    containerClass="scs-phone w-full"
-                    inputClass={cn(
-                      "scs-phone__input !w-full !min-h-12 !rounded-r-[var(--radius-control)] !bg-bg/60 !pl-[4.5rem] !font-sans !text-[15px] !text-ink",
-                      errors.phone ? "!border-danger" : "!border-[rgb(196_181_253/0.22)]",
-                    )}
-                    buttonClass="scs-phone__btn !rounded-l-[var(--radius-control)] !border-[rgb(196_181_253/0.22)]"
-                    dropdownClass="scs-phone__dropdown"
-                    searchClass="scs-phone__search"
-                  />
-                </Field>
+              <Field label="Name" error={errors.name} errorId="err-name">
+                <input type="text" name="name" required value={form.name} onChange={onChange} autoComplete="name" placeholder="Jane Rivera" className={cn(INPUT, border("name"))} {...invalid("name")} />
+              </Field>
+              <Field label="Email" error={errors.email} errorId="err-email">
+                <input type="email" name="email" required value={form.email} onChange={onChange} autoComplete="email" placeholder="jane@company.com" className={cn(INPUT, border("email"))} {...invalid("email")} />
+              </Field>
+              <Field
+                label="What would you like to build or improve?"
+                hint="No technical details needed. The problem, the people involved and what you'd like to be easier is plenty."
+                error={errors.message}
+                errorId="err-message"
+                className="sm:col-span-2"
+              >
+                <textarea
+                  name="message"
+                  required
+                  rows={6}
+                  value={form.message}
+                  onChange={onChange}
+                  placeholder="For example: how the work runs today, who's involved, and what keeps going wrong…"
+                  className={cn(INPUT, "min-h-[150px] resize-y py-3", border("message"))}
+                  {...invalid("message")}
+                />
+              </Field>
+              <Field label="Phone" optional error={errors.phone} errorId="err-phone">
+                <PhoneInput
+                  country="us"
+                  value={form.phoneDigits}
+                  onChange={(value, country, _event, formatted) => {
+                    const dial = country && "dialCode" in country ? country.dialCode : "";
+                    setForm((s) => ({ ...s, phoneDigits: value, phoneDial: dial, phoneDisplay: formatted }));
+                  }}
+                  enableSearch
+                  inputProps={{ name: "phone", autoComplete: "tel", ...invalid("phone") }}
+                  containerClass="scs-phone w-full"
+                  inputClass={cn(
+                    "scs-phone__input !w-full !min-h-12 !rounded-r-[var(--radius-control)] !bg-bg/60 !pl-[4.5rem] !font-sans !text-[15px] !text-ink",
+                    errors.phone ? "!border-danger" : "!border-[rgb(196_181_253/0.22)]",
+                  )}
+                  buttonClass="scs-phone__btn !rounded-l-[var(--radius-control)] !border-[rgb(196_181_253/0.22)]"
+                  dropdownClass="scs-phone__dropdown"
+                  searchClass="scs-phone__search"
+                />
+              </Field>
+              <Field label="Tools you use today" optional hint="Only if it's relevant, e.g. spreadsheets or a booking app." errorId="err-tools">
+                <input type="text" name="tools" value={form.tools} onChange={onChange} placeholder="Google Sheets, Jotform…" className={cn(INPUT, "border-[rgb(196_181_253/0.22)]")} />
+              </Field>
 
-                <div role="status" aria-live="polite" className="sm:col-span-2 empty:hidden">
-                  {status.ok && <p className="m-0 font-medium text-success">Thanks — we'll be in touch shortly.</p>}
-                  {status.err && <p className="m-0 text-danger">{status.err}</p>}
-                </div>
+              <div role="status" aria-live="polite" className="sm:col-span-2 empty:hidden">
+                {status.ok && <p className="m-0 font-medium text-success">Thanks — we'll be in touch shortly.</p>}
+                {status.err && <p className="m-0 text-danger">{status.err}</p>}
+              </div>
 
-                <div className="flex flex-col gap-4 sm:col-span-2 sm:flex-row sm:items-center sm:justify-between">
-                  <p className="m-0 max-w-[440px] text-[13px] leading-normal text-ink-subtle">
-                    Sent securely to our inbox and used only to reply to you. See the{" "}
-                    <Link to="/privacy" className="text-link">
-                      privacy policy
-                    </Link>
-                    .
-                  </p>
-                  <Button type="submit" disabled={status.sending} aria-busy={status.sending} className="max-sm:w-full">
-                    {status.sending ? "Sending…" : "Send message"}
-                  </Button>
-                </div>
-              </form>
-            </Tile>
+              <div className="flex flex-col gap-4 sm:col-span-2 sm:flex-row sm:items-center sm:justify-between">
+                <p className="m-0 max-w-[440px] text-[13px] leading-normal text-ink-subtle">
+                  Sent securely to our inbox and used only to reply to you. See the{" "}
+                  <Link to="/privacy" className="text-link">
+                    privacy policy
+                  </Link>
+                  .
+                </p>
+                <Button type="submit" disabled={status.sending} aria-busy={status.sending} className="max-sm:w-full">
+                  {status.sending ? "Sending…" : "Send message"}
+                </Button>
+              </div>
+            </form>
+          </div>
 
-            <Tile span={{ md: 3, lg: 4 }} className="flex flex-col gap-2 p-6">
-              <Eyebrow tone="subtle">Email</Eyebrow>
-              <a href={`mailto:${CONTACT.email}`} className="break-all text-base text-link no-underline hover:text-white sm:text-[17px]">
-                {CONTACT.email}
-              </a>
-            </Tile>
-            <Tile span={{ md: 3, lg: 4 }} className="flex flex-col gap-2 p-6">
-              <Eyebrow tone="subtle">WhatsApp</Eyebrow>
-              <a href={CONTACT.whatsappUrl} target="_blank" rel="noreferrer" className="text-base text-link no-underline hover:text-white sm:text-[17px]">
-                {CONTACT.whatsappDisplay}
-              </a>
-            </Tile>
-            <Tile span={{ md: 6, lg: 4 }} className="flex flex-col gap-2.5 p-6">
-              <Eyebrow tone="fuchsia">What happens next</Eyebrow>
-              <ol className="m-0 flex flex-col gap-1 pl-[18px] text-sm leading-[1.7] text-ink-muted">
-                <li>We read your message and reply by email.</li>
-                <li>A short call to understand the workflow.</li>
-                <li>A written proposal with scope and milestones.</li>
-              </ol>
-            </Tile>
-          </Bento>
-        </Container>
-      </section>
-
-      <section id="faq" aria-labelledby="faq-heading" className="scroll-mt-28 pb-16 lg:pb-[100px]">
-        <Container className="flex flex-col gap-6">
-          <SectionHeading id="faq-heading" title="Questions" size="md" />
-          <Accordion items={CONTACT_FAQ} />
+          {/* Questions */}
+          <aside id="faq" aria-labelledby="faq-heading" className="scroll-mt-28 flex flex-col gap-5 lg:col-span-5">
+            <div className="flex flex-col gap-2">
+              <Eyebrow>Questions</Eyebrow>
+              <h2 id="faq-heading" className="display m-0 text-[26px] sm:text-[30px]">
+                Before you write
+              </h2>
+            </div>
+            <Accordion items={CONTACT_FAQ} />
+          </aside>
         </Container>
       </section>
     </>

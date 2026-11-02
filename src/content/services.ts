@@ -1,104 +1,175 @@
 import type { AccordionItem } from "../components/ui/Accordion";
-import type { Service } from "./types";
+import type { ApplicationType, ProcessStep, Service, TitledText } from "./types";
 
-// Custom software is the dominant service; automation and modernization are
-// secondary; websites are supporting (docs/design-review.md, decision 7)
+// Two outward-facing services. Custom software is the business; websites are
+// a secondary offering. Automations, integrations and support can be parts of
+// a custom application but are never promoted as services of their own.
 export const SERVICES: readonly Service[] = [
   {
     id: "custom",
     tier: "primary",
     title: "Custom software development",
-    short:
-      "Internal dashboards, records platforms, booking systems, client portals and management tools, designed around how your team works.",
+    short: "Purpose-built applications that help your business operate, organize and grow.",
     description:
-      "When spreadsheets, shared inboxes and generic tools stop fitting the way you work, we build the system that does: designed with your team, typed and tested, and handed over with documentation.",
-    tags: ["Records & operations platforms", "Booking & scheduling", "Client portals", "Internal dashboards", "Admin & management tools"],
-  },
-  {
-    id: "automation",
-    tier: "secondary",
-    title: "Workflow automation & integrations",
-    short: "Connect the tools you already use and retire the copy-and-paste steps.",
-    description:
-      "Connect the tools you already use, sync data between them and retire copy-and-paste steps: API integrations, scheduled jobs, approvals and generated documents.",
-    tags: ["APIs", "Data sync", "PDF generation", "Notifications"],
-  },
-  {
-    id: "modernization",
-    tier: "secondary",
-    title: "Software modernization & support",
-    short: "Refactor, speed up and extend an existing web app.",
-    description:
-      "Refactor, speed up and extend an existing web application without starting over. Bug fixes, performance work, new features and ongoing maintenance.",
-    tags: ["Refactoring", "Performance", "New features", "Maintenance"],
+      "Off-the-shelf tools are built for everyone. Your business has its own processes, priorities and challenges. We work with you to create applications that address those needs directly, with an experience designed for the people who will actually use them.",
+    tags: ["Operations platforms", "Records systems", "Scheduling & booking", "Customer & staff portals", "Finance & admin", "Reporting dashboards"],
   },
   {
     id: "websites",
-    tier: "supporting",
-    title: "Website development",
-    short: "Business websites and WordPress builds, fast and SEO-ready.",
+    tier: "secondary",
+    title: "Business website development",
+    short: "Professional websites that establish your presence, communicate your value and make it easy for customers to reach you.",
     description:
-      "Business websites and WordPress builds: responsive, fast and SEO-ready, including redesigns and ongoing support.",
-    tags: ["WordPress", "Redesigns", "SEO", "Support"],
+      "We design and develop professional websites that communicate your value clearly, work across devices and give potential customers a strong first impression. Depending on what your business needs, that's a WordPress site you can update yourself or a custom-built React site.",
+    tags: ["WordPress", "Custom React sites", "Redesigns", "Responsive", "SEO-ready", "Contact & quote forms"],
   },
 ];
 
-export const PROBLEMS_SOLVED = [
-  "Data spread across sheets, inboxes and paper",
-  "Forms and documents typed out by hand",
-  "Bookings that overrun capacity",
-  "No single view of what's happening today",
-] as const;
+/** What custom software can do: possibilities, not a product menu */
+export const APPLICATION_TYPES: readonly ApplicationType[] = [
+  {
+    id: "records",
+    title: "Records & information management",
+    text: "Keep important information organized, searchable and accessible to the right people.",
+    vignette: "records",
+  },
+  {
+    id: "scheduling",
+    title: "Scheduling & booking",
+    text: "Manage availability, appointments, resources and capacity in one place.",
+    vignette: "calendar",
+  },
+  {
+    id: "operations",
+    title: "Business operations",
+    text: "Give your team a central system to manage tasks, requests and daily processes.",
+    vignette: "board",
+  },
+  {
+    id: "portals",
+    title: "Customer & staff portals",
+    text: "Dedicated experiences where people submit information, manage requests and track progress.",
+    vignette: "portal",
+  },
+  {
+    id: "finance",
+    title: "Finance & administration",
+    text: "Simplify invoicing, expenses, approvals and the administrative work around them.",
+    vignette: "invoice",
+  },
+  {
+    id: "reporting",
+    title: "Reporting & dashboards",
+    text: "Turn operational data into clear, useful information that supports better decisions.",
+    vignette: "chart",
+  },
+];
 
-/** Today → fitted solution rows on the homepage */
-export const PROBLEM_ROWS = [
-  { today: "Forms typed out by hand, one by one", fitted: "Documents generated from the data you already enter" },
-  { today: "Bookings over text messages and a shared sheet", fitted: "Self-service booking with capacity rules built in" },
-  { today: "The same data copied between three tools", fitted: "Integrations that keep every system in sync" },
-] as const;
+/** Why Solid Code Solutions (homepage) */
+export const DIFFERENTIATORS: readonly TitledText[] = [
+  {
+    title: "Built around your needs",
+    text: "Your requirements shape the software, not the limitations of a generic product.",
+  },
+  {
+    title: "A collaborative process",
+    text: "You're part of the process, with clear communication and real chances to review and refine what we're building.",
+  },
+  {
+    title: "Quality & security by design",
+    text: "Secure development practices, careful testing and reliable engineering are part of the work, not an add-on.",
+  },
+  {
+    title: "Room to grow",
+    text: "A strong foundation that can evolve as your operations and requirements change.",
+  },
+];
 
-export const PROCESS = [
-  { step: "Discover", text: "Map the process and the people." },
-  { step: "Design", text: "Shape the data model and screens together." },
-  { step: "Build", text: "Typed, tested code in short reviewable steps." },
-  { step: "Deploy", text: "Launch with training and a rollback plan." },
-  { step: "Improve", text: "Iterate on real use." },
-] as const;
+/** What makes us different (about page) */
+export const ABOUT_DIFFERENTIATORS: readonly TitledText[] = [
+  {
+    title: "Direct collaboration",
+    text: "You work directly with the person building your application, with clear communication and meaningful involvement throughout the project.",
+  },
+  {
+    title: "Purpose-built solutions",
+    text: "The application is shaped around your goals, your users and your operational needs rather than a predefined template.",
+  },
+  {
+    title: "Thoughtful engineering",
+    text: "Understandable, maintainable code, reliable functionality, careful testing and sensible security practices.",
+  },
+  {
+    title: "A practical partnership",
+    text: "The aim is something genuinely useful for your business, not added complexity.",
+  },
+];
+
+export const MISSION =
+  "Make business technology more useful, accessible and effective by creating software that solves real problems and fits the people who use it.";
+
+export const VISION =
+  "Help businesses operate with greater clarity, efficiency and flexibility through thoughtfully designed digital solutions built around their needs.";
+
+/** The five stages of a project, with collaboration and refinement built in */
+export const PROCESS: readonly ProcessStep[] = [
+  { step: "Discover", text: "We learn your goals, the challenges, who will use the system and what it needs to do." },
+  { step: "Design", text: "We plan the experience and shape the solution together, before anything is built." },
+  { step: "Build", text: "We develop the application in clear, reviewable stages, so you see progress as it happens." },
+  { step: "Test & refine", text: "We check functionality, usability and security considerations, and fold in your feedback." },
+  { step: "Launch & evolve", text: "We deploy the solution, then improve it as your needs change." },
+];
 
 export const SERVICE_FAQ: readonly AccordionItem[] = [
   {
-    q: "Can you work with our existing tools?",
-    a: "Yes. Integrating with what you already use is usually part of the plan, whether that's spreadsheets, forms, a CRM or another web app.",
+    q: "What kinds of applications can you build?",
+    a: "Most well-defined business processes can become an application: records and information management, scheduling and booking, internal operations tools, customer or staff portals, invoicing and administrative systems, reporting dashboards and more. The examples on this page are starting points, not a fixed menu.",
   },
   {
-    q: "Do you take over existing projects?",
-    a: "Yes. We regularly extend, refactor and speed up existing React, Firebase and WordPress projects without disrupting what already works.",
+    q: "What if I only have an idea and don't know exactly what I need?",
+    a: "That's a normal place to start. Discovery exists for exactly this: we talk through the problem, who it affects and what a good outcome looks like, then suggest a practical first version together.",
   },
   {
-    q: "How do we work together during a project?",
-    a: "You work directly with the developer building it. We agree milestones up front and share progress in short, reviewable steps with plain-language updates.",
+    q: "How involved will I be during development?",
+    a: "As involved as you want to be, and never less than informed. You see the work in reviewable stages, give feedback as it takes shape and make the decisions that affect how your team will use it.",
   },
   {
-    q: "What happens after launch?",
-    a: "We offer ongoing maintenance, fixes and new features, either as a retainer or as needed.",
+    q: "Can the application grow as my business changes?",
+    a: "Yes. Applications are designed with change in mind, so new features, more users or a different workflow can be added to the foundation instead of starting over.",
+  },
+  {
+    q: "How do you approach quality and security?",
+    a: "With care at every stage: a clear data model, access based on roles, secure development practices, testing before anything reaches your team, and maintainable code that can be understood later. We don't make blanket guarantees; we build carefully and explain what we've done.",
+  },
+  {
+    q: "How do you determine a project's scope and price?",
+    a: "After discovery you receive a written proposal with the scope, milestones and pricing for your project, so you know what you're getting before the work begins.",
+  },
+  {
+    q: "Do you also develop business websites?",
+    a: "Yes. We build professional business websites, as WordPress sites or custom React sites, including redesigns of sites that have stopped working for the business.",
   },
 ];
 
 export const CONTACT_FAQ: readonly AccordionItem[] = [
   {
-    q: "Do you work with existing software?",
-    a: "Yes. We regularly extend, refactor and speed up existing React, Firebase and WordPress projects without disrupting what works.",
+    q: "What happens after I send a message?",
+    a: "We read it and reply by email, usually with a few questions. If it looks like a fit, we schedule a short call to understand the project, then send a written proposal with scope, milestones and pricing.",
   },
   {
-    q: "How long does a project take?",
-    a: "It depends on scope: smaller projects can launch within a few weeks, while full applications may take several months. Once we understand the workflow, you get a written timeline with milestones.",
+    q: "Do I need technical specifications to get started?",
+    a: "No. Describe the problem, the people involved and what you'd like to be easier. Working out the technical details is part of our job.",
   },
   {
-    q: "What should I budget?",
-    a: "Every project is different. After a short call we send a written proposal with scope, milestones and transparent pricing, so you know exactly what you're getting.",
+    q: "How do you determine scope and price?",
+    a: "Every project is different, so pricing follows discovery. You receive a written proposal with the scope, milestones and price before any work begins.",
   },
   {
-    q: "What happens after launch?",
-    a: "We provide maintenance, performance work and new features, either on a retainer or whenever you need them.",
+    q: "Can the application work with tools we already use?",
+    a: "Often, yes. When a custom application needs to exchange data with a tool you rely on, that can be part of its design. The application itself stays the focus.",
+  },
+  {
+    q: "Do you build websites too?",
+    a: "Yes. Professional business websites, as WordPress sites or custom React sites, are our secondary service.",
   },
 ];

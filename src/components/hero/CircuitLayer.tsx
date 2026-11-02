@@ -27,22 +27,41 @@ const PHONE: PathDef[] = [
   { d: "M0 0 V-160 H-80 V-320", delay: 0.05 },
 ];
 
+// Ambient pulses: each path and node gets its own period so the traffic never
+// marches in step (--d also staggers their start)
+const ambientVars = (i: number, delay: number) =>
+  ({ "--d": `${delay}s`, "--ap": `${6.5 + ((i * 1.7) % 4)}s`, "--ao": `${(i * 2.3) % 7}s` }) as CSSProperties;
+
 function Paths({ paths, className }: { paths: PathDef[]; className?: string }) {
   return (
     <g className={className}>
-      {paths.map((p) => (
-        <path key={p.d} d={p.d} className={p.branch ? "branch" : undefined} style={{ "--d": `${p.delay}s` } as CSSProperties} />
+      {paths.map((p, i) => (
+        <path key={p.d} d={p.d} className={p.branch ? "branch" : undefined} style={ambientVars(i, p.delay)} />
       ))}
       {paths
         .filter((p) => p.node)
-        .map((p) => (
-          <circle key={`n${p.d}`} cx={p.node?.[0]} cy={p.node?.[1]} r="3.5" style={{ "--d": `${p.delay}s` } as CSSProperties} />
+        .map((p, i) => (
+          <circle key={`n${p.d}`} cx={p.node?.[0]} cy={p.node?.[1]} r="3.5" style={ambientVars(i + 2, p.delay)} />
         ))}
     </g>
   );
 }
 
-export function CircuitLayer({ state, origin }: { state: CircuitState; origin: { x: number; y: number } | null }) {
+/**
+ * The circuit behind the puzzle. `playing` runs the solve sequence, `ambient`
+ * keeps faint pulses travelling along the same wires afterwards, `static` is
+ * the finished circuit shown still (reduced motion). `active` is false while
+ * the hero is off-screen or the tab is hidden, which pauses the ambient loop.
+ */
+export function CircuitLayer({
+  state,
+  origin,
+  active = true,
+}: {
+  state: CircuitState;
+  origin: { x: number; y: number } | null;
+  active?: boolean;
+}) {
   if (!origin) return null;
   const style = { "--ox": `${origin.x}px`, "--oy": `${origin.y}px` } as CSSProperties;
   return (
@@ -51,6 +70,7 @@ export function CircuitLayer({ state, origin }: { state: CircuitState; origin: {
       // Same mask as the hero grid: faint behind the copy, full strength around the cube
       className="circuit grid-motif !bg-none [mask-image:linear-gradient(90deg,rgb(0_0_0/0.22)_0%,rgb(0_0_0/0.22)_38%,#000_60%)] max-lg:[mask-image:linear-gradient(180deg,rgb(0_0_0/0.2)_0%,rgb(0_0_0/0.2)_42%,#000_60%)]"
       data-state={state}
+      data-active={active}
       style={style}
     >
       <div className="circuit-hot" />

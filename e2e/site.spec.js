@@ -22,6 +22,26 @@ function watchErrors(page) {
 
 const heroHeading = (page) =>
   page.getByRole("heading", { level: 1, name: "Custom Software. Built Around Your Business." });
+const solvedLine = (page) => page.getByText("Your business is unique. Your software should be too.");
+
+// Wait for the 3D scene to report ready (the loader's live region stops being busy)
+const sceneReady = (page) => expect(page.locator('[role="status"][aria-busy="false"]')).toHaveCount(1);
+
+// Mouse-over the stage's centre column until the scene offers the grab cursor
+async function findLogoCube(page) {
+  const canvas = page.locator("canvas");
+  const box = await page.getByTestId("hero-stage").boundingBox();
+  for (const fx of [0.5, 0.46, 0.54]) {
+    for (let fy = 0.04; fy <= 0.6; fy += 0.02) {
+      const x = box.x + box.width * fx;
+      const y = box.y + box.height * fy;
+      await page.mouse.move(x, y);
+      // The scan meets the top edge of the cube's hit box first; grab a little inside it
+      if ((await canvas.evaluate((el) => el.style.cursor)) === "grab") return { x, y: y + 24, box };
+    }
+  }
+  return null;
+}
 
 test.describe("homepage hero", () => {
   test("states the offer before the puzzle and completes from the visible control", async ({ page }) => {
@@ -33,31 +53,86 @@ test.describe("homepage hero", () => {
     await expect(page.locator("canvas")).toHaveCount(1);
 
     await page.getByRole("button", { name: "Place it for me" }).click();
-    await expect(page.getByText("Every piece has a purpose. Every solution is built to fit.")).toBeVisible();
+    await expect(solvedLine(page)).toBeVisible();
     await expect(heroHeading(page)).toBeVisible();
     expect(errors).toEqual([]);
   });
 
-  test("remembers the solve for the session and replays on request", async ({ page }) => {
+  test("the logo cube can be grabbed and dragged into place with the mouse", async ({ page, isMobile }) => {
+    test.skip(isMobile, "mouse drag; touch is covered by the swipe test");
     const errors = watchErrors(page);
     await page.goto("/");
+    await sceneReady(page);
+    const grab = await findLogoCube(page);
+    expect(grab, "the cube offers a grab cursor").not.toBeNull();
+
+    await page.mouse.move(grab.x, grab.y);
+    await page.mouse.down();
+    await expect(page.locator("canvas")).toHaveCSS("cursor", "grabbing");
+    // Only partway: the piece floats back and the puzzle stays unsolved
+    for (let i = 1; i <= 4; i++) await page.mouse.move(grab.x, grab.y + i * 6);
+    await page.mouse.up();
+    await expect(page.getByRole("button", { name: "Place it for me" })).toBeVisible();
+
+    // All the way: the piece snaps in and the solve sequence plays. The cube
+    // floats back up after the release, so find it again before grabbing.
+    await page.waitForTimeout(800);
+    const again = await findLogoCube(page);
+    expect(again, "the cube is back in reach after a short drag").not.toBeNull();
+    await page.mouse.move(again.x, again.y);
+    await page.mouse.down();
+    for (let i = 1; i <= 24; i++) await page.mouse.move(again.x, again.y + i * again.box.height * 0.025);
+    await page.mouse.up();
+    await expect(solvedLine(page)).toBeVisible();
+    await expect(page.locator(".circuit")).toHaveAttribute("data-state", "playing");
+    await expect(page.locator(".circuit")).toHaveAttribute("data-state", "ambient");
+    expect(await page.evaluate(() => sessionStorage.getItem("scs:hero-solved"))).toBe("1");
+    // The copy and controls over the canvas still take clicks
+    await expect(heroHeading(page)).toBeVisible();
+    await page.getByRole("link", { name: "See one in practice" }).click();
+    await expect(page).toHaveURL(/\/work\/street-cat-clinic$/);
+    expect(errors).toEqual([]);
+  });
+
+  test("remembers the solve for the session, stays alive, and replays on request", async ({ page }) => {
+    const errors = watchErrors(page);
+    await page.goto("/");
+    const circuit = page.locator(".circuit");
+    await expect(circuit).toHaveAttribute("data-state", "off");
     await page.getByRole("button", { name: "Place it for me" }).click();
     await expect(page.getByRole("button", { name: "Replay the puzzle" })).toBeVisible();
-    const strip = page.getByRole("group", { name: "How a fitted solution comes together" });
-    await expect(strip).toHaveAttribute("data-lit", "true");
+    await expect(circuit).toHaveAttribute("data-state", "playing");
+    // After the sequence the hero keeps a quiet ambient pulse
+    await expect(circuit).toHaveAttribute("data-state", "ambient");
+    await expect(circuit).toHaveAttribute("data-active", "true");
 
     // A restored solve shows the finished state at once, with no sequence
     await page.reload();
     await expect(page.getByRole("button", { name: "Replay the puzzle" })).toBeVisible();
-    await expect(strip).toHaveAttribute("data-lit", "true");
-    await expect(page.locator(".circuit")).toHaveAttribute("data-state", "off");
+    await expect(circuit).toHaveAttribute("data-state", "ambient");
+
+    // The loop pauses while the hero is off-screen
+    await page.getByRole("contentinfo").scrollIntoViewIfNeeded();
+    await expect(circuit).toHaveAttribute("data-active", "false");
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await expect(circuit).toHaveAttribute("data-active", "true");
 
     await page.getByRole("button", { name: "Replay the puzzle" }).click();
     await expect(page.getByRole("button", { name: "Place it for me" })).toBeVisible();
-    await expect(strip).toHaveAttribute("data-lit", "false");
+    await expect(circuit).toHaveAttribute("data-state", "off");
     expect(await page.evaluate(() => sessionStorage.getItem("scs:hero-solved"))).toBeNull();
     await expect(page.locator("canvas")).toHaveCount(1);
     expect(errors).toEqual([]);
+  });
+
+  test("reduced motion shows the finished circuit still, with no animation", async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.goto("/");
+    await page.getByRole("button", { name: "Place it for me" }).click();
+    await expect(solvedLine(page)).toBeVisible();
+    await expect(page.locator(".circuit")).toHaveAttribute("data-state", "static");
+    await page.reload();
+    await expect(page.locator(".circuit")).toHaveAttribute("data-state", "static");
   });
 
   test("keeps the page usable when the 3D model fails to load", async ({ page }) => {
@@ -123,17 +198,68 @@ test.describe("navigation", () => {
     await menu.getByRole("link", { name: "Services" }).click();
     await expect(page).toHaveURL(/\/services$/);
     await expect(menu).toBeHidden();
-    await expect(page.getByRole("heading", { level: 2, name: "Custom software development" })).toBeVisible();
+    await expect(page.getByRole("heading", { level: 2, name: /Software that fits your business/ })).toBeVisible();
   });
 
   test("every page renders without errors", async ({ page }) => {
     const errors = watchErrors(page);
-    for (const path of ["/services", "/work", "/work/let-me-style-your-career", "/work/bio-coatings-blast-it-off", "/privacy", "/terms"]) {
+    for (const path of ["/services", "/work", "/work/let-me-style-your-career", "/work/bio-coatings-blast-it-off", "/about", "/contact", "/privacy", "/terms"]) {
       await page.goto(path);
       await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
       await expect(page.locator("head title")).toHaveCount(1);
     }
     expect(errors).toEqual([]);
+  });
+
+  test("promotes two services and no standalone automation or modernization", async ({ page }) => {
+    await page.goto("/services");
+    await expect(page.locator("#custom")).toBeAttached();
+    await expect(page.locator("#websites")).toBeAttached();
+    await expect(page.locator("#automation, #modernization")).toHaveCount(0);
+    await expect(page.locator("main")).not.toContainText(/modernization/i);
+    const footer = page.getByRole("contentinfo");
+    await expect(footer.getByRole("link", { name: "Custom software" })).toHaveAttribute("href", "/services#custom");
+    await expect(footer.getByRole("link", { name: "Business websites" })).toHaveAttribute("href", "/services#websites");
+    await expect(footer.getByRole("link", { name: "+1 (954) 559-2944" })).toHaveAttribute("href", "tel:+19545592944");
+    await expect(footer).not.toContainText(/WhatsApp/);
+  });
+});
+
+test.describe("homepage sections", () => {
+  test("tells the story in order and lights the process as it scrolls into view", async ({ page }) => {
+    await page.goto("/");
+    const headings = await page.getByRole("heading", { level: 2 }).allTextContents();
+    const order = ["better way to run it", "isn't a template", "right digital solution", "Five stages", "Real systems", "What could your business"];
+    const positions = order.map((t) => headings.findIndex((h) => h.includes(t)));
+    expect(positions, headings.join(" | ")).toEqual([...positions].sort((a, b) => a - b));
+    expect(positions.every((p) => p >= 0)).toBe(true);
+    await expect(page.locator("main")).not.toContainText(/Software & websites for|How it fits|ELC Real Estate/);
+
+    // The timeline is unlit above the fold and fills as it scrolls past
+    const timeline = page.locator("ol[data-active]");
+    await expect(timeline).toHaveAttribute("data-active", "-1");
+    await page.getByRole("heading", { name: "Five stages. You're part of every one." }).scrollIntoViewIfNeeded();
+    await page.mouse.wheel(0, 300);
+    await expect.poll(() => timeline.getAttribute("data-active")).not.toBe("-1");
+    // Scrolling past the whole timeline lights every step
+    await page.getByRole("heading", { name: "Real systems, solving real business problems." }).scrollIntoViewIfNeeded();
+    await expect(timeline).toHaveAttribute("data-active", "4");
+    await expect(timeline.locator("li[data-lit='true']")).toHaveCount(5);
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await expect(timeline).toHaveAttribute("data-active", "-1");
+  });
+
+  test("featured projects offer a case study and a prefilled similar-project inquiry", async ({ page }) => {
+    await page.goto("/");
+    const card = page.getByRole("article", { name: "MeowMax" });
+    await card.scrollIntoViewIfNeeded();
+    await expect(card.getByRole("link", { name: "View case study" })).toHaveAttribute("href", "/work/meowmax");
+    await card.getByRole("link", { name: "Start a similar project" }).click();
+    await expect(page).toHaveURL(/\/contact\?intent=start-similar&project=meowmax/);
+    const message = page.getByRole("textbox", { name: /What would you like to build or improve/ });
+    await expect(message).toHaveValue(/a custom software project similar to the MeowMax scheduling and management platform/);
+    await message.fill("Edited by hand.");
+    await expect(message).toHaveValue("Edited by hand.");
   });
 });
 
@@ -181,7 +307,8 @@ test.describe("work and case studies", () => {
     await expect(page.getByRole("heading", { level: 3, name: "Street Cat Clinic" })).toBeVisible();
     const headings = await page.getByRole("heading", { level: 3 }).allTextContents();
     expect(headings.indexOf("Street Cat Clinic")).toBeLessThan(headings.indexOf("Let Me Style Your Career"));
-    await page.getByRole("link", { name: /Street Cat Clinic/ }).first().click();
+    await expect(page.locator("main")).not.toContainText("ELC Real Estate");
+    await page.getByRole("article", { name: "Street Cat Clinic" }).getByRole("link", { name: "View case study" }).click();
     await expect(page).toHaveURL(/\/work\/street-cat-clinic$/);
     await expect(page).toHaveTitle(/Street Cat Clinic/);
   });
@@ -189,6 +316,36 @@ test.describe("work and case studies", () => {
   test("unknown case studies are Not Found", async ({ page }) => {
     await page.goto("/work/no-such-case");
     await expect(page.getByRole("heading", { level: 1, name: /doesn’t fit anywhere/ })).toBeVisible();
+  });
+
+  test("the product walkthrough moves with buttons, keys, thumbnails and groups", async ({ page }) => {
+    await page.goto("/work/meowmax");
+    const tour = page.getByRole("region", { name: "MeowMax: Trapper app" });
+    await tour.scrollIntoViewIfNeeded();
+    await expect(tour).toContainText("1 / 10");
+    await expect(tour.getByRole("heading", { level: 3 })).toHaveText("Home — Upcoming At-a-Glance");
+
+    await tour.getByRole("button", { name: "Next screen" }).click();
+    await expect(tour).toContainText("2 / 10");
+    await expect(tour.getByRole("heading", { level: 3 })).toHaveText("Book Appointment — Calendar & Slots");
+    await tour.getByRole("button", { name: "Previous screen" }).click();
+    await tour.getByRole("button", { name: "Previous screen" }).click();
+    await expect(tour).toContainText("10 / 10");
+
+    await tour.focus();
+    await page.keyboard.press("ArrowRight");
+    await expect(tour).toContainText("1 / 10");
+    await page.keyboard.press("End");
+    await expect(tour).toContainText("10 / 10");
+
+    await page.getByRole("button", { name: "Show screen 3: Confirmation — Appointments Booked" }).click();
+    await expect(tour).toContainText("3 / 10");
+    await expect(page.getByRole("button", { name: /^Show screen 3:/ })).toHaveAttribute("aria-current", "true");
+
+    await page.getByRole("button", { name: "Admin dashboard" }).click();
+    const admin = page.getByRole("region", { name: "MeowMax: Admin dashboard" });
+    await expect(admin).toContainText("1 / 5");
+    await expect(admin.getByRole("heading", { level: 3 })).toHaveText("Appointments Manager — Daily Overview");
   });
 
   test("lightbox opens from the keyboard and returns focus when closed", async ({ page }) => {
@@ -202,6 +359,15 @@ test.describe("work and case studies", () => {
     await page.keyboard.press("Escape");
     await expect(dialog).toHaveCount(0);
     await expect(shot).toBeFocused();
+  });
+
+  test("the case study's similar-project action carries its context to the form", async ({ page }) => {
+    await page.goto("/work/street-cat-clinic");
+    await page.getByRole("link", { name: "Start a similar project" }).first().click();
+    await expect(page).toHaveURL(/\/contact\?intent=start-similar&project=street-cat-clinic/);
+    await expect(page.getByRole("textbox", { name: /What would you like to build or improve/ })).toHaveValue(
+      /similar to the Street Cat Clinic records management platform/,
+    );
   });
 
   test("shows outcomes, not unverified percentages", async ({ page }) => {
@@ -222,8 +388,8 @@ test.describe("contact form", () => {
     await page.goto("/contact");
     for (const [name, value] of [
       [/^Name/, "Jane Doe"],
-      [/Work email/, "jane@example.com"],
-      [/What should the software help with/, "We need a booking site."],
+      [/^Email/, "jane@example.com"],
+      [/What would you like to build or improve/, "We need a booking site."],
     ]) {
       const field = page.getByRole("textbox", { name });
       // Focus first: under mobile emulation fill() on an unfocused field is dropped

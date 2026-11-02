@@ -1,10 +1,11 @@
 import SEO from "../components/SEO";
 import JsonLd from "../components/JsonLd";
 import { PageHeader } from "../components/layout/PageHeader";
-import { ContactBand } from "../components/ContactBand";
-import { Bento, TagList, Tile } from "../components/ui/Bento";
+import { ClosingCta } from "../components/ClosingCta";
+import { FeaturedProject } from "../components/work/FeaturedProject";
+import { Bento, Tile } from "../components/ui/Bento";
 import { ArrowIcon } from "../components/ui/Button";
-import { Container, Eyebrow } from "../components/ui/Section";
+import { Container, Eyebrow, SectionHeading } from "../components/ui/Section";
 import { OTHER_PROJECTS, SOFTWARE_CASES, WEBSITE_CASES, workPath } from "../content/work";
 import { ORIGIN } from "../constants/seo";
 import { useScrollToHash } from "../hooks/useScrollToHash";
@@ -15,7 +16,7 @@ export default function Work() {
     <>
       <SEO
         title="Work: Custom Software Case Studies"
-        description="Case studies of custom software in daily use, including a records platform and a scheduling app, plus the websites we've built for businesses."
+        description="Custom software in daily use: a records management platform and a scheduling platform, each built around a real business process, plus the websites we've built for businesses."
         path="/work"
       >
         <JsonLd
@@ -33,44 +34,32 @@ export default function Work() {
         />
       </SEO>
 
-      <PageHeader eyebrow="Work" title="Software in daily use, and the websites around it." />
+      <PageHeader
+        eyebrow="Work"
+        title="Real systems, built around real processes."
+        lead="Each software project below started with a process that generic tools couldn't handle. The websites that follow are the secondary service."
+      />
 
-      <section aria-labelledby="software" className="pb-16">
-        <Container className="flex flex-col gap-5">
-          <h2 id="software" className="label m-0 font-medium text-fuchsia">
-            Software · case studies
-          </h2>
-          <Bento>
+      <section aria-labelledby="software" className="pb-16 lg:pb-24">
+        <Container className="flex flex-col gap-8">
+          <SectionHeading id="software" eyebrow="Custom software" title="Case studies" size="md" />
+          <div className="flex flex-col gap-6 lg:gap-8">
             {SOFTWARE_CASES.map((c, i) => (
-              <Tile
-                key={c.slug}
-                to={workPath(c.slug)}
-                variant="feature"
-                span={{ md: i === 0 ? 6 : 6, lg: i === 0 ? 7 : 5 }}
-                className="flex flex-col gap-3 p-6 pb-0 sm:p-8 sm:pb-0"
-              >
-                <Eyebrow tone="subtle">{c.category}</Eyebrow>
-                <h3 className="display m-0 text-[26px] sm:text-[32px]">{c.name}</h3>
-                <p className="m-0 leading-relaxed text-ink-muted">{c.teaser}</p>
-                <TagList items={c.tech.slice(0, 3)} />
-                <span className="inline-flex items-center gap-2 text-sm font-semibold text-link">
-                  Read the case study <ArrowIcon />
-                </span>
-                <img src={c.cover.src} alt={c.cover.alt} loading="lazy" className="screenshot mt-auto rounded-b-none pt-2" />
-              </Tile>
+              <FeaturedProject key={c.slug} study={c} index={i} reverse={i % 2 === 1} />
             ))}
-          </Bento>
+          </div>
         </Container>
       </section>
 
-      <section id="websites" aria-labelledby="websites-heading" className="scroll-mt-28 pb-16 lg:pb-[72px]">
-        <Container className="flex flex-col gap-5">
-          <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
-            <h2 id="websites-heading" className="label m-0 font-medium text-ink-subtle">
-              Websites &amp; web experiences
-            </h2>
-            <span className="text-[13px] text-ink-subtle">Website development is a supporting service</span>
-          </div>
+      <section id="websites" aria-labelledby="websites-heading" className="scroll-mt-28 pb-16 lg:pb-24">
+        <Container className="flex flex-col gap-6">
+          <SectionHeading
+            id="websites-heading"
+            eyebrow="Business websites"
+            title="Websites & web experiences"
+            size="md"
+            lead="Professional websites built for businesses that want to be found and contacted. A secondary service, shown here in brief."
+          />
           <Bento>
             {WEBSITE_CASES.map((c) => (
               <Tile key={c.slug} to={workPath(c.slug)} span={{ md: 6, lg: 6 }} className="grid sm:grid-cols-[200px_minmax(0,1fr)]">
@@ -79,21 +68,23 @@ export default function Work() {
                   <Eyebrow tone="subtle">{c.category}</Eyebrow>
                   <h3 className="display m-0 text-xl">{c.name}</h3>
                   <p className="m-0 text-sm text-ink-muted">{c.teaser}</p>
-                  <span className="mt-auto inline-flex items-center gap-1.5 pt-2 text-[13px] text-link">
+                  <span className="mt-auto inline-flex items-center gap-1.5 pt-2 text-[13px] font-semibold text-link">
                     Case study <ArrowIcon className="size-3.5" />
                   </span>
                 </div>
               </Tile>
             ))}
             {OTHER_PROJECTS.map((p) => (
-              <Tile key={p.name} to={p.url} span={{ base: 2, md: 2, lg: 4 }} className="flex flex-col">
-                <img src={p.image.src} alt={p.image.alt} loading="lazy" className="block h-[150px] w-full object-cover object-top" />
-                <div className="flex flex-col gap-1 px-[18px] py-4">
-                  <h3 className="display m-0 text-base">{p.name}</h3>
-                  <p className="m-0 text-[13px] text-ink-subtle">
-                    {p.role} <span aria-hidden="true">↗</span>
-                    <span className="sr-only"> (opens the live site in a new tab)</span>
-                  </p>
+              <Tile key={p.name} to={p.url} span={{ base: 1, md: 3, lg: 6 }} className="grid sm:grid-cols-[200px_minmax(0,1fr)]">
+                <img src={p.image.src} alt={p.image.alt} loading="lazy" className="h-40 w-full object-cover object-top sm:h-full" />
+                <div className="flex flex-col gap-2 p-5 sm:p-[22px]">
+                  <Eyebrow tone="subtle">{p.role}</Eyebrow>
+                  <h3 className="display m-0 text-xl">{p.name}</h3>
+                  <p className="m-0 text-sm text-ink-muted max-sm:hidden">{p.summary}</p>
+                  <span className="mt-auto inline-flex items-center gap-1.5 pt-2 text-[13px] font-semibold text-link">
+                    Visit the site <span aria-hidden="true">↗</span>
+                    <span className="sr-only"> (opens in a new tab)</span>
+                  </span>
                 </div>
               </Tile>
             ))}
@@ -101,7 +92,12 @@ export default function Work() {
         </Container>
       </section>
 
-      <ContactBand title="Have a process that should be simpler?" text="Tell us what slows your team down and the tools involved. We'll reply with practical next steps." />
+      <ClosingCta
+        eyebrow="Your project"
+        title="Have a process that should be simpler?"
+        text="Tell us what slows your team down. We'll reply with questions and a practical first version to discuss."
+        secondary={{ label: "Our services", to: "/services" }}
+      />
     </>
   );
 }

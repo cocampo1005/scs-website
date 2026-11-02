@@ -4,18 +4,19 @@ import { hasWebGL } from "../three/webgl";
 // Homepage hero state (docs/design-review.md, decisions 2-4).
 //
 // - A deliberate solve (drag or "Place it for me") plays the circuit sequence
-//   and lights the story strip 1.9 s later (at once with reduced motion).
+//   (about 2.2 s); afterwards the circuit settles into a faint ambient pulse
+//   that keeps the solved hero alive. Reduced motion shows the still circuit.
 // - Solving stores SESSION_KEY in sessionStorage. It is read after mount, so
 //   the first render always matches prerendered HTML (the unsolved layout); a
-//   restored session then jumps straight to the assembled cube, no circuit.
+//   restored session then jumps straight to the assembled cube and the ambient
+//   state, with no sequence.
 // - "Replay the puzzle" clears the flag and puts the pieces back.
 
 export const SESSION_KEY = "scs:hero-solved";
 export const CIRCUIT_MS = 2200;
-export const STORY_DELAY_MS = 1900;
-export const STORY_DELAY_REDUCED_MS = 300;
 
-export type CircuitState = "off" | "playing" | "static";
+/** off: unsolved · playing: the solve sequence · ambient: the solved idle pulse · static: solved, reduced motion */
+export type CircuitState = "off" | "playing" | "ambient" | "static";
 
 export type HeroState = {
   solved: boolean;
@@ -24,17 +25,15 @@ export type HeroState = {
   /** "Place it for me" was pressed */
   placing: boolean;
   circuit: CircuitState;
-  storyLit: boolean;
   /** Bumped by replay: remounts the scene with the pieces at the start */
   replayKey: number;
 };
 
 export type HeroAction =
-  | { type: "restore" }
+  | { type: "restore"; reducedMotion: boolean }
   | { type: "place" }
   | { type: "solved"; reducedMotion: boolean }
   | { type: "circuitDone" }
-  | { type: "lightStory" }
   | { type: "replay" };
 
 export const initialHeroState: HeroState = {
@@ -42,14 +41,15 @@ export const initialHeroState: HeroState = {
   restored: false,
   placing: false,
   circuit: "off",
-  storyLit: false,
   replayKey: 0,
 };
+
+const settled = (reducedMotion: boolean): CircuitState => (reducedMotion ? "static" : "ambient");
 
 export function heroReducer(state: HeroState, action: HeroAction): HeroState {
   switch (action.type) {
     case "restore":
-      return state.solved ? state : { ...state, solved: true, restored: true, storyLit: true };
+      return state.solved ? state : { ...state, solved: true, restored: true, circuit: settled(action.reducedMotion) };
     case "place":
       return state.solved ? state : { ...state, placing: true };
     case "solved":
@@ -57,9 +57,7 @@ export function heroReducer(state: HeroState, action: HeroAction): HeroState {
       if (state.restored || state.solved) return state;
       return { ...state, solved: true, circuit: action.reducedMotion ? "static" : "playing" };
     case "circuitDone":
-      return state.circuit === "playing" ? { ...state, circuit: "off" } : state;
-    case "lightStory":
-      return state.solved ? { ...state, storyLit: true } : state;
+      return state.circuit === "playing" ? { ...state, circuit: "ambient" } : state;
     case "replay":
       return { ...initialHeroState, replayKey: state.replayKey + 1 };
   }
@@ -93,7 +91,9 @@ export function useHomeHero(reducedMotion: boolean) {
 
   // After mount, so server/prerendered HTML and the first render agree
   useEffect(() => {
-    if (readSession()) dispatch({ type: "restore" });
+    if (readSession()) dispatch({ type: "restore", reducedMotion });
+    // Only the first read matters; a later motion change is handled by the CSS
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Pause rendering when the hero leaves the viewport or the tab is hidden
@@ -119,17 +119,8 @@ export function useHomeHero(reducedMotion: boolean) {
     };
   }, []);
 
-  // Sequence timers for a deliberate solve
-  const { circuit, solved, restored, storyLit } = state;
-  useEffect(() => {
-    if (!solved || restored || storyLit) return;
-    const t = window.setTimeout(
-      () => dispatch({ type: "lightStory" }),
-      reducedMotion ? STORY_DELAY_REDUCED_MS : STORY_DELAY_MS,
-    );
-    return () => window.clearTimeout(t);
-  }, [solved, restored, storyLit, reducedMotion]);
-
+  // The solve sequence hands over to the ambient pulse once it has played
+  const { circuit } = state;
   useEffect(() => {
     if (circuit !== "playing") return;
     const t = window.setTimeout(() => dispatch({ type: "circuitDone" }), CIRCUIT_MS + 200);

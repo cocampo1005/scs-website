@@ -21,3 +21,4 @@ window.matchMedia ??= vi.fn().mockImplementation((query) => ({
   removeListener: () => {},
 }));
 window.scrollTo = vi.fn();
+Element.prototype.scrollIntoView ??= vi.fn();

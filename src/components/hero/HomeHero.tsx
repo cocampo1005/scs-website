@@ -8,7 +8,6 @@ import { ArrowIcon, LinkButton } from "../ui/Button";
 import { Container, Eyebrow } from "../ui/Section";
 import { cn } from "../ui/cn";
 import { CircuitLayer } from "./CircuitLayer";
-import { StoryStrip } from "./StoryStrip";
 import { workPath } from "../../content/work";
 import posterImg from "../../assets/images/hero-puzzle-solved.webp";
 
@@ -71,7 +70,7 @@ function PuzzlePoster() {
   );
 }
 
-const CAPABILITIES = ["Records platforms", "Scheduling & booking", "Portals & dashboards", "Integrations"] as const;
+const CAPABILITIES = ["Operations platforms", "Scheduling & booking", "Portals & dashboards", "Finance & admin tools"] as const;
 
 export default function HomeHero() {
   const reducedMotion = Boolean(useReducedMotion());
@@ -86,7 +85,7 @@ export default function HomeHero() {
     <section
       ref={hero.containerRef}
       aria-labelledby="hero-heading"
-      className="relative isolate flex flex-col overflow-hidden pt-16 lg:min-h-[max(820px,min(100svh,940px))] lg:pt-[84px]"
+      className="relative isolate flex flex-col overflow-hidden pt-16 lg:min-h-[max(760px,min(100svh,900px))] lg:pt-[84px]"
     >
       {/* Ambient light, the engineering grid and the circuit, all behind the canvas */}
       <div
@@ -98,10 +97,14 @@ export default function HomeHero() {
         className="grid-motif absolute inset-0 -z-20 [mask-image:linear-gradient(90deg,rgb(0_0_0/0.28)_0%,rgb(0_0_0/0.28)_36%,#000_62%),linear-gradient(180deg,#000_75%,transparent)] [mask-composite:intersect] max-lg:[mask-image:linear-gradient(180deg,rgb(0_0_0/0.22)_0%,rgb(0_0_0/0.22)_40%,#000_62%,transparent_100%)]"
         style={stage ? { backgroundPosition: `${stage.originX}px ${stage.originY}px` } : undefined}
       />
-      <CircuitLayer state={state.circuit} origin={stage ? { x: stage.originX, y: stage.originY } : null} />
+      <CircuitLayer state={state.circuit} active={hero.active} origin={stage ? { x: stage.originX, y: stage.originY } : null} />
 
+      {/* The canvas spans the hero at z-0: it must be the top-most layer under
+          the pointer wherever there is no copy or control, or the cube can't be
+          grabbed. The content layer above it lets pointer events through except
+          on its own text and buttons. */}
       {sceneAvailable && (
-        <div className="absolute inset-0 -z-10 select-none" aria-hidden="true">
+        <div className="absolute inset-0 z-0 select-none" aria-hidden="true">
           <SceneBoundary fallback={null} onError={hero.handleFailure}>
             <Suspense fallback={null}>
               <HeroPuzzleCanvas
@@ -121,10 +124,10 @@ export default function HomeHero() {
         </div>
       )}
 
-      <Container className="flex flex-1 flex-col">
+      <Container className="pointer-events-none relative z-10 flex flex-1 flex-col">
         <div className="grid flex-1 grid-cols-1 lg:grid-cols-2 lg:items-start">
           {/* The offer is readable before, during and after the puzzle */}
-          <div className="relative z-10 flex flex-col gap-4 pt-6 text-left sm:items-center sm:pt-12 sm:text-center lg:items-start lg:gap-7 lg:pt-[104px] lg:text-left">
+          <div className="pointer-events-auto relative flex flex-col gap-4 self-start pt-6 text-left sm:items-center sm:pt-12 sm:text-center lg:items-start lg:gap-7 lg:pt-[104px] lg:text-left">
             <Eyebrow rule className="max-sm:[&>span]:hidden">
               Custom software development
             </Eyebrow>
@@ -137,8 +140,8 @@ export default function HomeHero() {
               <span className="text-gradient">Your Business.</span>
             </h1>
             <p className="m-0 max-w-[540px] text-[15px] leading-relaxed text-ink-muted sm:text-[17px] lg:text-[19px]">
-              We build reliable applications that streamline your workflows, connect your tools, and solve the problems
-              off-the-shelf products leave behind.
+              We design and build web applications around the way your business actually works, so your team gets
+              software that fits instead of a product to work around.
             </p>
             <div className="grid grid-cols-[1.4fr_1fr] gap-2.5 sm:flex sm:gap-3.5">
               <LinkButton to="/contact">
@@ -149,7 +152,7 @@ export default function HomeHero() {
                 <span className="hidden sm:inline">Explore our work</span>
               </LinkButton>
             </div>
-            <ul className="m-0 mt-2.5 hidden list-none gap-x-[26px] gap-y-2 p-0 text-sm text-ink-subtle lg:flex lg:flex-wrap">
+            <ul className="m-0 mt-2.5 hidden list-none gap-x-[26px] gap-y-2 p-0 text-sm text-ink-subtle lg:flex lg:flex-wrap" aria-label="Examples of what we build">
               {CAPABILITIES.map((c) => (
                 <li key={c}>{c}</li>
               ))}
@@ -157,9 +160,10 @@ export default function HomeHero() {
           </div>
 
           {/* Stage: the camera frames the puzzle here (or the poster without 3D) */}
-          <div className="relative flex flex-col items-center lg:h-full lg:min-h-[620px]">
+          <div className="relative flex flex-col items-center pb-8 lg:h-full lg:min-h-[640px] lg:pb-6">
             <div
               ref={stageRef}
+              data-testid="hero-stage"
               className="pointer-events-none relative h-[360px] w-full max-w-[440px] sm:h-[440px] lg:mt-4 lg:h-[560px] lg:max-w-none"
             >
               {sceneAvailable ? <CubeLoader ready={hero.ready} /> : <PuzzlePoster />}
@@ -173,7 +177,6 @@ export default function HomeHero() {
             />
           </div>
         </div>
-        <StoryStrip lit={solved && (state.storyLit || !sceneAvailable)} className="mt-6 mb-6 lg:mt-auto lg:mb-[22px]" />
       </Container>
     </section>
   );
@@ -193,12 +196,12 @@ function PuzzleControls({
   onReplay: () => void;
 }) {
   return (
-    <div className="relative z-10 flex min-h-12 w-full flex-wrap items-center justify-between gap-x-4 gap-y-2 sm:justify-center">
+    <div className="pointer-events-auto relative flex min-h-12 w-full max-w-[560px] flex-wrap items-center justify-between gap-x-4 gap-y-2 sm:justify-center">
       {sceneAvailable && !solved ? (
         <>
           <p className="m-0 text-[13px] text-ink-muted sm:text-sm">
             <span className="sm:hidden">Drag the cube down</span>
-            <span className="hidden sm:inline">Fit the missing piece</span>
+            <span className="hidden sm:inline">Drag the missing piece into place</span>
           </p>
           <button
             type="button"
@@ -210,22 +213,27 @@ function PuzzleControls({
           </button>
         </>
       ) : (
-        <div className={cn("flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-center", sceneAvailable && "motion-safe:animate-panel-in")}>
-          <p className="m-0 text-sm font-medium text-ink" aria-live="polite">
-            Every piece has a purpose. Every solution is built to fit.
+        <div className={cn("flex flex-col items-center gap-2 text-center", sceneAvailable && "motion-safe:animate-panel-in")}>
+          <p className="display m-0 text-[17px] text-ink sm:text-xl" aria-live="polite">
+            Your business is unique. <span className="text-fuchsia">Your software should be too.</span>
           </p>
-          {sceneAvailable ? (
-            <button
-              type="button"
-              onClick={onReplay}
-              className="min-h-11 cursor-pointer border-0 bg-transparent px-1.5 font-sans text-[13px] font-medium text-accent underline underline-offset-4 hover:text-white"
+          <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1">
+            {sceneAvailable ? (
+              <button
+                type="button"
+                onClick={onReplay}
+                className="min-h-11 cursor-pointer border-0 bg-transparent px-1 font-sans text-[13px] font-medium text-accent underline underline-offset-4 hover:text-white"
+              >
+                Replay the puzzle
+              </button>
+            ) : null}
+            <Link
+              to={workPath("street-cat-clinic")}
+              className="inline-flex min-h-11 items-center gap-1 text-[13px] font-medium text-ink-soft no-underline hover:text-white"
             >
-              Replay the puzzle
-            </button>
-          ) : null}
-          <Link to={workPath("street-cat-clinic")} className="inline-flex min-h-11 items-center gap-1 text-[13px] font-medium text-fuchsia no-underline hover:text-white">
-            See one in practice <ArrowIcon className="size-3.5" />
-          </Link>
+              See one in practice <ArrowIcon className="size-3.5" />
+            </Link>
+          </div>
         </div>
       )}
     </div>
