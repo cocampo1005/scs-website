@@ -18,6 +18,7 @@ export default function SolidPuzzleCanvas({
   onStageChange,
   placedIds,
   commandsRef,
+  solvedLift = false,
   onContextLost,
 }) {
   // "never" while off-screen or the tab is hidden. The idle float needs a steady
@@ -52,6 +53,7 @@ export default function SolidPuzzleCanvas({
           onStageChange={onStageChange}
           placedIds={placedIds}
           commandsRef={commandsRef}
+          solvedLift={solvedLift}
         />
       </Suspense>
     </Canvas>

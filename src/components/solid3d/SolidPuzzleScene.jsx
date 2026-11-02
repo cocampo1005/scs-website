@@ -305,13 +305,15 @@ export default function SolidPuzzleScene({
   onStageChange,
   placedIds,
   commandsRef,
+  // Glide the finished wall up (desktop, where the win card overlays the board)
+  solvedLift = false,
 }) {
   const { list: parts, wall } = useSolidParts();
   const { camera, gl, size, invalidate } = useThree();
 
   // Latest props for event handlers and the frame loop (no re-renders needed)
   const latest = useRef({});
-  latest.current = { onPlace, onSelect, onDragChange, activeId, reducedMotion };
+  latest.current = { onPlace, onSelect, onDragChange, activeId, reducedMotion, layout, solvedLift };
 
   // Start positions and stage framing. Stable for the whole attempt (seeded);
   // a reset draws a new seed. On phones the tray re-packs as pieces are placed.
@@ -389,15 +391,20 @@ export default function SolidPuzzleScene({
 
   // Wide: fit the whole box. Tall: fit the width and pin the top edge, so when
   // the stage shrinks the wall stays put and only the empty tray goes away.
+  // The frame loop adds `camLift` (the finished wall gliding up on wide
+  // layouts) to this base position
+  const camBaseY = useRef(0);
+  const camLift = useRef(0);
   useEffect(() => {
     if (layout === "tall") {
       camera.zoom = size.width / box.w;
-      camera.position.y = box.top - size.height / 2 / camera.zoom;
+      camBaseY.current = box.top - size.height / 2 / camera.zoom;
     } else {
       camera.zoom = Math.min(size.width / box.w, size.height / box.h);
-      camera.position.y = box.cy;
+      camBaseY.current = box.cy;
     }
     camera.position.x = box.cx;
+    camera.position.y = camBaseY.current - camLift.current;
     camera.position.z = SOLID_SCENE.cameraZ;
     camera.updateProjectionMatrix();
     invalidate();
@@ -653,10 +660,18 @@ export default function SolidPuzzleScene({
   useFrame((state, delta) => {
     const dt = Math.min(delta, 0.05);
     const t = state.clock.elapsedTime;
-    const { reducedMotion: rm, activeId: active } = latest.current;
+    const { reducedMotion: rm, activeId: active, layout: lay, solvedLift: lift } = latest.current;
     const total = parts.length;
     const allPlaced = placedCount.current === total;
     let busy = false;
+
+    // Desktop: once the wall is complete the view glides down so the wall
+    // sits in the upper part of the board, clear of the win card over it
+    const liftTarget = allPlaced && lift && lay === "wide" ? PUZZLE.solvedLift : 0;
+    camLift.current = rm ? liftTarget : damp(camLift.current, liftTarget, 2.5, dt);
+    if (Math.abs(camLift.current - liftTarget) > 0.05) busy = true;
+    else camLift.current = liftTarget;
+    camera.position.y = camBaseY.current - camLift.current;
 
     if (allPlaced) solveElapsed.current += dt;
     const solveT = solveElapsed.current;

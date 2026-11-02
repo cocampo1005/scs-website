@@ -130,6 +130,7 @@ export const PUZZLE = {
   floatSpeed: 0.9,
   jitter: { wide: 12, tall: 8 },
   edgeMargin: 14, // keep dragged pieces this far inside the stage
+  solvedLift: 200, // wide layout: the finished wall glides up this far so the win card below it never covers it
 };
 
 // Stage framing.

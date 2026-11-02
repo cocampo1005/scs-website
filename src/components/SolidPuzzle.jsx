@@ -23,6 +23,9 @@ export default function SolidPuzzle() {
   // Info: a column beside the board on desktop, a bottom sheet below that.
   const isWide = useMediaQuery("(min-width: 768px)");
   const isDesktop = useMediaQuery("(min-width: 1024px)");
+  // The win card overlays the board only where the board is wide enough for
+  // it to sit beneath the lifted wall; narrower screens get it under the board
+  const overlayWin = useMediaQuery("(min-width: 1280px)");
   const layout = isWide ? "wide" : "tall";
 
   const total = SOLID_PIECES.length;
@@ -203,6 +206,7 @@ export default function SolidPuzzle() {
                   onStageChange={handleStageChange}
                   placedIds={placedIds}
                   commandsRef={commandsRef}
+                  solvedLift={overlayWin}
                   onContextLost={handleContextLost}
                 />
               </Suspense>
@@ -215,7 +219,7 @@ export default function SolidPuzzle() {
       </div>
       <SolidVictoryBanner show={banner} />
       {solved && !victoryDismissed && (
-        <SolidVictoryCard animated={banner} inline={!isWide} onReset={puzzle.reset} onDismiss={() => setVictoryDismissed(true)} />
+        <SolidVictoryCard animated={banner} inline={!overlayWin} onReset={puzzle.reset} onDismiss={() => setVictoryDismissed(true)} />
       )}
       </div>
 

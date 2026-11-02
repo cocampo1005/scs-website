@@ -31,7 +31,7 @@ export function SolidVictoryBanner({ show }) {
 export function SolidVictoryCard({ animated, inline, onReset, onDismiss }) {
   return (
     <div
-      className={`victory-card-wrap ${inline ? "relative mt-4" : "absolute inset-0 flex items-end justify-center p-4 sm:p-6"} ${animated ? "victory-card-wrap-animated" : ""}`}
+      className={`victory-card-wrap ${inline ? "relative mt-4" : "absolute inset-0 flex items-end justify-center p-4 sm:p-5"} ${animated ? "victory-card-wrap-animated" : ""}`}
     >
       {!inline && (
         <div aria-hidden="true" className="absolute inset-0 rounded-[var(--radius-tile)] bg-[linear-gradient(180deg,transparent_30%,rgb(8_6_13/0.9)_100%)]" />
@@ -39,27 +39,30 @@ export function SolidVictoryCard({ animated, inline, onReset, onDismiss }) {
       <section
         role="status"
         aria-labelledby="victory-heading"
-        className={`victory-card tile tile-feature relative w-full overflow-hidden ${inline ? "" : "max-w-[600px]"}`}
+        className="victory-card tile tile-feature relative w-full overflow-hidden"
       >
         <div aria-hidden="true" className="absolute inset-0 bg-[radial-gradient(420px_220px_at_85%_0%,rgb(192_38_211/0.32),transparent_70%),radial-gradient(360px_200px_at_5%_100%,rgb(124_58_237/0.3),transparent_70%)]" />
+        {/* The close control floats in the corner; the content runs the full width beneath it */}
         <button
           type="button"
           onClick={onDismiss}
           aria-label="Show the finished wall"
-          className="absolute top-3 right-3 z-10 inline-flex size-10 cursor-pointer items-center justify-center rounded-full border border-line bg-bg/60 text-ink-soft transition-colors hover:border-focus/60 hover:text-white"
+          className="absolute top-3 right-3 z-10 inline-flex size-9 cursor-pointer items-center justify-center rounded-full border border-line bg-bg/60 text-ink-soft transition-colors hover:border-focus/60 hover:text-white"
         >
           <X className="size-4" aria-hidden="true" />
         </button>
-        <div className="relative flex flex-col gap-4 p-5 pr-14 sm:p-8">
-          <p className="label m-0 text-fuchsia">Stage clear · 7 / 7 pieces</p>
-          <h3 id="victory-heading" className="display m-0 text-[24px] leading-[1.1] sm:text-[30px]">
-            That’s SOLID. Now imagine your software built the same way.
-          </h3>
-          <p className="m-0 text-[15px] leading-relaxed text-ink-muted sm:text-base">
-            Every piece had a place and the wall held. That's how we build business applications: well-made parts
-            that fit together and stay dependable as your business grows. Ready for the next level?
-          </p>
-          <div className="flex flex-col gap-3 pt-1 sm:flex-row">
+        <div className="relative grid gap-4 p-5 sm:p-6">
+          <div className="flex flex-col gap-2.5">
+            <p className="label m-0 pr-10 text-fuchsia">Stage clear · 7 / 7 pieces</p>
+            <h3 id="victory-heading" className="display m-0 text-[24px] leading-[1.1] sm:text-[28px]">
+              That’s SOLID. Now imagine your software built the same way.
+            </h3>
+            <p className="m-0 max-w-[640px] text-[15px] leading-relaxed text-ink-muted">
+              Every piece had a place and the wall held. That's how we build business applications: well-made parts
+              that fit together and stay dependable as your business grows. Ready for the next level?
+            </p>
+          </div>
+          <div className="flex flex-col gap-3 sm:flex-row">
             <LinkButton to="/contact">
               Press start on your project <ArrowIcon />
             </LinkButton>
